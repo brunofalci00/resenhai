@@ -34,20 +34,6 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
               className="rounded-full bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="size-4" />
-              <span>Conversas leves e humanas</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Bot className="size-4 text-secondary" />
-              <span>IA personalizada para você</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <BarChart3 className="size-4 text-amber-500" />
-              <span>Relatórios semanais</span>
-            </div>
-          </div>
         </div>
 
         <div className="lg:col-span-6">
