@@ -34,22 +34,18 @@
       "id": "3",
       "name": "Supabase Get User",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -1240,
         -200
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "phone",
               "value": "={{'eq.' + $item(0).$node['Normalize Incoming'].json.phone}}"
@@ -63,7 +59,8 @@
               "value": "1"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
@@ -110,19 +107,19 @@
       "id": "6",
       "name": "Create User Record",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -700,
         -380
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "POST",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ phone: $json.phone, name: $json.profile_name || null, onboarding_step: 1, onboarding_completed: false, timezone: 'America/Sao_Paulo' }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -133,12 +130,11 @@
             }
           ]
         },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ phone: $json.phone, name: $json.profile_name || null, onboarding_step: 1, onboarding_completed: false, timezone: 'America/Sao_Paulo' }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -196,19 +192,29 @@
       "id": "9",
       "name": "Update Step 1 Response",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -520,
         -200
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "PATCH",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ goals: { raw: $json.text }, onboarding_step: 2 }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{'eq.' + $json.phone}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -219,20 +225,11 @@
             }
           ]
         },
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ goals: { raw: $json.text }, onboarding_step: 2 }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -255,19 +252,29 @@
       "id": "11",
       "name": "Update Step 2 Response",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -520,
         -40
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "PATCH",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ bad_habits: { raw: $json.text }, onboarding_step: 3 }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{'eq.' + $json.phone}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -278,20 +285,11 @@
             }
           ]
         },
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ bad_habits: { raw: $json.text }, onboarding_step: 3 }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -314,19 +312,29 @@
       "id": "13",
       "name": "Update Step 3 Response",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -520,
         120
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "PATCH",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ financial_situation: $json.text, onboarding_step: 4 }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{'eq.' + $json.phone}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -337,20 +345,11 @@
             }
           ]
         },
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ financial_situation: $json.text, onboarding_step: 4 }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -373,19 +372,29 @@
       "id": "15",
       "name": "Update Step 4 Response",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -520,
         280
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "PATCH",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ available_times: { raw: $json.text }, onboarding_step: 5 }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{'eq.' + $json.phone}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -396,20 +405,11 @@
             }
           ]
         },
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ available_times: { raw: $json.text }, onboarding_step: 5 }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -444,19 +444,19 @@
       "id": "18",
       "name": "Insert Habits",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         20,
         280
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
         "method": "POST",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify($json.habits) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -467,30 +467,40 @@
             }
           ]
         },
-        "options": {
-          "response": {
-            "response": "json"
-          }
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.habits) }}",
+        "responseFormat": "json"
       }
     },
     {
       "id": "19",
       "name": "Complete Onboarding",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         200,
         280
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
         "method": "PATCH",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify({ onboarding_completed: true, onboarding_step: 6 }) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{'eq.' + ($item(0).$node['Update Step 4 Response'].json[0]?.phone ?? $item(0).$node['Normalize Incoming'].json.phone)}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "return=representation"
@@ -501,20 +511,11 @@
             }
           ]
         },
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + ($item(0).$node['Update Step 4 Response'].json[0]?.phone ?? $item(0).$node['Normalize Incoming'].json.phone)}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ onboarding_completed: true, onboarding_step: 6 }) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -569,22 +570,18 @@
       "id": "23",
       "name": "Fetch Pending Habit",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -340,
         220
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "user_id",
               "value": "={{'eq.' + $json.user.id}}"
@@ -602,26 +599,27 @@
               "value": "1"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
       "id": "24",
       "name": "Upsert Habit Log",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -160,
         220
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
         "method": "POST",
-        "jsonParameters": true,
-        "bodyParametersJson": "={{ JSON.stringify([{ habit_id: ($json[0]?.id ?? $json.id), user_id: ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node['Detect Confirmation'].json.user.id), completed: true, date: (new Date()).toISOString().slice(0,10), completed_at: (new Date()).toISOString() }]) }}",
-        "headerParametersUi": {
-          "parameter": [
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Prefer",
               "value": "resolution=merge-duplicates"
@@ -632,11 +630,11 @@
             }
           ]
         },
-        "options": {
-          "response": {
-            "response": "json"
-          }
-        }
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify([{ habit_id: ($json[0]?.id ?? $json.id), user_id: ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node['Detect Confirmation'].json.user.id), completed: true, date: (new Date()).toISOString().slice(0,10), completed_at: (new Date()).toISOString() }]) }}",
+        "responseFormat": "json"
       }
     },
     {
@@ -659,22 +657,18 @@
       "id": "26",
       "name": "Fetch Active Habits",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -340,
         420
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "user_id",
               "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
@@ -688,29 +682,26 @@
               "value": "id,name,type,frequency,reminder_times"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
       "id": "27",
       "name": "Fetch Today Progress",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -160,
         420
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "user_id",
               "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
@@ -720,29 +711,26 @@
               "value": "={{'eq.' + $now.toFormat('yyyy-LL-dd')}}"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
       "id": "28",
       "name": "Fetch Conversation History",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         20,
         420
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/conversations",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "user_id",
               "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
@@ -756,7 +744,8 @@
               "value": "10"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
@@ -827,22 +816,18 @@
       "id": "33",
       "name": "Fetch Reminder Candidates",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.2,
       "position": [
         -1420,
         120
       ],
       "parameters": {
-        "authentication": "headerAuth",
+        "authentication": "none",
         "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "options": {
-          "response": {
-            "response": "json"
-          },
-          "splitIntoItems": false
-        },
-        "queryParametersUi": {
-          "parameter": [
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
             {
               "name": "is_active",
               "value": "eq.true"
@@ -852,7 +837,8 @@
               "value": "id,name,reminder_times,user_id,users(name,phone,timezone)"
             }
           ]
-        }
+        },
+        "responseFormat": "json"
       }
     },
     {
