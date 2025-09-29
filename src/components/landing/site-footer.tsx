@@ -30,10 +30,10 @@ export function SiteFooter() {
         <div className="flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
           <p>© 2025 Foquinha IA</p>
           <div className="flex items-center gap-6">
-            <Link href="#" className="transition-colors hover:text-foreground">
+            <Link href="/termos" className="transition-colors hover:text-foreground">
               Termos
             </Link>
-            <Link href="#" className="transition-colors hover:text-foreground">
+            <Link href="/termos" className="transition-colors hover:text-foreground">
               Privacidade
             </Link>
             <Link href="#" className="transition-colors hover:text-foreground">

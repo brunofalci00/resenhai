@@ -65,8 +65,8 @@ export function PricingSection({ ctaHref }: PricingSectionProps) {
               </div>
 
               <div className="space-y-3">
-                <div className="text-5xl font-bold text-foreground">12x de R$ 7,25</div>
-                <div className="text-xl text-muted-foreground">ou R$87 por ano</div>
+                <div className="text-5xl font-bold text-foreground">12x de R$ 6,59</div>
+                <div className="text-xl text-muted-foreground">ou R$79 por ano</div>
                 <div className="mx-auto w-16 h-1 bg-secondary rounded-full"></div>
               </div>
 
