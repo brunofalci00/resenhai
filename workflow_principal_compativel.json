@@ -1,0 +1,786 @@
+{
+  "name": "Assistente Desenvolvimento Pessoal - Principal",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "whatsapp-trigger",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [140, 300]
+    },
+    {
+      "parameters": {
+        "resource": "users",
+        "operation": "getAll",
+        "filters": {
+          "phone": "={{ $json.messages[0].from }}"
+        },
+        "limit": 1
+      },
+      "id": "load-user-data",
+      "name": "Load User Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [360, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "is-new-user",
+      "name": "Is New User?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [580, 300]
+    },
+    {
+      "parameters": {
+        "resource": "users",
+        "operation": "insert",
+        "records": [
+          {
+            "phone": "={{ $node['WhatsApp Trigger'].json.messages[0].from }}",
+            "name": "={{ $node['WhatsApp Trigger'].json.contacts?.[0]?.profile?.name || '' }}",
+            "onboarding_step": 1,
+            "onboarding_completed": false,
+            "created_at": "={{ new Date().toISOString() }}",
+            "updated_at": "={{ new Date().toISOString() }}"
+          }
+        ]
+      },
+      "id": "create-new-user",
+      "name": "Create New User",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "onboarding_step",
+              "value": 1
+            }
+          ],
+          "string": [
+            {
+              "name": "phone",
+              "value": "={{ $node['WhatsApp Trigger'].json.messages[0].from }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $node['WhatsApp Trigger'].json.contacts?.[0]?.profile?.name || '' }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "onboarding_completed",
+              "value": false
+            }
+          ],
+          "object": [
+            {
+              "name": "goals",
+              "value": "{}"
+            },
+            {
+              "name": "bad_habits",
+              "value": "{}"
+            }
+          ]
+        }
+      },
+      "id": "set-new-user-data",
+      "name": "Set New User Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1020, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "id",
+              "value": "={{ $json[0].id }}"
+            },
+            {
+              "name": "onboarding_step",
+              "value": "={{ $json[0].onboarding_step }}"
+            }
+          ],
+          "string": [
+            {
+              "name": "phone",
+              "value": "={{ $json[0].phone }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json[0].name }}"
+            },
+            {
+              "name": "financial_situation",
+              "value": "={{ $json[0].financial_situation }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "onboarding_completed",
+              "value": "={{ $json[0].onboarding_completed }}"
+            }
+          ],
+          "object": [
+            {
+              "name": "goals",
+              "value": "={{ $json[0].goals }}"
+            },
+            {
+              "name": "bad_habits",
+              "value": "={{ $json[0].bad_habits }}"
+            }
+          ]
+        }
+      },
+      "id": "set-existing-user-data",
+      "name": "Set Existing User Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "id",
+              "field2": "id"
+            }
+          ]
+        }
+      },
+      "id": "merge-user-data",
+      "name": "Merge User Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1240, 300]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "number": [
+                  {
+                    "value1": "={{ $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": 1
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "number": [
+                  {
+                    "value1": "={{ $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": 2
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "number": [
+                  {
+                    "value1": "={{ $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": 3
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "number": [
+                  {
+                    "value1": "={{ $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": 4
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "number": [
+                  {
+                    "value1": "={{ $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": 5
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "boolean": [
+                  {
+                    "value1": "={{ $json.onboarding_completed }}",
+                    "value2": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "route-user-status",
+      "name": "Route User Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [1460, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Step 1 - Coletando hábitos a construir.\n\nPERGUNTA: Para começarmos, me diga: quais são os 3 principais hábitos que você gostaria de construir ou melhorar na sua vida? Pode ser qualquer coisa, desde ler mais até começar a meditar. 📚🧘‍♀️"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step1",
+      "name": "Prompt Step 1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 100]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Step 2 - Coletando hábitos a abandonar.\n\nPERGUNTA: Ótimas escolhas! 👏 Agora, existe algum hábito ou vício que você sente que está te atrapalhando e que gostaria de deixar para trás?"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step2",
+      "name": "Prompt Step 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Step 3 - Situação financeira.\n\nPERGUNTA: Para criar um plano adequado, como você classificaria sua situação financeira?\n💰 Baixa - Prefiro opções gratuitas\n💵 Média - Posso investir moderadamente\n💎 Alta - Tenho flexibilidade para investir"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step3",
+      "name": "Prompt Step 3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Step 4 - Horários disponíveis.\n\nPERGUNTA: Perfeito! 🎯 Agora me diga: quais são seus horários mais livres durante a semana? Por exemplo: 'Manhã das 6h às 8h, noite das 19h às 21h'"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step4",
+      "name": "Prompt Step 4",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 400]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Step 5 - Criar plano personalizado.\n\nINSTRUÇÕES: Crie um plano realista baseado nos dados coletados. Apresente de forma clara e motivadora. Termine perguntando se aprova o plano."
+            }
+          ]
+        }
+      },
+      "id": "prompt-step5",
+      "name": "Prompt Step 5",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 500]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo.\n\nCONTEXTO: Usuário ativo.\n\nDIRETRIZES: Responda contextualmente. Se for confirmação de tarefa, celebre. Mantenha tom motivador."
+            }
+          ]
+        }
+      },
+      "id": "prompt-active-user",
+      "name": "Prompt Active User",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 600]
+    },
+    {
+      "parameters": {
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "id",
+              "field2": "id"
+            }
+          ]
+        }
+      },
+      "id": "merge-with-prompt",
+      "name": "Merge with Prompt",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1900, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "message": "={{ $json.system_prompt }}"
+            },
+            {
+              "message": "Mensagem do usuário: {{ $node['WhatsApp Trigger'].json.messages[0].text.body }}",
+              "role": "user"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 500
+        }
+      },
+      "id": "openai-agent",
+      "name": "OpenAI Agent",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [2120, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential",
+          "name": "OpenAI Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "conversations",
+        "operation": "insert",
+        "records": [
+          {
+            "user_id": "={{ $json.id }}",
+            "message": "={{ $node['WhatsApp Trigger'].json.messages[0].text.body }}",
+            "sender": "user",
+            "timestamp": "={{ new Date().toISOString() }}",
+            "context": "={{ JSON.stringify({ onboarding_step: $json.onboarding_step }) }}"
+          }
+        ]
+      },
+      "id": "save-user-message",
+      "name": "Save User Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2340, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "conversations",
+        "operation": "insert",
+        "records": [
+          {
+            "user_id": "={{ $json.id }}",
+            "message": "={{ $node['OpenAI Agent'].json.choices[0].message.content }}",
+            "sender": "assistant",
+            "timestamp": "={{ new Date().toISOString() }}",
+            "context": "={{ JSON.stringify({ onboarding_step: $json.onboarding_step }) }}"
+          }
+        ]
+      },
+      "id": "save-assistant-message",
+      "name": "Save Assistant Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2340, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const userMessage = $node['WhatsApp Trigger'].json.messages[0].text.body;\nconst currentStep = $json.onboarding_step;\n\nlet updateData = {\n  updated_at: new Date().toISOString()\n};\n\nif (currentStep === 1) {\n  const goals = {\n    raw_response: userMessage,\n    extracted_goals: userMessage.toLowerCase().match(/\\b(exercit|ler|medit|estud|água)\\w*/g) || []\n  };\n  updateData.goals = JSON.stringify(goals);\n  updateData.onboarding_step = 2;\n} else if (currentStep === 2) {\n  const badHabits = {\n    raw_response: userMessage,\n    extracted_habits: userMessage.toLowerCase().match(/\\b(fuma|procrastin|celular|doce)\\w*/g) || []\n  };\n  updateData.bad_habits = JSON.stringify(badHabits);\n  updateData.onboarding_step = 3;\n} else if (currentStep === 3) {\n  let financial = 'media';\n  if (userMessage.toLowerCase().includes('baixa')) financial = 'baixa';\n  if (userMessage.toLowerCase().includes('alta')) financial = 'alta';\n  updateData.financial_situation = financial;\n  updateData.onboarding_step = 4;\n} else if (currentStep === 4) {\n  const availableTimes = {\n    raw_response: userMessage,\n    morning: userMessage.toLowerCase().includes('manhã'),\n    evening: userMessage.toLowerCase().includes('noite')\n  };\n  updateData.available_times = JSON.stringify(availableTimes);\n  updateData.onboarding_step = 5;\n} else if (currentStep === 5) {\n  if (userMessage.toLowerCase().includes('sim') || userMessage.toLowerCase().includes('aprovo')) {\n    updateData.onboarding_completed = true;\n    updateData.onboarding_step = 6;\n  }\n}\n\nreturn [{\n  json: {\n    user_id: $json.id,\n    phone: $json.phone,\n    update_data: updateData\n  }\n}];"
+      },
+      "id": "process-user-data",
+      "name": "Process User Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [2560, 300]
+    },
+    {
+      "parameters": {
+        "resource": "users",
+        "operation": "update",
+        "id": "={{ $json.user_id }}",
+        "updateFields": "={{ $json.update_data }}"
+      },
+      "id": "update-user-data",
+      "name": "Update User Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2780, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "={{ $json.phone }}",
+        "message": "={{ $node['OpenAI Agent'].json.choices[0].message.content }}"
+      },
+      "id": "send-whatsapp-response",
+      "name": "Send WhatsApp Response",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [3000, 300],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "whatsapp-credential",
+          "name": "WhatsApp Foquinha AI"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load User Data": {
+      "main": [
+        [
+          {
+            "node": "Is New User?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New User?": {
+      "main": [
+        [
+          {
+            "node": "Create New User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Existing User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New User": {
+      "main": [
+        [
+          {
+            "node": "Set New User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set New User Data": {
+      "main": [
+        [
+          {
+            "node": "Merge User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Existing User Data": {
+      "main": [
+        [
+          {
+            "node": "Merge User Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge User Data": {
+      "main": [
+        [
+          {
+            "node": "Route User Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route User Status": {
+      "main": [
+        [
+          {
+            "node": "Prompt Step 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Active User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 1": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 2": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 3": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 4": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 5": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Active User": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge with Prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Agent": {
+      "main": [
+        [
+          {
+            "node": "Save User Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Assistant Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Process User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process User Data": {
+      "main": [
+        [
+          {
+            "node": "Update User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User Data": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "assistente-desenvolvimento-pessoal-compativel",
+  "tags": [
+    "WhatsApp",
+    "AI",
+    "Supabase",
+    "Compatível"
+  ]
+}

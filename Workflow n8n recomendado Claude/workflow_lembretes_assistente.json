@@ -1,0 +1,202 @@
+{
+  "name": "Assistente Desenvolvimento Pessoal - Lembretes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Cron - A Cada 30 Minutos",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [140, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT h.id, h.name, h.user_id, u.phone, u.name as user_name, h.reminder_times\nFROM habits h\nJOIN users u ON h.user_id = u.id\nWHERE h.is_active = true\n  AND u.onboarding_completed = true\n  AND CURRENT_TIME::time = ANY(h.reminder_times::time[])\n  AND NOT EXISTS (\n    SELECT 1 FROM habit_logs hl \n    WHERE hl.habit_id = h.id \n      AND hl.date = CURRENT_DATE \n      AND hl.completed = true\n  )"
+      },
+      "id": "get-pending-reminders",
+      "name": "Get Pending Reminders",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [360, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "has-reminders",
+      "name": "Has Reminders?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [580, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-reminders",
+      "name": "Loop Through Reminders",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [800, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar mensagem de lembrete personalizada\nconst habit = $json;\nconst habitName = habit.name;\nconst userName = habit.user_name || 'Guerreiro(a)';\n\n// Personalizar mensagem baseada no tipo de hábito\nlet emoji = '💪';\nlet motivationalMessage = 'Vamos com tudo! Cada pequeno passo te aproxima do seu objetivo.';\n\nif (habitName.toLowerCase().includes('exercit') || habitName.toLowerCase().includes('treina')) {\n  emoji = '🏋️‍♀️';\n  motivationalMessage = 'Hora de movimentar o corpo! Seu futuro eu agradece! 💪';\n} else if (habitName.toLowerCase().includes('ler') || habitName.toLowerCase().includes('leit')) {\n  emoji = '📚';\n  motivationalMessage = 'Que tal alimentar a mente com conhecimento? Sua sabedoria cresce a cada página! 🧠';\n} else if (habitName.toLowerCase().includes('medit')) {\n  emoji = '🧘‍♀️';\n  motivationalMessage = 'Momento de paz e conexão interior. Respire fundo e se conecte consigo! ✨';\n} else if (habitName.toLowerCase().includes('água') || habitName.toLowerCase().includes('water')) {\n  emoji = '💧';\n  motivationalMessage = 'Hora de se hidratar! Seu corpo é seu templo, cuide bem dele! 🌊';\n} else if (habitName.toLowerCase().includes('evitar') || habitName.toLowerCase().includes('limitar')) {\n  emoji = '🛡️';\n  motivationalMessage = 'Lembre-se: você está no controle! Cada \"não\" te torna mais forte! 💎';\n} else if (habitName.toLowerCase().includes('acorda') || habitName.toLowerCase().includes('dormi')) {\n  emoji = '⏰';\n  motivationalMessage = 'Bons hábitos de sono = energia renovada! Seu corpo precisa disso! 😴';\n}\n\nconst reminderMessage = `${emoji} **Lembrete Personalizado** ${emoji}\n\nOi ${userName}! Hora do seu: **${habitName}**!\n\n${motivationalMessage}\n\nResponda \"feito\" quando concluir! 🚀\n\n_Enviado com ❤️ pelo seu assistente pessoal_`;\n\nreturn [{\n  json: {\n    ...habit,\n    reminder_message: reminderMessage\n  }\n}];"
+      },
+      "id": "generate-reminder-message",
+      "name": "Generate Reminder Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1020, 300]
+    },
+    {
+      "parameters": {
+        "to": "={{ $json.phone }}",
+        "message": "={{ $json.reminder_message }}",
+        "options": {}
+      },
+      "id": "send-reminder",
+      "name": "Send Reminder",
+      "type": "n8n-nodes-base.whatsAppBusinessCloud",
+      "typeVersion": 1,
+      "position": [1240, 300],
+      "credentials": {
+        "whatsAppBusinessCloudApi": {
+          "id": "whatsapp-send-credential",
+          "name": "WhatsApp Business Cloud Send"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "fields": {
+          "user_id": "={{ $json.user_id }}",
+          "message": "{{ $json.reminder_message }}",
+          "sender": "assistant",
+          "timestamp": "={{ new Date().toISOString() }}",
+          "context": "{{ JSON.stringify({ type: 'reminder', habit_id: $json.id, habit_name: $json.name }) }}"
+        }
+      },
+      "id": "log-reminder-sent",
+      "name": "Log Reminder Sent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1460, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron - A Cada 30 Minutos": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Reminders": {
+      "main": [
+        [
+          {
+            "node": "Has Reminders?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Reminders?": {
+      "main": [
+        [
+          {
+            "node": "Loop Through Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Through Reminders": {
+      "main": [
+        [
+          {
+            "node": "Generate Reminder Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Reminder Message": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder": {
+      "main": [
+        [
+          {
+            "node": "Log Reminder Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "assistente-desenvolvimento-pessoal-lembretes",
+  "tags": [
+    "WhatsApp",
+    "Lembretes",
+    "Automação",
+    "Supabase",
+    "Cron"
+  ]
+}

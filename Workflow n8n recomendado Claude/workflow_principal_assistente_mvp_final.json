@@ -1,0 +1,1110 @@
+{
+  "name": "Assistente Desenvolvimento Pessoal - Workflow Principal",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "whatsapp-trigger",
+      "name": "WhatsApp Business Cloud Trigger",
+      "type": "n8n-nodes-base.whatsAppBusinessCloudTrigger",
+      "typeVersion": 1,
+      "position": [140, 300],
+      "webhookId": "assistente-desenvolvimento-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "users",
+        "where": {
+          "conditions": [
+            {
+              "column": "phone",
+              "operator": "=",
+              "value": "={{ $json.messages[0].from }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "load-user-data",
+      "name": "Load User Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [360, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "is-new-user",
+      "name": "Is New User?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [580, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "users",
+        "fields": {
+          "phone": "={{ $node['WhatsApp Business Cloud Trigger'].json.messages[0].from }}",
+          "name": "={{ $node['WhatsApp Business Cloud Trigger'].json.contacts?.[0]?.profile?.name || '' }}",
+          "onboarding_step": 1,
+          "onboarding_completed": false,
+          "created_at": "={{ new Date().toISOString() }}",
+          "updated_at": "={{ new Date().toISOString() }}"
+        }
+      },
+      "id": "create-new-user",
+      "name": "Create New User",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "id",
+              "value": "={{ $json[0].id }}"
+            },
+            {
+              "name": "onboarding_step",
+              "value": 1
+            }
+          ],
+          "string": [
+            {
+              "name": "phone",
+              "value": "={{ $node['WhatsApp Business Cloud Trigger'].json.messages[0].from }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $node['WhatsApp Business Cloud Trigger'].json.contacts?.[0]?.profile?.name || '' }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "onboarding_completed",
+              "value": false
+            }
+          ],
+          "object": [
+            {
+              "name": "goals",
+              "value": "{}"
+            },
+            {
+              "name": "bad_habits",
+              "value": "{}"
+            },
+            {
+              "name": "available_times",
+              "value": "{}"
+            }
+          ]
+        }
+      },
+      "id": "set-new-user-data",
+      "name": "Set New User Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1020, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "id",
+              "value": "={{ $json[0].id }}"
+            },
+            {
+              "name": "onboarding_step",
+              "value": "={{ $json[0].onboarding_step }}"
+            }
+          ],
+          "string": [
+            {
+              "name": "phone",
+              "value": "={{ $json[0].phone }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json[0].name }}"
+            },
+            {
+              "name": "financial_situation",
+              "value": "={{ $json[0].financial_situation }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "onboarding_completed",
+              "value": "={{ $json[0].onboarding_completed }}"
+            }
+          ],
+          "object": [
+            {
+              "name": "goals",
+              "value": "={{ $json[0].goals }}"
+            },
+            {
+              "name": "bad_habits",
+              "value": "={{ $json[0].bad_habits }}"
+            },
+            {
+              "name": "available_times",
+              "value": "={{ $json[0].available_times }}"
+            }
+          ]
+        }
+      },
+      "id": "set-existing-user-data",
+      "name": "Set Existing User Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "conversations",
+        "where": {
+          "conditions": [
+            {
+              "column": "user_id",
+              "operator": "=",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "sort": {
+          "fields": [
+            {
+              "field": "timestamp",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "limit": 10
+      },
+      "id": "load-conversation-history",
+      "name": "Load Conversation History",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1240, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "expression": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}"
+      },
+      "id": "route-user-status",
+      "name": "Route by User Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [1460, 300],
+      "parameters": {
+        "options": {
+          "fallbackOutput": 3
+        },
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "onboarding_step_1"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "step_1_goals"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "onboarding_step_2"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "step_2_bad_habits"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "onboarding_step_3"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "step_3_financial"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "onboarding_step_4"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "step_4_schedule"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "onboarding_step_5"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "step_5_create_plan"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.onboarding_completed ? 'active_user' : 'onboarding_step_' + $json.onboarding_step }}",
+                    "operation": "equal",
+                    "value2": "active_user"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "active_user"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nCONTEXTO: Usuário está no Step 1 do onboarding - Coletando hábitos que quer construir.\n\nOBJETIVO: Coletar informações sobre os 3 principais hábitos que o usuário quer construir.\n\nDIRETRIZES:\n- Faça UMA pergunta por vez\n- Seja empático e encorajador\n- Mantenha o tom conversacional e amigável\n\nRESPOSTA ESPERADA: Para começarmos, me diga: quais são os 3 principais hábitos que você gostaria de construir ou melhorar na sua vida? Pode ser qualquer coisa, desde ler mais até começar a meditar. 📚🧘‍♀️\n\nQuando o usuário responder, extraia os hábitos mencionados e salve no formato JSON para o campo goals."
+            }
+          ]
+        }
+      },
+      "id": "prompt-step1",
+      "name": "Prompt Step 1 - Goals",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 100]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nDADOS DO USUÁRIO:\n- Hábitos a construir: {{ $json.goals }}\n\nCONTEXTO: Usuário está no Step 2 do onboarding - Coletando hábitos que quer abandonar.\n\nOBJETIVO: Coletar informações sobre hábitos negativos que quer deixar para trás.\n\nDIRETRIZES:\n- Seja empático ao abordar vícios/hábitos negativos\n- Mantenha tom positivo e sem julgamentos\n- Enfatize que é normal ter hábitos que queremos mudar\n\nRESPOSTA ESPERADA: Ótimas escolhas! 👏 Agora, existe algum hábito ou vício que você sente que está te atrapalhando e que gostaria de deixar para trás? Lembre-se: todos temos aspectos que queremos melhorar, e reconhecer isso já é um grande passo! 💪\n\nQuando o usuário responder, extraia os hábitos mencionados e salve no formato JSON para o campo bad_habits."
+            }
+          ]
+        }
+      },
+      "id": "prompt-step2",
+      "name": "Prompt Step 2 - Bad Habits",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nDADOS DO USUÁRIO:\n- Hábitos a construir: {{ $json.goals }}\n- Hábitos a abandonar: {{ $json.bad_habits }}\n\nCONTEXTO: Usuário está no Step 3 do onboarding - Coletando situação financeira.\n\nOBJETIVO: Entender a situação financeira para criar plano adequado ao orçamento.\n\nDIRETRIZES:\n- Seja delicado ao abordar questões financeiras\n- Explique que é para personalizar o plano\n- Ofereça opções claras\n\nRESPOSTA ESPERADA: Para eu criar um plano que caiba no seu bolso, como você classificaria sua situação financeira atual?\n\n💰 **Baixa** - Prefiro opções gratuitas e econômicas\n💵 **Média** - Posso investir um valor moderado mensalmente\n💎 **Alta** - Tenho flexibilidade para investir em qualidade\n\nEscolha uma das opções acima para que eu possa personalizar seu plano! 😊"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step3",
+      "name": "Prompt Step 3 - Financial Situation",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nDADOS DO USUÁRIO:\n- Hábitos a construir: {{ $json.goals }}\n- Hábitos a abandonar: {{ $json.bad_habits }}\n- Situação financeira: {{ $json.financial_situation }}\n\nCONTEXTO: Usuário está no Step 4 do onboarding - Coletando horários disponíveis.\n\nOBJETIVO: Entender a rotina e horários disponíveis do usuário.\n\nDIRETRIZES:\n- Pergunte sobre horários livres específicos\n- Seja flexível (texto ou áudio)\n- Foque em praticidade\n- Considere rotina real do usuário\n\nRESPOSTA ESPERADA: Perfeito! 🎯 Agora me diga: quais são seus horários mais livres durante a semana?\n\nPor exemplo:\n⏰ \"Manhã das 6h às 8h\"\n⏰ \"Almoço das 12h às 13h\"\n⏰ \"Noite das 19h às 21h\"\n\nPode me dizer em texto ou mandar um áudio, como preferir! 😊"
+            }
+          ]
+        }
+      },
+      "id": "prompt-step4",
+      "name": "Prompt Step 4 - Available Times",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 400]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nDADOS COLETADOS:\n- Nome: {{ $json.name }}\n- Hábitos a construir: {{ $json.goals }}\n- Hábitos a abandonar: {{ $json.bad_habits }}\n- Situação financeira: {{ $json.financial_situation }}\n- Horários disponíveis: {{ $json.available_times }}\n\nCONTEXTO: Step 5 - Criar plano personalizado e finalizar onboarding.\n\nINSTRUÇÕES CRÍTICAS:\n1. Crie um plano semanal REALISTA e ALCANÇÁVEL\n2. Considere a situação financeira para sugestões\n3. Adapte aos horários disponíveis\n4. Para cada hábito, sugira:\n   - Frequência específica (daily, 3x_week, etc.)\n   - Horários ideais para lembretes\n   - Ações práticas e concretas\n5. Apresente o plano de forma clara e motivadora\n6. Use emojis para tornar visual\n7. Termine perguntando se aprova o plano\n\nAPÓS A RESPOSTA DO USUÁRIO APROVAR:\n- Marque onboarding_completed = true\n- Crie registros na tabela habits\n- Finalize o onboarding\n\nOBJETIVO: Gerar um plano personalizado que será seguido desde o primeiro dia."
+            }
+          ]
+        }
+      },
+      "id": "prompt-step5",
+      "name": "Prompt Step 5 - Create Plan",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1680, 500]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "habits",
+        "where": {
+          "conditions": [
+            {
+              "column": "user_id",
+              "operator": "=",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "column": "is_active",
+              "operator": "=",
+              "value": true
+            }
+          ]
+        }
+      },
+      "id": "load-active-habits",
+      "name": "Load Active Habits",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1680, 600],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "habit_logs",
+        "where": {
+          "conditions": [
+            {
+              "column": "user_id",
+              "operator": "=",
+              "value": "={{ $node['Load Conversation History'].json.id }}"
+            },
+            {
+              "column": "date",
+              "operator": "=",
+              "value": "={{ new Date().toISOString().split('T')[0] }}"
+            }
+          ]
+        }
+      },
+      "id": "load-today-progress",
+      "name": "Load Today Progress",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1900, 600],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system_prompt",
+              "value": "Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Seu tom é leve, descontraído e encorajador.\n\nDADOS DO USUÁRIO:\n- Nome: {{ $node['Load Conversation History'].json.name }}\n- Situação Financeira: {{ $node['Load Conversation History'].json.financial_situation }}\n- Horários Disponíveis: {{ $node['Load Conversation History'].json.available_times }}\n- Hábitos a Construir: {{ $node['Load Conversation History'].json.goals }}\n- Hábitos a Abandonar: {{ $node['Load Conversation History'].json.bad_habits }}\n\nHÁBITOS ATIVOS:\n{{ $node['Load Active Habits'].json.map(h => `- ${h.name} (${h.frequency}) - Lembretes: ${h.reminder_times.join(', ')}`).join('\\n') }}\n\nPROGRESSO DE HOJE:\n{{ $node['Load Today Progress'].json.map(log => `- ${log.completed ? '✅' : '⏳'} Hábito ID ${log.habit_id}`).join('\\n') }}\n\nHISTÓRICO RECENTE:\n{{ $node['Load Conversation History'].json.slice(-5).map(conv => `${conv.sender}: ${conv.message}`).join('\\n') }}\n\nCONTEXTO: Usuário ativo com plano em andamento.\n\nFUNCIONALIDADES DISPONÍVEIS:\n- Confirmar tarefas: \"feito\", \"concluído\", \"✅\", \"done\"\n- Pedir ajuda ou motivação\n- Reorganizar agenda por imprevistos\n- Solicitar dicas específicas\n- Compartilhar conquistas\n- Ver progresso atual\n\nDIRETRIZES:\n- Responda contextualmente à mensagem do usuário\n- Se for confirmação de tarefa, identifique qual hábito e celebre\n- Se for pedido de ajuda, ofereça suporte específico\n- Se for reorganização, seja flexível e proativo\n- Para conquistas, celebre entusiasticamente\n- Use o nome do usuário quando apropriado\n- Ofereça soluções práticas para desafios\n- Mantenha sempre tom motivador e personalizado\n\nSE DETECTAR CONFIRMAÇÃO DE TAREFA:\n1. Identifique qual hábito foi completado\n2. Registre na tabela habit_logs\n3. Celebre a conquista\n4. Motive para próximas ações"
+            }
+          ]
+        }
+      },
+      "id": "prompt-active-user",
+      "name": "Prompt Active User",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [2120, 600]
+    },
+    {
+      "parameters": {
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "id",
+              "field2": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "merge-with-prompt",
+      "name": "Merge with Prompt",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1900, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "message": "={{ $json.system_prompt }}"
+            },
+            {
+              "message": "Mensagem do usuário: {{ $node['WhatsApp Business Cloud Trigger'].json.messages[0].text.body }}",
+              "role": "user"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 800
+        }
+      },
+      "id": "langchain-agent",
+      "name": "LangChain Agent GPT-4",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [2120, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential",
+          "name": "OpenAI Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "fields": {
+          "user_id": "={{ $json.id }}",
+          "message": "={{ $node['WhatsApp Business Cloud Trigger'].json.messages[0].text.body }}",
+          "sender": "user",
+          "timestamp": "={{ new Date().toISOString() }}",
+          "context": "={{ JSON.stringify({ onboarding_step: $json.onboarding_step, message_type: 'incoming' }) }}"
+        }
+      },
+      "id": "save-user-message",
+      "name": "Save User Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2340, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "fields": {
+          "user_id": "={{ $json.id }}",
+          "message": "={{ $node['LangChain Agent GPT-4'].json.choices[0].message.content }}",
+          "sender": "assistant",
+          "timestamp": "={{ new Date().toISOString() }}",
+          "context": "={{ JSON.stringify({ onboarding_step: $json.onboarding_step, message_type: 'response' }) }}"
+        }
+      },
+      "id": "save-assistant-message",
+      "name": "Save Assistant Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2340, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair informações da resposta da IA\nconst userMessage = $node['WhatsApp Business Cloud Trigger'].json.messages[0].text.body;\nconst aiResponse = $node['LangChain Agent GPT-4'].json.choices[0].message.content;\nconst currentStep = $json.onboarding_step;\n\nlet updateData = {\n  updated_at: new Date().toISOString()\n};\n\n// Lógica para extrair dados baseado no step do onboarding\nif (currentStep === 1) {\n  // Extrair goals da mensagem do usuário\n  const goals = {\n    raw_response: userMessage,\n    extracted_goals: userMessage.toLowerCase().match(/\\b(exercit|ler|leit|medit|estud|acord|dorm|water|água|caminha|treina|academia)\\w*/g) || []\n  };\n  updateData.goals = JSON.stringify(goals);\n  updateData.onboarding_step = 2;\n} else if (currentStep === 2) {\n  // Extrair bad_habits da mensagem do usuário\n  const badHabits = {\n    raw_response: userMessage,\n    extracted_habits: userMessage.toLowerCase().match(/\\b(fuma|cigarro|procrastin|atrasa|celular|doce|refri|bebe|álcool|sedenta)\\w*/g) || []\n  };\n  updateData.bad_habits = JSON.stringify(badHabits);\n  updateData.onboarding_step = 3;\n} else if (currentStep === 3) {\n  // Extrair situação financeira\n  let financial = 'media'; // default\n  if (userMessage.toLowerCase().includes('baixa') || userMessage.toLowerCase().includes('econômica') || userMessage.toLowerCase().includes('gratuita')) {\n    financial = 'baixa';\n  } else if (userMessage.toLowerCase().includes('alta') || userMessage.toLowerCase().includes('flexibilidade') || userMessage.toLowerCase().includes('qualidade')) {\n    financial = 'alta';\n  }\n  updateData.financial_situation = financial;\n  updateData.onboarding_step = 4;\n} else if (currentStep === 4) {\n  // Extrair horários disponíveis\n  const availableTimes = {\n    raw_response: userMessage,\n    morning: userMessage.toLowerCase().includes('manhã') || userMessage.toLowerCase().includes('manha'),\n    afternoon: userMessage.toLowerCase().includes('tarde'),\n    evening: userMessage.toLowerCase().includes('noite'),\n    specific_times: userMessage.match(/\\d{1,2}h?\\s*(?:às?|-)\\s*\\d{1,2}h?/g) || []\n  };\n  updateData.available_times = JSON.stringify(availableTimes);\n  updateData.onboarding_step = 5;\n} else if (currentStep === 5) {\n  // Verificar se usuário aprovou o plano\n  if (userMessage.toLowerCase().includes('sim') || \n      userMessage.toLowerCase().includes('aprovo') || \n      userMessage.toLowerCase().includes('aceito') ||\n      userMessage.toLowerCase().includes('vamos')) {\n    updateData.onboarding_completed = true;\n    updateData.onboarding_step = 6;\n  }\n}\n\n// Detectar confirmação de tarefa para usuários ativos\nif ($json.onboarding_completed && \n    (userMessage.toLowerCase().includes('feito') || \n     userMessage.toLowerCase().includes('concluído') || \n     userMessage.toLowerCase().includes('✅') ||\n     userMessage.toLowerCase().includes('done') ||\n     userMessage.toLowerCase().includes('pronto'))) {\n  updateData.task_completed = true;\n}\n\nreturn [{\n  json: {\n    user_id: $json.id,\n    phone: $json.phone,\n    update_data: updateData,\n    task_completed: updateData.task_completed || false\n  }\n}];"
+      },
+      "id": "process-user-data",
+      "name": "Process User Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [2560, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "users",
+        "updateKey": "id",
+        "fields": "={{ $json.update_data }}",
+        "where": {
+          "conditions": [
+            {
+              "column": "id",
+              "operator": "=",
+              "value": "={{ $json.user_id }}"
+            }
+          ]
+        }
+      },
+      "id": "update-user-data",
+      "name": "Update User Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2780, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.update_data.onboarding_completed }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-onboarding-completed",
+      "name": "Check Onboarding Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [3000, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Criar hábitos baseados nos dados coletados durante o onboarding\nconst userData = $node['Update User Data'].json;\nconst userId = $json.user_id;\n\n// Buscar dados do usuário para criar hábitos\nconst goals = JSON.parse(userData.goals || '{}');\nconst badHabits = JSON.parse(userData.bad_habits || '{}');\nconst availableTimes = JSON.parse(userData.available_times || '{}');\nconst financialSituation = userData.financial_situation;\n\nconst habitsToCreate = [];\n\n// Processar hábitos positivos\nif (goals.extracted_goals) {\n  goals.extracted_goals.forEach(goal => {\n    let habitName = '';\n    let frequency = 'daily';\n    let reminderTimes = ['09:00'];\n    \n    if (goal.includes('exercit') || goal.includes('treina') || goal.includes('academia')) {\n      habitName = 'Exercitar-se';\n      frequency = '3x_week';\n      reminderTimes = availableTimes.morning ? ['07:00'] : ['18:00'];\n    } else if (goal.includes('ler') || goal.includes('leit')) {\n      habitName = 'Ler 30 minutos';\n      frequency = 'daily';\n      reminderTimes = availableTimes.evening ? ['20:00'] : ['12:00'];\n    } else if (goal.includes('medit')) {\n      habitName = 'Meditar';\n      frequency = 'daily';\n      reminderTimes = availableTimes.morning ? ['06:30'] : ['21:00'];\n    } else if (goal.includes('água') || goal.includes('water')) {\n      habitName = 'Beber água';\n      frequency = 'daily';\n      reminderTimes = ['09:00', '14:00', '18:00'];\n    }\n    \n    if (habitName) {\n      habitsToCreate.push({\n        user_id: userId,\n        name: habitName,\n        type: 'good',\n        frequency: frequency,\n        reminder_times: reminderTimes,\n        is_active: true\n      });\n    }\n  });\n}\n\n// Processar hábitos negativos\nif (badHabits.extracted_habits) {\n  badHabits.extracted_habits.forEach(habit => {\n    let habitName = '';\n    let frequency = 'daily';\n    let reminderTimes = ['10:00'];\n    \n    if (habit.includes('fuma') || habit.includes('cigarro')) {\n      habitName = 'Evitar cigarro';\n      frequency = 'daily';\n      reminderTimes = ['09:00', '15:00', '21:00'];\n    } else if (habit.includes('procrastin')) {\n      habitName = 'Evitar procrastinação';\n      frequency = 'daily';\n      reminderTimes = ['10:00', '16:00'];\n    } else if (habit.includes('celular')) {\n      habitName = 'Limitar uso do celular';\n      frequency = 'daily';\n      reminderTimes = ['12:00', '20:00'];\n    }\n    \n    if (habitName) {\n      habitsToCreate.push({\n        user_id: userId,\n        name: habitName,\n        type: 'bad',\n        frequency: frequency,\n        reminder_times: reminderTimes,\n        is_active: true\n      });\n    }\n  });\n}\n\nreturn habitsToCreate.map(habit => ({ json: habit }));"
+      },
+      "id": "create-habits-data",
+      "name": "Create Habits Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [3220, 200]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "habits",
+        "fields": {
+          "user_id": "={{ $json.user_id }}",
+          "name": "={{ $json.name }}",
+          "type": "={{ $json.type }}",
+          "frequency": "={{ $json.frequency }}",
+          "reminder_times": "={{ JSON.stringify($json.reminder_times) }}",
+          "is_active": true,
+          "created_at": "={{ new Date().toISOString() }}"
+        }
+      },
+      "id": "insert-habits",
+      "name": "Insert Habits",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3440, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.task_completed }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-task-completed",
+      "name": "Check Task Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [3000, 400]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "habits",
+        "where": {
+          "conditions": [
+            {
+              "column": "user_id",
+              "operator": "=",
+              "value": "={{ $json.user_id }}"
+            },
+            {
+              "column": "is_active",
+              "operator": "=",
+              "value": true
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "get-latest-habit",
+      "name": "Get Latest Habit",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3220, 400],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "habit_logs",
+        "fields": {
+          "habit_id": "={{ $json[0].id }}",
+          "user_id": "={{ $node['Process User Data'].json.user_id }}",
+          "completed": true,
+          "date": "={{ new Date().toISOString().split('T')[0] }}",
+          "completed_at": "={{ new Date().toISOString() }}",
+          "notes": "Confirmado via WhatsApp",
+          "created_at": "={{ new Date().toISOString() }}"
+        }
+      },
+      "id": "log-habit-completion",
+      "name": "Log Habit Completion",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3440, 400],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "={{ $json.phone }}",
+        "message": "={{ $node['LangChain Agent GPT-4'].json.choices[0].message.content }}",
+        "options": {}
+      },
+      "id": "send-whatsapp-response",
+      "name": "Send WhatsApp Response",
+      "type": "n8n-nodes-base.whatsAppBusinessCloud",
+      "typeVersion": 1,
+      "position": [3000, 300],
+      "credentials": {
+        "whatsAppBusinessCloudApi": {
+          "id": "whatsapp-send-credential",
+          "name": "WhatsApp Business Cloud Send"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "WhatsApp Business Cloud Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load User Data": {
+      "main": [
+        [
+          {
+            "node": "Is New User?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New User?": {
+      "main": [
+        [
+          {
+            "node": "Create New User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Existing User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New User": {
+      "main": [
+        [
+          {
+            "node": "Set New User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set New User Data": {
+      "main": [
+        [
+          {
+            "node": "Load Conversation History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Existing User Data": {
+      "main": [
+        [
+          {
+            "node": "Load Conversation History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Conversation History": {
+      "main": [
+        [
+          {
+            "node": "Route by User Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by User Status": {
+      "main": [
+        [
+          {
+            "node": "Prompt Step 1 - Goals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 2 - Bad Habits",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 3 - Financial Situation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 4 - Available Times",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt Step 5 - Create Plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load Active Habits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 1 - Goals": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 2 - Bad Habits": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 3 - Financial Situation": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 4 - Available Times": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Step 5 - Create Plan": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Active Habits": {
+      "main": [
+        [
+          {
+            "node": "Load Today Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Today Progress": {
+      "main": [
+        [
+          {
+            "node": "Prompt Active User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Active User": {
+      "main": [
+        [
+          {
+            "node": "Merge with Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge with Prompt": {
+      "main": [
+        [
+          {
+            "node": "LangChain Agent GPT-4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LangChain Agent GPT-4": {
+      "main": [
+        [
+          {
+            "node": "Save User Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Assistant Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Process User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process User Data": {
+      "main": [
+        [
+          {
+            "node": "Update User Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User Data": {
+      "main": [
+        [
+          {
+            "node": "Check Onboarding Completed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Task Completed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send WhatsApp Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Onboarding Completed": {
+      "main": [
+        [
+          {
+            "node": "Create Habits Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Habits Data": {
+      "main": [
+        [
+          {
+            "node": "Insert Habits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Task Completed": {
+      "main": [
+        [
+          {
+            "node": "Get Latest Habit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Latest Habit": {
+      "main": [
+        [
+          {
+            "node": "Log Habit Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "assistente-desenvolvimento-pessoal-principal",
+  "tags": [
+    "WhatsApp",
+    "AI",
+    "Desenvolvimento Pessoal",
+    "Supabase",
+    "MVP Final"
+  ]
+}

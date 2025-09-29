@@ -1,0 +1,399 @@
+{
+  "name": "Assistente Desenvolvimento Pessoal - Relatórios",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 19 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "cron-weekly-report",
+      "name": "Cron - Relatório Semanal (Domingo 19h)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [140, 200]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 20 28-31 * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-monthly-report",
+      "name": "Cron - Relatório Mensal (Último dia 20h)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [140, 500]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "users",
+        "where": {
+          "conditions": [
+            {
+              "column": "onboarding_completed",
+              "operator": "=",
+              "value": true
+            }
+          ]
+        }
+      },
+      "id": "get-active-users-weekly",
+      "name": "Get Active Users (Weekly)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [360, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "users",
+        "where": {
+          "conditions": [
+            {
+              "column": "onboarding_completed",
+              "operator": "=",
+              "value": true
+            }
+          ]
+        }
+      },
+      "id": "get-active-users-monthly",
+      "name": "Get Active Users (Monthly)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [360, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-users-weekly",
+      "name": "Loop Users (Weekly)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [580, 200]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-users-monthly",
+      "name": "Loop Users (Monthly)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [580, 500]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  h.id, h.name,\n  COUNT(CASE WHEN hl.completed = true THEN 1 END) as completed_count,\n  COUNT(hl.id) as total_logs,\n  ROUND(COUNT(CASE WHEN hl.completed = true THEN 1 END) * 100.0 / NULLIF(COUNT(hl.id), 0), 1) as completion_rate\nFROM habits h\nLEFT JOIN habit_logs hl ON h.id = hl.habit_id \n  AND hl.date >= CURRENT_DATE - INTERVAL '7 days'\nWHERE h.user_id = {{ $json.id }} \n  AND h.is_active = true\nGROUP BY h.id, h.name\nORDER BY completion_rate DESC"
+      },
+      "id": "get-weekly-data",
+      "name": "Get Weekly Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  h.id, h.name,\n  COUNT(CASE WHEN hl.completed = true THEN 1 END) as completed_count,\n  COUNT(hl.id) as total_logs,\n  ROUND(COUNT(CASE WHEN hl.completed = true THEN 1 END) * 100.0 / NULLIF(COUNT(hl.id), 0), 1) as completion_rate,\n  -- Calcular tendência (comparar últimas 2 semanas vs 2 semanas anteriores)\n  (\n    SELECT ROUND(COUNT(CASE WHEN hl2.completed = true THEN 1 END) * 100.0 / NULLIF(COUNT(hl2.id), 0), 1)\n    FROM habit_logs hl2 \n    WHERE hl2.habit_id = h.id \n      AND hl2.date >= CURRENT_DATE - INTERVAL '14 days'\n      AND hl2.date < CURRENT_DATE - INTERVAL '7 days'\n  ) as previous_rate\nFROM habits h\nLEFT JOIN habit_logs hl ON h.id = hl.habit_id \n  AND hl.date >= CURRENT_DATE - INTERVAL '30 days'\nWHERE h.user_id = {{ $json.id }} \n  AND h.is_active = true\nGROUP BY h.id, h.name\nORDER BY completion_rate DESC"
+      },
+      "id": "get-monthly-data",
+      "name": "Get Monthly Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [800, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar relatório semanal personalizado\nconst user = $input.all()[0];\nconst habitsData = $input.all()[1];\n\nconst userName = user.name || 'Guerreiro(a)';\nconst totalHabits = habitsData.length;\n\nlet reportContent = `✨ **SEU RELATÓRIO SEMANAL** ✨\\n\\nOlá ${userName}! Aqui está um resumo da sua semana:\\n\\n`;\n\n// Calcular estatísticas gerais\nlet totalCompletions = 0;\nlet totalPossible = 0;\nlet bestHabit = null;\nlet worstHabit = null;\nlet bestRate = 0;\nlet worstRate = 100;\n\nhabitsData.forEach(habit => {\n  const rate = habit.completion_rate || 0;\n  totalCompletions += habit.completed_count || 0;\n  totalPossible += habit.total_logs || 0;\n  \n  if (rate > bestRate) {\n    bestRate = rate;\n    bestHabit = habit;\n  }\n  \n  if (rate < worstRate && rate > 0) {\n    worstRate = rate;\n    worstHabit = habit;\n  }\n});\n\nconst overallRate = totalPossible > 0 ? Math.round((totalCompletions / totalPossible) * 100) : 0;\n\n// Adicionar estatísticas por hábito\nreportContent += `📊 **DESEMPENHO GERAL:** ${overallRate}%\\n\\n`;\n\nhabitsData.forEach(habit => {\n  const rate = habit.completion_rate || 0;\n  const emoji = rate >= 80 ? '🔥' : rate >= 60 ? '💪' : rate >= 40 ? '📈' : '🌱';\n  reportContent += `${emoji} **${habit.name}:** ${rate}% (${habit.completed_count}/${habit.total_logs})\\n`;\n});\n\n// Mensagem motivacional baseada no desempenho\nlet motivationalMessage;\nif (overallRate >= 80) {\n  motivationalMessage = `🎉 **PARABÉNS!** Você está arrasando! Continue assim, ${userName}! Sua consistência é inspiradora! 🚀`;\n} else if (overallRate >= 60) {\n  motivationalMessage = `💪 **MUITO BEM!** Você está no caminho certo! Alguns ajustes e você vai alcançar a excelência! 📈`;\n} else if (overallRate >= 40) {\n  motivationalMessage = `🌱 **CRESCENDO!** Toda jornada tem seus desafios. O importante é não desistir! Você consegue! 💎`;\n} else {\n  motivationalMessage = `🤗 **JUNTOS NESSA!** Não desanime! Grandes transformações começam com pequenos passos. Vamos ajustar seu plano! ✨`;\n}\n\nreportContent += `\\n${motivationalMessage}\\n\\n`;\n\n// Destaque da semana\nif (bestHabit && bestRate > 0) {\n  reportContent += `🏆 **DESTAQUE DA SEMANA:** ${bestHabit.name} com ${bestRate}%!\\n\\n`;\n}\n\n// Sugestão para próxima semana\nif (worstHabit && worstRate < 60) {\n  reportContent += `🎯 **FOCO PARA PRÓXIMA SEMANA:** Vamos dar atenção especial ao \"${worstHabit.name}\". Que tal ajustarmos os horários?\\n\\n`;\n}\n\nreportContent += `Qual será nosso foco para a próxima semana? Estou aqui para te ajudar! 💫\\n\\n_Enviado com ❤️ pelo seu assistente pessoal_`;\n\nreturn [{\n  json: {\n    user_id: user.id,\n    phone: user.phone,\n    name: userName,\n    report_content: reportContent,\n    overall_rate: overallRate,\n    report_type: 'weekly'\n  }\n}];"
+      },
+      "id": "generate-weekly-report",
+      "name": "Generate Weekly Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1020, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar relatório mensal detalhado\nconst user = $input.all()[0];\nconst habitsData = $input.all()[1];\n\nconst userName = user.name || 'Guerreiro(a)';\n\nlet reportContent = `🌟 **SEU RELATÓRIO MENSAL** 🌟\\n\\nOlá ${userName}! Aqui está sua jornada do último mês:\\n\\n`;\n\n// Calcular estatísticas e tendências\nlet improvingHabits = [];\nlet decliningHabits = [];\nlet stableHabits = [];\n\nhabitsData.forEach(habit => {\n  const currentRate = habit.completion_rate || 0;\n  const previousRate = habit.previous_rate || 0;\n  \n  const trendEmoji = currentRate > previousRate + 5 ? '📈' : \n                    currentRate < previousRate - 5 ? '📉' : '➡️';\n  \n  const habitSummary = {\n    name: habit.name,\n    rate: currentRate,\n    previousRate: previousRate,\n    trend: trendEmoji,\n    completed: habit.completed_count\n  };\n  \n  if (currentRate > previousRate + 5) {\n    improvingHabits.push(habitSummary);\n  } else if (currentRate < previousRate - 5) {\n    decliningHabits.push(habitSummary);\n  } else {\n    stableHabits.push(habitSummary);\n  }\n});\n\n// Estatísticas por hábito\nreportContent += `📊 **DESEMPENHO POR HÁBITO:**\\n\\n`;\n\nhabitsData.forEach(habit => {\n  const rate = habit.completion_rate || 0;\n  const previousRate = habit.previous_rate || 0;\n  const trend = rate > previousRate + 5 ? '📈' : \n               rate < previousRate - 5 ? '📉' : '➡️';\n  const emoji = rate >= 80 ? '🔥' : rate >= 60 ? '💪' : rate >= 40 ? '📈' : '🌱';\n  \n  reportContent += `${emoji} **${habit.name}**: ${rate}% ${trend}\\n`;\n  reportContent += `   └ Completou ${habit.completed_count} vezes no mês\\n\\n`;\n});\n\n// Análise de tendências\nif (improvingHabits.length > 0) {\n  reportContent += `🚀 **HÁBITOS EM ASCENSÃO:**\\n`;\n  improvingHabits.forEach(habit => {\n    reportContent += `• ${habit.name}: ${habit.previousRate}% → ${habit.rate}%\\n`;\n  });\n  reportContent += `\\n`;\n}\n\nif (decliningHabits.length > 0) {\n  reportContent += `⚠️ **PRECISAM DE ATENÇÃO:**\\n`;\n  decliningHabits.forEach(habit => {\n    reportContent += `• ${habit.name}: ${habit.previousRate}% → ${habit.rate}%\\n`;\n  });\n  reportContent += `\\n`;\n}\n\n// Insights e sugestões\nreportContent += `💡 **INSIGHTS E SUGESTÕES:**\\n\\n`;\n\nif (improvingHabits.length >= decliningHabits.length) {\n  reportContent += `🎯 Você está evoluindo! ${improvingHabits.length} hábito(s) melhoraram significativamente.\\n\\n`;\n  reportContent += `📅 **Sugestão:** Continue com a estratégia atual e considere ajustar os horários dos hábitos que precisam de atenção.\\n\\n`;\n} else {\n  reportContent += `🔄 Hora de revisar! Vamos ajustar a estratégia para os próximos 30 dias.\\n\\n`;\n  reportContent += `📅 **Sugestão:** Que tal simplificarmos alguns hábitos e focarmos na consistência?\\n\\n`;\n}\n\n// Chamada para ação\nreportContent += `🎯 **PRÓXIMOS 30 DIAS:**\\nVamos definir juntos suas prioridades para o próximo mês. Me mande uma mensagem e vamos criar um plano ainda mais eficiente!\\n\\n`;\n\nreportContent += `Lembre-se: grandes transformações acontecem com pequenos passos consistentes! 💪✨\\n\\n_Enviado com ❤️ pelo seu assistente pessoal_`;\n\nreturn [{\n  json: {\n    user_id: user.id,\n    phone: user.phone,\n    name: userName,\n    report_content: reportContent,\n    improving_habits: improvingHabits.length,\n    declining_habits: decliningHabits.length,\n    report_type: 'monthly'\n  }\n}];"
+      },
+      "id": "generate-monthly-report",
+      "name": "Generate Monthly Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1020, 500]
+    },
+    {
+      "parameters": {
+        "to": "={{ $json.phone }}",
+        "message": "={{ $json.report_content }}",
+        "options": {}
+      },
+      "id": "send-weekly-report",
+      "name": "Send Weekly Report",
+      "type": "n8n-nodes-base.whatsAppBusinessCloud",
+      "typeVersion": 1,
+      "position": [1240, 200],
+      "credentials": {
+        "whatsAppBusinessCloudApi": {
+          "id": "whatsapp-send-credential",
+          "name": "WhatsApp Business Cloud Send"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "={{ $json.phone }}",
+        "message": "={{ $json.report_content }}",
+        "options": {}
+      },
+      "id": "send-monthly-report",
+      "name": "Send Monthly Report",
+      "type": "n8n-nodes-base.whatsAppBusinessCloud",
+      "typeVersion": 1,
+      "position": [1240, 500],
+      "credentials": {
+        "whatsAppBusinessCloudApi": {
+          "id": "whatsapp-send-credential",
+          "name": "WhatsApp Business Cloud Send"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "fields": {
+          "user_id": "={{ $json.user_id }}",
+          "message": "{{ $json.report_content }}",
+          "sender": "assistant",
+          "timestamp": "={{ new Date().toISOString() }}",
+          "context": "{{ JSON.stringify({ type: $json.report_type + '_report', overall_rate: $json.overall_rate || null, improving_habits: $json.improving_habits || null, declining_habits: $json.declining_habits || null }) }}"
+        }
+      },
+      "id": "log-weekly-report",
+      "name": "Log Weekly Report",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1460, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "conversations",
+        "fields": {
+          "user_id": "={{ $json.user_id }}",
+          "message": "{{ $json.report_content }}",
+          "sender": "assistant",
+          "timestamp": "={{ new Date().toISOString() }}",
+          "context": "{{ JSON.stringify({ type: $json.report_type + '_report', improving_habits: $json.improving_habits, declining_habits: $json.declining_habits }) }}"
+        }
+      },
+      "id": "log-monthly-report",
+      "name": "Log Monthly Report",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1460, 500],
+      "credentials": {
+        "supabaseApi": {
+          "id": "supabase-credential",
+          "name": "Supabase Foquinha AI"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron - Relatório Semanal (Domingo 19h)": {
+      "main": [
+        [
+          {
+            "node": "Get Active Users (Weekly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron - Relatório Mensal (Último dia 20h)": {
+      "main": [
+        [
+          {
+            "node": "Get Active Users (Monthly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Users (Weekly)": {
+      "main": [
+        [
+          {
+            "node": "Loop Users (Weekly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Users (Monthly)": {
+      "main": [
+        [
+          {
+            "node": "Loop Users (Monthly)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Users (Weekly)": {
+      "main": [
+        [
+          {
+            "node": "Get Weekly Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Users (Monthly)": {
+      "main": [
+        [
+          {
+            "node": "Get Monthly Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weekly Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Weekly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Monthly Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Monthly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Weekly Report": {
+      "main": [
+        [
+          {
+            "node": "Send Weekly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Monthly Report": {
+      "main": [
+        [
+          {
+            "node": "Send Monthly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Weekly Report": {
+      "main": [
+        [
+          {
+            "node": "Log Weekly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Monthly Report": {
+      "main": [
+        [
+          {
+            "node": "Log Monthly Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "assistente-desenvolvimento-pessoal-relatorios",
+  "tags": [
+    "WhatsApp",
+    "Relatórios",
+    "Analytics",
+    "Supabase",
+    "Cron"
+  ]
+}
