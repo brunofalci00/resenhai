@@ -1,5 +1,13 @@
+import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { CalendarCheck, Dumbbell, Sparkles, TrendingUp, Utensils } from "lucide-react"
 
 const steps = [
@@ -64,6 +72,37 @@ const outcomes = [
 ] as const
 
 export function HowItWorksSection() {
+  const mockImage = "https://i.ibb.co/fVgGDsrB/14.png"
+
+  const StepCard = ({
+    step,
+  }: {
+    step: (typeof steps)[number]
+  }) => (
+    <Card className="h-full border-0 bg-white/90 shadow-lg shadow-secondary/5 ring-1 ring-slate-200/60 transition-transform hover:-translate-y-1">
+      <CardContent className="flex h-full flex-col gap-6 p-6">
+        <div className="flex items-center gap-4">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+            <span className="text-2xl font-semibold">{step.number}</span>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
+            <p className="text-sm text-muted-foreground">{step.description}</p>
+          </div>
+        </div>
+        <div className="relative mt-auto overflow-hidden rounded-3xl border border-slate-200/60 bg-slate-50">
+          <Image
+            src={mockImage}
+            alt={`Interface Foquinha - passo ${step.number}`}
+            width={340}
+            height={640}
+            className="w-full object-contain"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+
   return (
     <section id="funciona" className="bg-slate-50 py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -74,16 +113,27 @@ export function HowItWorksSection() {
           <p className="mt-6 text-xl text-muted-foreground">Direto no WhatsApp, simples e prático.</p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="hidden gap-8 lg:grid lg:grid-cols-3">
           {steps.map((step) => (
-            <div key={step.number} className="text-center">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                <span className="text-2xl font-bold">{step.number}</span>
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
-            </div>
+            <StepCard key={step.number} step={step} />
           ))}
+        </div>
+
+        <div className="lg:hidden">
+          <Carousel
+            opts={{ align: "start", loop: false }}
+            className="relative w-full"
+          >
+            <CarouselContent>
+              {steps.map((step) => (
+                <CarouselItem key={step.number} className="basis-[85%] pl-4">
+                  <StepCard step={step} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-2 top-1/2 hidden translate-y-1/2 rounded-full bg-white shadow-lg sm:flex" />
+            <CarouselNext className="-right-2 top-1/2 hidden -translate-y-1/2 rounded-full bg-white shadow-lg sm:flex" />
+          </Carousel>
         </div>
 
         <div className="mx-auto mt-20 max-w-5xl">

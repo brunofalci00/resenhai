@@ -9,10 +9,10 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center">
           <div className="mb-6 flex items-center justify-center gap-3">
-            <div className="relative size-12 overflow-hidden rounded-2xl bg-secondary/10">
+            <div className="relative size-12 overflow-hidden rounded-2xl bg-secondary/10 p-1">
               <Image
                 alt="Foquinha IA"
-                src="https://i.ibb.co/9kBTkx0b/Habitz-branco.webp"
+                src="https://i.ibb.co/Kzr3VMvx/foquiai-logo.png"
                 fill
                 className="object-contain"
                 sizes="48px"

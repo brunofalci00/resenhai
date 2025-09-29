@@ -1,4 +1,4 @@
-import { BarChart3, Bot, CheckCircle2, Flame, MessageCircle } from "lucide-react"
+import { CheckCircle2, Flame } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CtaButton } from "@/components/landing/cta-button"

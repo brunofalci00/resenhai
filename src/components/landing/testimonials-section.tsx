@@ -12,7 +12,7 @@ const testimonials = [
       "Nunca consegui seguir um planner. A Foquinha foi a primeira que entendeu meu ritmo. Me sinto mais leve e focada.",
     highlight: "Leveza e foco",
     icon: Sparkles,
-    image: "https://images.unsplash.com/photo-1621619856624-42fd193a0661?w=400&q=80",
+    image: "https://i.ibb.co/wF2zkBZt/julia-psicologa.webp",
   },
   {
     name: "Júlia",
@@ -21,7 +21,7 @@ const testimonials = [
       "A Foquinha ajusta meus horários conforme a semana. Consigo treinar, comer bem e ainda descansar sem culpa.",
     highlight: "Rotina real",
     icon: Anchor,
-    image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=400&q=80",
+    image: "https://i.ibb.co/b5nSxRWm/mariana-designer.webp",
   },
   {
     name: "Luan",
@@ -29,7 +29,7 @@ const testimonials = [
     quote: "Em poucas semanas, minha rotina ficou mais organizada e menos pesada.",
     highlight: "Mudança rápida e leve",
     icon: Zap,
-    image: "https://images.unsplash.com/photo-1610279460780-d7f0cb00b1c8?w=400&q=80",
+    image: "https://i.ibb.co/spy6CscW/Luan-estudante.webp",
   },
 ] as const
 

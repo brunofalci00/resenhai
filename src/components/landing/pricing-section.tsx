@@ -80,7 +80,7 @@ export function PricingSection({ ctaHref }: PricingSectionProps) {
               <CtaButton
                 href={ctaHref}
                 label="QUERO COMEÇAR AGORA COM A FOQUINHA IA"
-                className="w-full rounded-2xl bg-secondary py-4 text-sm font-bold uppercase tracking-wide text-white hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full flex-wrap whitespace-normal rounded-2xl bg-secondary px-6 py-4 text-center text-xs font-bold uppercase leading-tight tracking-wide text-white hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 sm:text-sm"
               />
 
               <Separator className="bg-slate-200" />
@@ -105,7 +105,7 @@ export function PricingSection({ ctaHref }: PricingSectionProps) {
             <CtaButton
               href={ctaHref}
               label="COMEÇAR AGORA COM A FOQUINHA IA"
-              className="rounded-full bg-primary px-8 py-3 text-sm font-semibold tracking-wide text-primary-foreground hover:bg-primary/90"
+              className="flex-wrap whitespace-normal rounded-full bg-primary px-6 py-3 text-center text-xs font-semibold leading-tight tracking-wide text-primary-foreground hover:bg-primary/90 sm:text-sm"
             />
           </div>
         </div>

@@ -39,13 +39,13 @@ export function SiteHeader({ ctaHref, ctaLabel }: SiteHeaderProps) {
     <header className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 transition-[height] lg:px-8">
         <Link href="#hero" className="flex items-center gap-3" aria-label="Foquinha IA - Início">
-          <div className="relative size-10 overflow-hidden rounded-2xl bg-secondary/10">
+          <div className="relative size-12 overflow-hidden rounded-2xl bg-secondary/10 p-1">
             <Image
               alt="Foquinha IA"
-              src="https://i.ibb.co/9kBTkx0b/Habitz-branco.webp"
+              src="https://i.ibb.co/Kzr3VMvx/foquiai-logo.png"
               fill
               className="object-contain"
-              sizes="40px"
+              sizes="48px"
               priority
             />
           </div>

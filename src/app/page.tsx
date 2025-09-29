@@ -16,6 +16,7 @@ export default function Home() {
       <SiteHeader ctaHref={WHATSAPP_LINK} ctaLabel="COMEÇAR AGORA" />
       <main className="flex flex-col gap-0">
         <HeroSection ctaHref={WHATSAPP_LINK} />
+        <ContextSection />
         <FeaturesSection />
         <HowItWorksSection />
         <TestimonialsSection ctaHref={WHATSAPP_LINK} />
