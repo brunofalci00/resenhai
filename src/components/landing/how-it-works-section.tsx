@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { CalendarCheck, Dumbbell, Sparkles, TrendingUp, Utensils } from "lucide-react"
 
 const steps = [
@@ -37,23 +38,28 @@ const steps = [
 const outcomes = [
   {
     icon: Sparkles,
-    text: "Clareza no dia a dia",
+    title: "Clareza no dia a dia",
+    description: "Rotina com foco no que importa e sem ruído mental.",
   },
   {
     icon: CalendarCheck,
-    text: "Rotina mais leve e organizada",
+    title: "Rotina leve e organizada",
+    description: "Agenda que encaixa na sua semana – sem sobrecarregar.",
   },
   {
     icon: Utensils,
-    text: "Alimentação equilibrada",
+    title: "Alimentação equilibrada",
+    description: "Sugestões acessíveis e possíveis para cada refeição.",
   },
   {
     icon: Dumbbell,
-    text: "Treinos encaixando na sua realidade",
+    title: "Treinos que cabem na sua realidade",
+    description: "Planos rápidos, adaptados ao tempo e espaço que você tem.",
   },
   {
     icon: TrendingUp,
-    text: "Evolução sem estresse",
+    title: "Evolução sem estresse",
+    description: "Check-ins semanais mostrando progresso real sem pressão.",
   },
 ] as const
 
@@ -80,22 +86,39 @@ export function HowItWorksSection() {
           ))}
         </div>
 
-        <div className="mx-auto mt-20 max-w-3xl text-center">
-          <h3 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            🌱 Em 14 dias você começa a sentir:
-          </h3>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {outcomes.map((outcome, index) => (
-              <div
-                key={outcome.text}
-                className={cn(
-                  "flex items-center justify-center gap-3 text-sm text-foreground",
-                  index === outcomes.length - 1 ? "sm:col-span-2" : undefined,
-                )}
+        <div className="mx-auto mt-20 max-w-5xl">
+          <div className="text-center">
+            <Badge className="mx-auto w-fit rounded-full bg-secondary/15 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-secondary">
+              🌱 em 14 dias
+            </Badge>
+            <h3 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Você começa a sentir resultados de verdade
+            </h3>
+            <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+              Pequenas vitórias semanais que mostram que a Foquinha está funcionando.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            {outcomes.map((outcome) => (
+              <Card
+                key={outcome.title}
+                className="group h-full border-0 bg-white/90 shadow-sm ring-1 ring-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <outcome.icon className="size-5 text-primary" />
-                <span>{outcome.text}</span>
-              </div>
+                <CardContent className="flex h-full flex-col gap-4 rounded-[1.25rem] bg-gradient-to-br from-white via-white to-secondary/10 p-6 text-left">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-full bg-secondary/15 text-secondary transition-colors group-hover:bg-secondary group-hover:text-secondary-foreground">
+                      <outcome.icon className="size-5" />
+                    </div>
+                    <h4 className="text-base font-semibold text-foreground">
+                      {outcome.title}
+                    </h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {outcome.description}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>

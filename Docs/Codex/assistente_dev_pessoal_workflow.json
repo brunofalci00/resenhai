@@ -1,1225 +1,1225 @@
-{
-  "name": "Assistente Desenvolvimento Pessoal MVP",
-  "versionId": "ce296dc0-5f23-43b8-80b2-99b66a5efb83",
-  "nodes": [
-    {
-      "id": "1",
-      "name": "WhatsApp Trigger",
-      "type": "n8n-nodes-base.whatsAppBusinessCloudTrigger",
-      "typeVersion": 1,
-      "position": [
-        -1600,
-        -200
-      ],
-      "parameters": {
-        "events": [
-          "messages"
-        ]
-      }
-    },
-    {
-      "id": "2",
-      "name": "Normalize Incoming",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        -1420,
-        -200
-      ],
-      "parameters": {
-        "functionCode": "const entry = $json.entry?.[0]?.changes?.[0]?.value ?? {};\nconst message = entry.messages?.[0] ?? {};\nconst contact = entry.contacts?.[0] ?? {};\nconst text = message.text?.body ?? message.interactive?.text ?? message.button?.text ?? '';\nconst item = {\n  phone: message.from || '',\n  message_id: message.id || '',\n  profile_name: contact.profile?.name || '',\n  text,\n  message_type: message.type || 'text',\n  timestamp: message.timestamp || null,\n  raw: $json\n};\nreturn [{ json: item }];"
-      }
-    },
-    {
-      "id": "3",
-      "name": "Supabase Get User",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -1240,
-        -200
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $item(0).$node['Normalize Incoming'].json.phone}}"
-            },
-            {
-              "name": "select",
-              "value": "*"
-            },
-            {
-              "name": "limit",
-              "value": "1"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "4",
-      "name": "Classify User",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        -1060,
-        -200
-      ],
-      "parameters": {
-        "functionCode": "const incoming = $item(0).$node['Normalize Incoming'].json;\nconst response = $json;\nlet user = null;\nif (Array.isArray(response) && response.length > 0) {\n  user = response[0];\n} else if (response && Object.keys(response).length > 0) {\n  user = response;\n}\nconst onboardingStep = user?.onboarding_step ?? 0;\nconst status = user ? (user.onboarding_completed === true ? 'active' : 'onboarding') : 'new';\nreturn [{ json: { ...incoming, user, user_status: status, onboarding_step: onboardingStep } }];"
-      }
-    },
-    {
-      "id": "5",
-      "name": "Route User",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 2,
-      "position": [
-        -880,
-        -200
-      ],
-      "parameters": {
-        "value1": "={{$json.user_status}}",
-        "rules": [
-          {
-            "operation": "equal",
-            "value2": "new"
-          },
-          {
-            "operation": "equal",
-            "value2": "onboarding"
-          },
-          {
-            "operation": "equal",
-            "value2": "active"
-          }
-        ]
-      }
-    },
-    {
-      "id": "6",
-      "name": "Create User Record",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -700,
-        -380
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "POST",
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ phone: $json.phone, name: $json.profile_name || null, onboarding_step: 1, onboarding_completed: false, timezone: 'America/Sao_Paulo' }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "7",
-      "name": "Send Step 1 Prompt",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        -520,
-        -380
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$item(0).$node['Normalize Incoming'].json.phone}}",
-        "text": "Olá! Eu sou o seu assistente de desenvolvimento pessoal. Para começarmos, me conte quais são os 3 hábitos que você quer construir ou melhorar na sua vida."
-      }
-    },
-    {
-      "id": "8",
-      "name": "Switch Onboarding Step",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 2,
-      "position": [
-        -700,
-        -40
-      ],
-      "parameters": {
-        "value1": "={{$json.user?.onboarding_step ?? $json.onboarding_step ?? 0}}",
-        "rules": [
-          {
-            "operation": "equal",
-            "value2": "1"
-          },
-          {
-            "operation": "equal",
-            "value2": "2"
-          },
-          {
-            "operation": "equal",
-            "value2": "3"
-          },
-          {
-            "operation": "equal",
-            "value2": "4"
-          },
-          {
-            "operation": "equal",
-            "value2": "5"
-          }
-        ]
-      }
-    },
-    {
-      "id": "9",
-      "name": "Update Step 1 Response",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -520,
-        -200
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "PATCH",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ goals: { raw: $json.text }, onboarding_step: 2 }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "10",
-      "name": "Send Step 2 Prompt",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        -340,
-        -200
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$json.phone}}",
-        "text": "Ótimo! Agora me conta: existe algum hábito ou vício que está te atrapalhando e que você quer deixar para trás?"
-      }
-    },
-    {
-      "id": "11",
-      "name": "Update Step 2 Response",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -520,
-        -40
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "PATCH",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ bad_habits: { raw: $json.text }, onboarding_step: 3 }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "12",
-      "name": "Send Step 3 Prompt",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        -340,
-        -40
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$json.phone}}",
-        "text": "Perfeito! Para adaptar o plano, como você classificaria sua situação financeira atual? (baixa / média / alta)"
-      }
-    },
-    {
-      "id": "13",
-      "name": "Update Step 3 Response",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -520,
-        120
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "PATCH",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ financial_situation: $json.text, onboarding_step: 4 }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "14",
-      "name": "Send Step 4 Prompt",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        -340,
-        120
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$json.phone}}",
-        "text": "Show! Agora me diz: quais são seus horários mais livres durante a semana? Pode ser algo como 'manhã 6h-8h, noite 19h-21h'."
-      }
-    },
-    {
-      "id": "15",
-      "name": "Update Step 4 Response",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -520,
-        280
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "PATCH",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + $json.phone}}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ available_times: { raw: $json.text }, onboarding_step: 5 }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "16",
-      "name": "Generate Personalized Plan",
-      "type": "n8n-nodes-langchain.chatOpenAi",
-      "typeVersion": 1,
-      "position": [
-        -340,
-        280
-      ],
-      "parameters": {
-        "model": "gpt-4o-mini",
-        "promptType": "define",
-        "prompt": "Você é um coach de desenvolvimento pessoal. Considere os dados do usuário abaixo e gere um plano de 3 hábitos para construir e até 2 hábitos para abandonar. Responda em JSON seguindo o formato {\\n  \\\"summary\\\": string,\\n  \\\"habits\\\": [\\n    {\\n      \\\"name\\\": string,\\n      \\\"type\\\": \\\"good\\\"|\\\"bad\\\",\\n      \\\"frequency\\\": string,\\n      \\\"reminder_times\\\": [string],\\n      \\\"guidance\\\": string\\n    }\\n  ]\\n}.\\n\\nDados do usuário: {{ JSON.stringify($item(0).$node['Update Step 4 Response'].json[0] ?? $item(0).$node['Update Step 4 Response'].json) }}"
-      }
-    },
-    {
-      "id": "17",
-      "name": "Format Plan Output",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        -160,
-        280
-      ],
-      "parameters": {
-        "functionCode": "const rawOutput = $json.text ?? $json.output ?? $json.response ?? '';\nlet parsed;\ntry {\n  parsed = typeof rawOutput === 'string' ? JSON.parse(rawOutput) : rawOutput;\n} catch (error) {\n  throw new Error('Não foi possível interpretar o JSON do plano gerado pela IA. Ajuste o prompt ou revise a resposta do modelo.');\n}\nconst userRow = $item(0).$node['Update Step 4 Response'].json;\nconst user = Array.isArray(userRow) ? userRow[0] : userRow;\nconst habits = (parsed?.habits ?? []).map((habit, index) => ({\n  order: index + 1,\n  name: habit.name,\n  type: habit.type,\n  frequency: habit.frequency,\n  reminder_times: habit.reminder_times ?? [],\n  guidance: habit.guidance ?? '',\n  user_id: user?.id,\n  completed: false\n}));\nreturn [{ json: { plan_summary: parsed?.summary ?? '', habits } }];"
-      }
-    },
-    {
-      "id": "18",
-      "name": "Insert Habits",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        20,
-        280
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "method": "POST",
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.habits) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "19",
-      "name": "Complete Onboarding",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        200,
-        280
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
-        "method": "PATCH",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "phone",
-              "value": "={{'eq.' + ($item(0).$node['Update Step 4 Response'].json[0]?.phone ?? $item(0).$node['Normalize Incoming'].json.phone)}}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ onboarding_completed: true, onboarding_step: 6 }) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "20",
-      "name": "Send Plan Summary",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        380,
-        280
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$item(0).$node['Normalize Incoming'].json.phone}}",
-        "text": "Plano pronto! Aqui está o seu resumo: {{$item(0).$node['Format Plan Output'].json.plan_summary}}. Vou te lembrar nos horários combinados para cada hábito."
-      }
-    },
-    {
-      "id": "21",
-      "name": "Detect Confirmation",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        -700,
-        300
-      ],
-      "parameters": {
-        "functionCode": "const text = ($json.text || '').toLowerCase();\nconst confirmations = ['feito', 'concluí', 'conclui', 'finalizei', 'done', 'ok', 'deu certo', 'terminei'];\nconst isConfirmation = confirmations.some((word) => text.includes(word));\nreturn [{ json: { ...$json, is_confirmation: isConfirmation } }];"
-      }
-    },
-    {
-      "id": "22",
-      "name": "IF Confirmation",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        -520,
-        300
-      ],
-      "parameters": {
-        "conditions": {
-          "boolean": [
-            {
-              "value1": "={{$json.is_confirmation}}"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "23",
-      "name": "Fetch Pending Habit",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -340,
-        220
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "user_id",
-              "value": "={{'eq.' + $json.user.id}}"
-            },
-            {
-              "name": "is_active",
-              "value": "eq.true"
-            },
-            {
-              "name": "select",
-              "value": "id,name,user_id"
-            },
-            {
-              "name": "limit",
-              "value": "1"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "24",
-      "name": "Upsert Habit Log",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -160,
-        220
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
-        "method": "POST",
-        "sendHeaders": true,
-        "specifyHeaders": "keypair",
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "resolution=merge-duplicates"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify([{ habit_id: ($json[0]?.id ?? $json.id), user_id: ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node['Detect Confirmation'].json.user.id), completed: true, date: (new Date()).toISOString().slice(0,10), completed_at: (new Date()).toISOString() }]) }}",
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "25",
-      "name": "Send Celebration",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        20,
-        220
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$item(0).$node['Normalize Incoming'].json.phone}}",
-        "text": "Sensacional! Registro marcado aqui. Continue firme! Se quiser ajustar algo, é só me falar."
-      }
-    },
-    {
-      "id": "26",
-      "name": "Fetch Active Habits",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -340,
-        420
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "user_id",
-              "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
-            },
-            {
-              "name": "is_active",
-              "value": "eq.true"
-            },
-            {
-              "name": "select",
-              "value": "id,name,type,frequency,reminder_times"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "27",
-      "name": "Fetch Today Progress",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -160,
-        420
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "user_id",
-              "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
-            },
-            {
-              "name": "date",
-              "value": "={{'eq.' + $now.toFormat('yyyy-LL-dd')}}"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "28",
-      "name": "Fetch Conversation History",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        20,
-        420
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/conversations",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "user_id",
-              "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"
-            },
-            {
-              "name": "order",
-              "value": "timestamp.desc"
-            },
-            {
-              "name": "limit",
-              "value": "10"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "29",
-      "name": "Build Agent Context",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        200,
-        420
-      ],
-      "parameters": {
-        "functionCode": "const user = $item(0).$node['Detect Confirmation'].json.user || {};\nconst habits = $item(0).$node['Fetch Active Habits'].json;\nconst logs = $item(0).$node['Fetch Today Progress'].json;\nconst history = $item(0).$node['Fetch Conversation History'].json;\nreturn [{ json: { ...$item(0).$node['Detect Confirmation'].json, user, habits, logs, history } }];"
-      }
-    },
-    {
-      "id": "30",
-      "name": "AI Agent Reply",
-      "type": "n8n-nodes-langchain.agentTools",
-      "typeVersion": 1,
-      "position": [
-        380,
-        420
-      ],
-      "parameters": {
-        "promptType": "define",
-        "prompt": "Você é um assistente de desenvolvimento pessoal amigável, motivador e direto. Use o contexto fornecido para responder a mensagem do usuário. Seja acolhedor, reconheça avanços e proponha ações específicas. Contexto do usuário: {{ JSON.stringify($json.user) }}. Hábitos ativos: {{ JSON.stringify($json.habits) }}. Progresso de hoje: {{ JSON.stringify($json.logs) }}. Histórico recente: {{ JSON.stringify($json.history) }}. Mensagem do usuário: {{$json.text}}"
-      }
-    },
-    {
-      "id": "31",
-      "name": "Send AI Reply",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        560,
-        420
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$item(0).$node['Normalize Incoming'].json.phone}}",
-        "text": "={{$json.output || $json.text || 'Estou aqui com você. Vamos nessa!'}}"
-      }
-    },
-    {
-      "id": "32",
-      "name": "Reminder Cron",
-      "type": "n8n-nodes-base.cron",
-      "typeVersion": 1,
-      "position": [
-        -1600,
-        120
-      ],
-      "parameters": {
-        "triggerTimes": {
-          "item": [
-            {
-              "mode": "everyX",
-              "unit": "minutes",
-              "value": 10
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "33",
-      "name": "Fetch Reminder Candidates",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -1420,
-        120
-      ],
-      "parameters": {
-        "authentication": "none",
-        "url": "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "is_active",
-              "value": "eq.true"
-            },
-            {
-              "name": "select",
-              "value": "id,name,reminder_times,user_id,users(name,phone,timezone)"
-            }
-          ]
-        },
-        "responseFormat": "json"
-      }
-    },
-    {
-      "id": "34",
-      "name": "Filter Reminder Window",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 2,
-      "position": [
-        -1240,
-        120
-      ],
-      "parameters": {
-        "functionCode": "const records = Array.isArray($json) ? $json : ($json.data || []);\nconst now = new Date();\nconst pad = (value) => String(value).padStart(2, '0');\nreturn records.flatMap((record) => {\n  const tz = record.users?.timezone || 'America/Sao_Paulo';\n  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz });\n  const [hourStr, minuteStr] = formatter.format(now).split(':');\n  const current = `${pad(hourStr)}:${pad(minuteStr)}`;\n  const reminders = record.reminder_times || [];\n  if (reminders.includes(current)) {\n    return [{ json: { user_id: record.user_id, habit_id: record.id, habit_name: record.name, phone: record.users?.phone, user_name: record.users?.name } }];\n  }\n  return [];\n});"
-      }
-    },
-    {
-      "id": "35",
-      "name": "Send Reminder",
-      "type": "n8n-nodes-base.whatsAppBusinessCloud",
-      "typeVersion": 1,
-      "position": [
-        -1060,
-        120
-      ],
-      "parameters": {
-        "operation": "sendMessage",
-        "messageType": "text",
-        "recipientPhoneNumber": "={{$json.phone}}",
-        "text": "Oi {{$json.user_name}}! Hora do seu {{$json.habit_name}}. Cada passo conta!"
-      }
-    }
-  ],
-  "connections": {
-    "WhatsApp Trigger": {
-      "main": [
-        [
-          {
-            "node": "Normalize Incoming",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Normalize Incoming": {
-      "main": [
-        [
-          {
-            "node": "Supabase Get User",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Supabase Get User": {
-      "main": [
-        [
-          {
-            "node": "Classify User",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Classify User": {
-      "main": [
-        [
-          {
-            "node": "Route User",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Route User": {
-      "main": [
-        [
-          {
-            "node": "Create User Record",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Switch Onboarding Step",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Detect Confirmation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create User Record": {
-      "main": [
-        [
-          {
-            "node": "Send Step 1 Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch Onboarding Step": {
-      "main": [
-        [
-          {
-            "node": "Update Step 1 Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Update Step 2 Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Update Step 3 Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Update Step 4 Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Generate Personalized Plan",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Step 1 Response": {
-      "main": [
-        [
-          {
-            "node": "Send Step 2 Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Step 2 Response": {
-      "main": [
-        [
-          {
-            "node": "Send Step 3 Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Step 3 Response": {
-      "main": [
-        [
-          {
-            "node": "Send Step 4 Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Step 4 Response": {
-      "main": [
-        [
-          {
-            "node": "Generate Personalized Plan",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Generate Personalized Plan": {
-      "main": [
-        [
-          {
-            "node": "Format Plan Output",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Plan Output": {
-      "main": [
-        [
-          {
-            "node": "Insert Habits",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Insert Habits": {
-      "main": [
-        [
-          {
-            "node": "Complete Onboarding",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Complete Onboarding": {
-      "main": [
-        [
-          {
-            "node": "Send Plan Summary",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Detect Confirmation": {
-      "main": [
-        [
-          {
-            "node": "IF Confirmation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF Confirmation": {
-      "main": [
-        [
-          {
-            "node": "Fetch Pending Habit",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Fetch Active Habits",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Pending Habit": {
-      "main": [
-        [
-          {
-            "node": "Upsert Habit Log",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upsert Habit Log": {
-      "main": [
-        [
-          {
-            "node": "Send Celebration",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Active Habits": {
-      "main": [
-        [
-          {
-            "node": "Fetch Today Progress",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Today Progress": {
-      "main": [
-        [
-          {
-            "node": "Fetch Conversation History",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Conversation History": {
-      "main": [
-        [
-          {
-            "node": "Build Agent Context",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build Agent Context": {
-      "main": [
-        [
-          {
-            "node": "AI Agent Reply",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Agent Reply": {
-      "main": [
-        [
-          {
-            "node": "Send AI Reply",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Reminder Cron": {
-      "main": [
-        [
-          {
-            "node": "Fetch Reminder Candidates",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Reminder Candidates": {
-      "main": [
-        [
-          {
-            "node": "Filter Reminder Window",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter Reminder Window": {
-      "main": [
-        [
-          {
-            "node": "Send Reminder",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "settings": {
-    "executionOrder": "v1"
-  }
+﻿{
+    "name":  "Assistente Desenvolvimento Pessoal MVP",
+    "versionId":  "ce296dc0-5f23-43b8-80b2-99b66a5efb83",
+    "nodes":  [
+                  {
+                      "id":  "1",
+                      "name":  "WhatsApp Trigger",
+                      "type":  "n8n-nodes-base.whatsAppTrigger",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1600,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "events":  [
+                                                        "messages"
+                                                    ]
+                                     }
+                  },
+                  {
+                      "id":  "2",
+                      "name":  "Normalize Incoming",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1420,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const entry = $json.entry?.[0]?.changes?.[0]?.value ?? {};\nconst message = entry.messages?.[0] ?? {};\nconst contact = entry.contacts?.[0] ?? {};\nconst text = message.text?.body ?? message.interactive?.text ?? message.button?.text ?? \u0027\u0027;\nconst item = {\n  phone: message.from || \u0027\u0027,\n  message_id: message.id || \u0027\u0027,\n  profile_name: contact.profile?.name || \u0027\u0027,\n  text,\n  message_type: message.type || \u0027text\u0027,\n  timestamp: message.timestamp || null,\n  raw: $json\n};\nreturn [{ json: item }];"
+                                     }
+                  },
+                  {
+                      "id":  "3",
+                      "name":  "Supabase Get User",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -1240,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $item(0).$node[\u0027Normalize Incoming\u0027].json.phone}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "select",
+                                                                                        "value":  "*"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "limit",
+                                                                                        "value":  "1"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "4",
+                      "name":  "Classify User",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1060,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const incoming = $item(0).$node[\u0027Normalize Incoming\u0027].json;\nconst response = $json;\nlet user = null;\nif (Array.isArray(response) \u0026\u0026 response.length \u003e 0) {\n  user = response[0];\n} else if (response \u0026\u0026 Object.keys(response).length \u003e 0) {\n  user = response;\n}\nconst onboardingStep = user?.onboarding_step ?? 0;\nconst status = user ? (user.onboarding_completed === true ? \u0027active\u0027 : \u0027onboarding\u0027) : \u0027new\u0027;\nreturn [{ json: { ...incoming, user, user_status: status, onboarding_step: onboardingStep } }];"
+                                     }
+                  },
+                  {
+                      "id":  "5",
+                      "name":  "Route User",
+                      "type":  "n8n-nodes-base.switch",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -880,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "value1":  "={{$json.user_status}}",
+                                         "rules":  [
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "new"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "onboarding"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "active"
+                                                       }
+                                                   ]
+                                     }
+                  },
+                  {
+                      "id":  "6",
+                      "name":  "Create User Record",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -700,
+                                       -380
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "POST",
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ phone: $json.phone, name: $json.profile_name || null, onboarding_step: 1, onboarding_completed: false, timezone: \u0027America/Sao_Paulo\u0027 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "7",
+                      "name":  "Send Step 1 Prompt",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -520,
+                                       -380
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$item(0).$node[\u0027Normalize Incoming\u0027].json.phone}}",
+                                         "text":  "OlÃ¡! Eu sou o seu assistente de desenvolvimento pessoal. Para comeÃ§armos, me conte quais sÃ£o os 3 hÃ¡bitos que vocÃª quer construir ou melhorar na sua vida."
+                                     }
+                  },
+                  {
+                      "id":  "8",
+                      "name":  "Switch Onboarding Step",
+                      "type":  "n8n-nodes-base.switch",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -700,
+                                       -40
+                                   ],
+                      "parameters":  {
+                                         "value1":  "={{$json.user?.onboarding_step ?? $json.onboarding_step ?? 0}}",
+                                         "rules":  [
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "1"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "2"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "3"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "4"
+                                                       },
+                                                       {
+                                                           "operation":  "equal",
+                                                           "value2":  "5"
+                                                       }
+                                                   ]
+                                     }
+                  },
+                  {
+                      "id":  "9",
+                      "name":  "Update Step 1 Response",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -520,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "PATCH",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $json.phone}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ goals: { raw: $json.text }, onboarding_step: 2 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "10",
+                      "name":  "Send Step 2 Prompt",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -340,
+                                       -200
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$json.phone}}",
+                                         "text":  "Ã“timo! Agora me conta: existe algum hÃ¡bito ou vÃ­cio que estÃ¡ te atrapalhando e que vocÃª quer deixar para trÃ¡s?"
+                                     }
+                  },
+                  {
+                      "id":  "11",
+                      "name":  "Update Step 2 Response",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -520,
+                                       -40
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "PATCH",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $json.phone}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ bad_habits: { raw: $json.text }, onboarding_step: 3 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "12",
+                      "name":  "Send Step 3 Prompt",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -340,
+                                       -40
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$json.phone}}",
+                                         "text":  "Perfeito! Para adaptar o plano, como vocÃª classificaria sua situaÃ§Ã£o financeira atual? (baixa / mÃ©dia / alta)"
+                                     }
+                  },
+                  {
+                      "id":  "13",
+                      "name":  "Update Step 3 Response",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -520,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "PATCH",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $json.phone}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ financial_situation: $json.text, onboarding_step: 4 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "14",
+                      "name":  "Send Step 4 Prompt",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -340,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$json.phone}}",
+                                         "text":  "Show! Agora me diz: quais sÃ£o seus horÃ¡rios mais livres durante a semana? Pode ser algo como \u0027manhÃ£ 6h-8h, noite 19h-21h\u0027."
+                                     }
+                  },
+                  {
+                      "id":  "15",
+                      "name":  "Update Step 4 Response",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -520,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "PATCH",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $json.phone}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ available_times: { raw: $json.text }, onboarding_step: 5 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "16",
+                      "name":  "Generate Personalized Plan",
+                      "type":  "n8n-nodes-langchain.chatOpenAi",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -340,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "model":  "gpt-4o-mini",
+                                         "promptType":  "define",
+                                         "prompt":  "VocÃª Ã© um coach de desenvolvimento pessoal. Considere os dados do usuÃ¡rio abaixo e gere um plano de 3 hÃ¡bitos para construir e atÃ© 2 hÃ¡bitos para abandonar. Responda em JSON seguindo o formato {\\n  \\\"summary\\\": string,\\n  \\\"habits\\\": [\\n    {\\n      \\\"name\\\": string,\\n      \\\"type\\\": \\\"good\\\"|\\\"bad\\\",\\n      \\\"frequency\\\": string,\\n      \\\"reminder_times\\\": [string],\\n      \\\"guidance\\\": string\\n    }\\n  ]\\n}.\\n\\nDados do usuÃ¡rio: {{ JSON.stringify($item(0).$node[\u0027Update Step 4 Response\u0027].json[0] ?? $item(0).$node[\u0027Update Step 4 Response\u0027].json) }}"
+                                     }
+                  },
+                  {
+                      "id":  "17",
+                      "name":  "Format Plan Output",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -160,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const rawOutput = $json.text ?? $json.output ?? $json.response ?? \u0027\u0027;\nlet parsed;\ntry {\n  parsed = typeof rawOutput === \u0027string\u0027 ? JSON.parse(rawOutput) : rawOutput;\n} catch (error) {\n  throw new Error(\u0027NÃ£o foi possÃ­vel interpretar o JSON do plano gerado pela IA. Ajuste o prompt ou revise a resposta do modelo.\u0027);\n}\nconst userRow = $item(0).$node[\u0027Update Step 4 Response\u0027].json;\nconst user = Array.isArray(userRow) ? userRow[0] : userRow;\nconst habits = (parsed?.habits ?? []).map((habit, index) =\u003e ({\n  order: index + 1,\n  name: habit.name,\n  type: habit.type,\n  frequency: habit.frequency,\n  reminder_times: habit.reminder_times ?? [],\n  guidance: habit.guidance ?? \u0027\u0027,\n  user_id: user?.id,\n  completed: false\n}));\nreturn [{ json: { plan_summary: parsed?.summary ?? \u0027\u0027, habits } }];"
+                                     }
+                  },
+                  {
+                      "id":  "18",
+                      "name":  "Insert Habits",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       20,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
+                                         "method":  "POST",
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify($json.habits) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "19",
+                      "name":  "Complete Onboarding",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       200,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/users",
+                                         "method":  "PATCH",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "phone",
+                                                                                        "value":  "={{\u0027eq.\u0027 + ($item(0).$node[\u0027Update Step 4 Response\u0027].json[0]?.phone ?? $item(0).$node[\u0027Normalize Incoming\u0027].json.phone)}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "return=representation"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ onboarding_completed: true, onboarding_step: 6 }) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "20",
+                      "name":  "Send Plan Summary",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       380,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$item(0).$node[\u0027Normalize Incoming\u0027].json.phone}}",
+                                         "text":  "Plano pronto! Aqui estÃ¡ o seu resumo: {{$item(0).$node[\u0027Format Plan Output\u0027].json.plan_summary}}. Vou te lembrar nos horÃ¡rios combinados para cada hÃ¡bito."
+                                     }
+                  },
+                  {
+                      "id":  "21",
+                      "name":  "Detect Confirmation",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -700,
+                                       300
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const text = ($json.text || \u0027\u0027).toLowerCase();\nconst confirmations = [\u0027feito\u0027, \u0027concluÃ­\u0027, \u0027conclui\u0027, \u0027finalizei\u0027, \u0027done\u0027, \u0027ok\u0027, \u0027deu certo\u0027, \u0027terminei\u0027];\nconst isConfirmation = confirmations.some((word) =\u003e text.includes(word));\nreturn [{ json: { ...$json, is_confirmation: isConfirmation } }];"
+                                     }
+                  },
+                  {
+                      "id":  "22",
+                      "name":  "IF Confirmation",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -520,
+                                       300
+                                   ],
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "boolean":  [
+                                                                            {
+                                                                                "value1":  "={{$json.is_confirmation}}"
+                                                                            }
+                                                                        ]
+                                                        }
+                                     }
+                  },
+                  {
+                      "id":  "23",
+                      "name":  "Fetch Pending Habit",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -340,
+                                       220
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "user_id",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $json.user.id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "is_active",
+                                                                                        "value":  "eq.true"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "select",
+                                                                                        "value":  "id,name,user_id"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "limit",
+                                                                                        "value":  "1"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "24",
+                      "name":  "Upsert Habit Log",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -160,
+                                       220
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
+                                         "method":  "POST",
+                                         "sendHeaders":  true,
+                                         "specifyHeaders":  "keypair",
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "Prefer",
+                                                                                         "value":  "resolution=merge-duplicates"
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "Content-Type",
+                                                                                         "value":  "application/json"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify([{ habit_id: ($json[0]?.id ?? $json.id), user_id: ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node[\u0027Detect Confirmation\u0027].json.user.id), completed: true, date: (new Date()).toISOString().slice(0,10), completed_at: (new Date()).toISOString() }]) }}",
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "25",
+                      "name":  "Send Celebration",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       20,
+                                       220
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$item(0).$node[\u0027Normalize Incoming\u0027].json.phone}}",
+                                         "text":  "Sensacional! Registro marcado aqui. Continue firme! Se quiser ajustar algo, Ã© sÃ³ me falar."
+                                     }
+                  },
+                  {
+                      "id":  "26",
+                      "name":  "Fetch Active Habits",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -340,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "user_id",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $item(0).$node[\u0027Detect Confirmation\u0027].json.user.id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "is_active",
+                                                                                        "value":  "eq.true"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "select",
+                                                                                        "value":  "id,name,type,frequency,reminder_times"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "27",
+                      "name":  "Fetch Today Progress",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -160,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habit_logs",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "user_id",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $item(0).$node[\u0027Detect Confirmation\u0027].json.user.id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "date",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $now.toFormat(\u0027yyyy-LL-dd\u0027)}}"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "28",
+                      "name":  "Fetch Conversation History",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       20,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/conversations",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "user_id",
+                                                                                        "value":  "={{\u0027eq.\u0027 + $item(0).$node[\u0027Detect Confirmation\u0027].json.user.id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "order",
+                                                                                        "value":  "timestamp.desc"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "limit",
+                                                                                        "value":  "10"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "29",
+                      "name":  "Build Agent Context",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       200,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const user = $item(0).$node[\u0027Detect Confirmation\u0027].json.user || {};\nconst habits = $item(0).$node[\u0027Fetch Active Habits\u0027].json;\nconst logs = $item(0).$node[\u0027Fetch Today Progress\u0027].json;\nconst history = $item(0).$node[\u0027Fetch Conversation History\u0027].json;\nreturn [{ json: { ...$item(0).$node[\u0027Detect Confirmation\u0027].json, user, habits, logs, history } }];"
+                                     }
+                  },
+                  {
+                      "id":  "30",
+                      "name":  "AI Agent Reply",
+                      "type":  "n8n-nodes-langchain.agentTools",
+                      "typeVersion":  1,
+                      "position":  [
+                                       380,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "prompt":  "VocÃª Ã© um assistente de desenvolvimento pessoal amigÃ¡vel, motivador e direto. Use o contexto fornecido para responder a mensagem do usuÃ¡rio. Seja acolhedor, reconheÃ§a avanÃ§os e proponha aÃ§Ãµes especÃ­ficas. Contexto do usuÃ¡rio: {{ JSON.stringify($json.user) }}. HÃ¡bitos ativos: {{ JSON.stringify($json.habits) }}. Progresso de hoje: {{ JSON.stringify($json.logs) }}. HistÃ³rico recente: {{ JSON.stringify($json.history) }}. Mensagem do usuÃ¡rio: {{$json.text}}"
+                                     }
+                  },
+                  {
+                      "id":  "31",
+                      "name":  "Send AI Reply",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       560,
+                                       420
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$item(0).$node[\u0027Normalize Incoming\u0027].json.phone}}",
+                                         "text":  "={{$json.output || $json.text || \u0027Estou aqui com vocÃª. Vamos nessa!\u0027}}"
+                                     }
+                  },
+                  {
+                      "id":  "32",
+                      "name":  "Reminder Cron",
+                      "type":  "n8n-nodes-base.cron",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1600,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "triggerTimes":  {
+                                                              "item":  [
+                                                                           {
+                                                                               "mode":  "everyX",
+                                                                               "unit":  "minutes",
+                                                                               "value":  10
+                                                                           }
+                                                                       ]
+                                                          }
+                                     }
+                  },
+                  {
+                      "id":  "33",
+                      "name":  "Fetch Reminder Candidates",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.2,
+                      "position":  [
+                                       -1420,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "authentication":  "none",
+                                         "url":  "https://llxkhcgmbumqedrdarmr.supabase.co/rest/v1/habits",
+                                         "sendQuery":  true,
+                                         "specifyQuery":  "keypair",
+                                         "queryParameters":  {
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "is_active",
+                                                                                        "value":  "eq.true"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "select",
+                                                                                        "value":  "id,name,reminder_times,user_id,users(name,phone,timezone)"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                         "responseFormat":  "json"
+                                     }
+                  },
+                  {
+                      "id":  "34",
+                      "name":  "Filter Reminder Window",
+                      "type":  "n8n-nodes-base.function",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1240,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "functionCode":  "const records = Array.isArray($json) ? $json : ($json.data || []);\nconst now = new Date();\nconst pad = (value) =\u003e String(value).padStart(2, \u00270\u0027);\nreturn records.flatMap((record) =\u003e {\n  const tz = record.users?.timezone || \u0027America/Sao_Paulo\u0027;\n  const formatter = new Intl.DateTimeFormat(\u0027pt-BR\u0027, { hour: \u00272-digit\u0027, minute: \u00272-digit\u0027, hour12: false, timeZone: tz });\n  const [hourStr, minuteStr] = formatter.format(now).split(\u0027:\u0027);\n  const current = `${pad(hourStr)}:${pad(minuteStr)}`;\n  const reminders = record.reminder_times || [];\n  if (reminders.includes(current)) {\n    return [{ json: { user_id: record.user_id, habit_id: record.id, habit_name: record.name, phone: record.users?.phone, user_name: record.users?.name } }];\n  }\n  return [];\n});"
+                                     }
+                  },
+                  {
+                      "id":  "35",
+                      "name":  "Send Reminder",
+                      "type":  "n8n-nodes-base.whatsApp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -1060,
+                                       120
+                                   ],
+                      "parameters":  {
+                                         "operation":  "sendMessage",
+                                         "messageType":  "text",
+                                         "recipientPhoneNumber":  "={{$json.phone}}",
+                                         "text":  "Oi {{$json.user_name}}! Hora do seu {{$json.habit_name}}. Cada passo conta!"
+                                     }
+                  }
+              ],
+    "connections":  {
+                        "WhatsApp Trigger":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Normalize Incoming",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "Normalize Incoming":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "Supabase Get User",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "Supabase Get User":  {
+                                                  "main":  [
+                                                               [
+                                                                   {
+                                                                       "node":  "Classify User",
+                                                                       "type":  "main",
+                                                                       "index":  0
+                                                                   }
+                                                               ]
+                                                           ]
+                                              },
+                        "Classify User":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Route User",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Route User":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "Create User Record",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ],
+                                                        [
+                                                            {
+                                                                "node":  "Switch Onboarding Step",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ],
+                                                        [
+                                                            {
+                                                                "node":  "Detect Confirmation",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "Create User Record":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "Send Step 1 Prompt",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "Switch Onboarding Step":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Update Step 1 Response",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ],
+                                                                    [
+                                                                        {
+                                                                            "node":  "Update Step 2 Response",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ],
+                                                                    [
+                                                                        {
+                                                                            "node":  "Update Step 3 Response",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ],
+                                                                    [
+                                                                        {
+                                                                            "node":  "Update Step 4 Response",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ],
+                                                                    [
+                                                                        {
+                                                                            "node":  "Generate Personalized Plan",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Update Step 1 Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Send Step 2 Prompt",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Update Step 2 Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Send Step 3 Prompt",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Update Step 3 Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Send Step 4 Prompt",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Update Step 4 Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Generate Personalized Plan",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Generate Personalized Plan":  {
+                                                           "main":  [
+                                                                        [
+                                                                            {
+                                                                                "node":  "Format Plan Output",
+                                                                                "type":  "main",
+                                                                                "index":  0
+                                                                            }
+                                                                        ]
+                                                                    ]
+                                                       },
+                        "Format Plan Output":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "Insert Habits",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "Insert Habits":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Complete Onboarding",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Complete Onboarding":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Send Plan Summary",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Detect Confirmation":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "IF Confirmation",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "IF Confirmation":  {
+                                                "main":  [
+                                                             [
+                                                                 {
+                                                                     "node":  "Fetch Pending Habit",
+                                                                     "type":  "main",
+                                                                     "index":  0
+                                                                 }
+                                                             ],
+                                                             [
+                                                                 {
+                                                                     "node":  "Fetch Active Habits",
+                                                                     "type":  "main",
+                                                                     "index":  0
+                                                                 }
+                                                             ]
+                                                         ]
+                                            },
+                        "Fetch Pending Habit":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Upsert Habit Log",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Upsert Habit Log":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Send Celebration",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "Fetch Active Habits":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Fetch Today Progress",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Fetch Today Progress":  {
+                                                     "main":  [
+                                                                  [
+                                                                      {
+                                                                          "node":  "Fetch Conversation History",
+                                                                          "type":  "main",
+                                                                          "index":  0
+                                                                      }
+                                                                  ]
+                                                              ]
+                                                 },
+                        "Fetch Conversation History":  {
+                                                           "main":  [
+                                                                        [
+                                                                            {
+                                                                                "node":  "Build Agent Context",
+                                                                                "type":  "main",
+                                                                                "index":  0
+                                                                            }
+                                                                        ]
+                                                                    ]
+                                                       },
+                        "Build Agent Context":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "AI Agent Reply",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "AI Agent Reply":  {
+                                               "main":  [
+                                                            [
+                                                                {
+                                                                    "node":  "Send AI Reply",
+                                                                    "type":  "main",
+                                                                    "index":  0
+                                                                }
+                                                            ]
+                                                        ]
+                                           },
+                        "Reminder Cron":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "Fetch Reminder Candidates",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Fetch Reminder Candidates":  {
+                                                          "main":  [
+                                                                       [
+                                                                           {
+                                                                               "node":  "Filter Reminder Window",
+                                                                               "type":  "main",
+                                                                               "index":  0
+                                                                           }
+                                                                       ]
+                                                                   ]
+                                                      },
+                        "Filter Reminder Window":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Send Reminder",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1"
+                 }
 }
