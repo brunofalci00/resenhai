@@ -12,18 +12,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://foquinhaai.life"
 const title = "Foquinha IA — Transforme a sua vida em 14 dias."
 const description =
   "Organize seus hábitos, melhore sua alimentação, comece a treinar e tire seus objetivos do papel. Tudo isso com ajuda da Foquinha direto no seu WhatsApp."
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://foquinha-landing.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title,
   description,
   openGraph: {
     title,
     description,
-    url: "/",
+    url: siteUrl,
     siteName: "Foquinha IA",
     images: [
       {
@@ -41,6 +42,9 @@ export const metadata: Metadata = {
     title,
     description,
     images: ["https://images.unsplash.com/photo-1526401485004-46910ecc8e51?w=1200&q=80&fit=crop"],
+  },
+  alternates: {
+    canonical: siteUrl,
   },
 };
 

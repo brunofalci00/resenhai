@@ -1,0 +1,169 @@
+{
+  "name": "Assistente Desenvolvimento Pessoal - AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "assistente-whatsapp",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "phone",
+              "value": "={{ $json.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.from || $json.from || 'unknown' }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.text?.body || $json.text || $json.message || 'Olá' }}"
+            }
+          ]
+        }
+      },
+      "id": "extract-data",
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Você é um assistente de desenvolvimento pessoal chamado Foquinha. Seu objetivo é ajudar as pessoas a construir hábitos positivos e abandonar vícios.\n\nSua personalidade:\n- Amigável e motivador\n- Sempre positivo e encorajador\n- Usa emojis para deixar as conversas mais leves\n- Faz perguntas para entender melhor o usuário\n\nQuando um usuário novo chegar:\n1. Se apresente como Foquinha\n2. Pergunte qual hábito ele quer construir OU abandonar\n3. Seja específico e prático nas sugestões\n4. Mantenha o foco em UMA coisa por vez\n\nExemplos de hábitos a construir: exercitar-se, ler, meditar, beber água, acordar cedo\nExemplos de hábitos a abandonar: fumar, procrastinar, comer doces, usar muito celular\n\nSempre termine suas mensagens perguntando algo para manter a conversa ativa.\nSeja breve - máximo 2 parágrafos por resposta."
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 300
+        }
+      },
+      "id": "openai-chat-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [680, 500],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential",
+          "name": "OpenAI Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Send message",
+        "chatId": "={{ $node['Extract Data'].json.phone }}",
+        "message": "={{ $json.output }}"
+      },
+      "id": "send-whatsapp",
+      "name": "Send WhatsApp",
+      "type": "n8n-nodes-base.whatsAppBusinessCloud",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "whatsAppBusinessCloudApi": {
+          "id": "whatsapp-credential",
+          "name": "WhatsApp Foquinha AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK"
+      },
+      "id": "respond-webhook",
+      "name": "Respond Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_chatModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_chatModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Respond Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "assistente-ai-agent-simples",
+  "tags": [
+    "AI Agent",
+    "WhatsApp",
+    "Simples",
+    "OpenAI"
+  ]
+}
