@@ -3,7 +3,143 @@ from uuid import uuid4
 
 SUPABASE_URL = "https://llxkhcgmbumqedrdarmr.supabase.co"
 
+normalize_code = """
+const entry = $json.entry?.[0]?.changes?.[0]?.value ?? {};
+const message = entry.messages?.[0] ?? {};
+const contact = entry.contacts?.[0] ?? {};
+const text = message.text?.body ?? message.interactive?.text ?? message.button?.text ?? '';
+const item = {
+  phone: message.from || '',
+  message_id: message.id || '',
+  profile_name: contact.profile?.name || '',
+  text,
+  message_type: message.type || 'text',
+  timestamp: message.timestamp || null,
+  raw: $json
+};
+return [{ json: item }];
+""".strip()
+
+classify_code = """
+const incoming = $item(0).$node['Normalize Incoming'].json;
+const response = $json;
+let user = null;
+if (Array.isArray(response) && response.length > 0) {
+  user = response[0];
+} else if (response && Object.keys(response).length > 0) {
+  user = response;
+}
+const onboardingStep = user?.onboarding_step ?? 0;
+const status = user ? (user.onboarding_completed === true ? 'active' : 'onboarding') : 'new';
+return [{ json: { ...incoming, user, user_status: status, onboarding_step: onboardingStep } }];
+""".strip()
+
+format_plan_code = """
+const rawOutput = $json.text ?? $json.output ?? $json.response ?? '';
+let parsed;
+try {
+  parsed = typeof rawOutput === 'string' ? JSON.parse(rawOutput) : rawOutput;
+} catch (error) {
+  throw new Error('Não foi possível interpretar o JSON do plano gerado pela IA. Ajuste o prompt ou revise a resposta do modelo.');
+}
+const userRow = $item(0).$node['Update Step 4 Response'].json;
+const user = Array.isArray(userRow) ? userRow[0] : userRow;
+const habits = (parsed?.habits ?? []).map((habit, index) => ({
+  order: index + 1,
+  name: habit.name,
+  type: habit.type,
+  frequency: habit.frequency,
+  reminder_times: habit.reminder_times ?? [],
+  guidance: habit.guidance ?? '',
+  user_id: user?.id,
+  completed: false
+}));
+return [{ json: { plan_summary: parsed?.summary ?? '', habits } }];
+""".strip()
+
+detect_confirmation_code = """
+const text = ($json.text || '').toLowerCase();
+const confirmations = ['feito', 'concluí', 'conclui', 'finalizei', 'done', 'ok', 'deu certo', 'terminei'];
+const isConfirmation = confirmations.some((word) => text.includes(word));
+return [{ json: { ...$json, is_confirmation: isConfirmation } }];
+""".strip()
+
+build_context_code = """
+const user = $item(0).$node['Detect Confirmation'].json.user || {};
+const habits = $item(0).$node['Fetch Active Habits'].json;
+const logs = $item(0).$node['Fetch Today Progress'].json;
+const history = $item(0).$node['Fetch Conversation History'].json;
+return [{ json: { ...$item(0).$node['Detect Confirmation'].json, user, habits, logs, history } }];
+""".strip()
+
+filter_reminder_code = """
+const records = Array.isArray($json) ? $json : ($json.data || []);
+const now = new Date();
+const pad = (value) => String(value).padStart(2, '0');
+return records.flatMap((record) => {
+  const tz = record.users?.timezone || 'America/Sao_Paulo';
+  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz });
+  const [hourStr, minuteStr] = formatter.format(now).split(':');
+  const current = `${pad(hourStr)}:${pad(minuteStr)}`;
+  const reminders = record.reminder_times || [];
+  if (reminders.includes(current)) {
+    return [{ json: { user_id: record.user_id, habit_id: record.id, habit_name: record.name, phone: record.users?.phone, user_name: record.users?.name } }];
+  }
+  return [];
+});
+""".strip()
+
+prompt_plan = """Você é um coach de desenvolvimento pessoal. Considere os dados do usuário abaixo e gere um plano de 3 hábitos para construir e até 2 hábitos para abandonar. Responda em JSON seguindo o formato {
+  \"summary\": string,
+  \"habits\": [
+    {
+      \"name\": string,
+      \"type\": \"good\"|\"bad\",
+      \"frequency\": string,
+      \"reminder_times\": [string],
+      \"guidance\": string
+    }
+  ]
+}.
+
+Dados do usuário: {{ JSON.stringify($item(0).$node['Update Step 4 Response'].json[0] ?? $item(0).$node['Update Step 4 Response'].json) }}""".strip()
+
+agent_prompt = """Você é um assistente de desenvolvimento pessoal amigável, motivador e direto. Use o contexto fornecido para responder a mensagem do usuário. Seja acolhedor, reconheça avanços e proponha ações específicas.
+
+Contexto do usuário: {{ JSON.stringify($json.user) }}
+Hábitos ativos: {{ JSON.stringify($json.habits) }}
+Progresso de hoje: {{ JSON.stringify($json.logs) }}
+Histórico recente: {{ JSON.stringify($json.history) }}
+
+Mensagem do usuário: {{$json.text}}""".strip()
+
 nodes = []
+
+def supabase_http_node(node_id, name, method, path, position, query_params=None, body_expr=None):
+    parameters = {
+        "method": method,
+        "url": f"{SUPABASE_URL}{path}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "responseFormat": "json"
+    }
+    if query_params:
+        parameters["sendQuery"] = True
+        parameters["specifyQuery"] = "keypair"
+        parameters["queryParameters"] = {"parameters": query_params}
+    if body_expr is not None:
+        parameters["sendBody"] = True
+        parameters["contentType"] = "json"
+        parameters["specifyBody"] = "json"
+        parameters["jsonBody"] = body_expr
+    return {
+        "id": node_id,
+        "name": name,
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": position,
+        "parameters": parameters
+    }
 
 nodes.append({
     "id": "1",
@@ -11,27 +147,8 @@ nodes.append({
     "type": "n8n-nodes-base.whatsAppBusinessCloudTrigger",
     "typeVersion": 1,
     "position": [-1600, -200],
-    "parameters": {
-        "events": ["messages"]
-    }
+    "parameters": {"events": ["messages"]}
 })
-
-normalize_code = (
-    "const entry = $json.entry?.[0]?.changes?.[0]?.value ?? {};\n"
-    "const message = entry.messages?.[0] ?? {};\n"
-    "const contact = entry.contacts?.[0] ?? {};\n"
-    "const text = message.text?.body ?? message.interactive?.text ?? message.button?.text ?? '';\n"
-    "const item = {\n"
-    "  phone: message.from || '',\n"
-    "  message_id: message.id || '',\n"
-    "  profile_name: contact.profile?.name || '',\n"
-    "  text,\n"
-    "  message_type: message.type || 'text',\n"
-    "  timestamp: message.timestamp || null,\n"
-    "  raw: $json\n"
-    "};\n"
-    "return [{ json: item }];"
-)
 
 nodes.append({
     "id": "2",
@@ -42,39 +159,18 @@ nodes.append({
     "parameters": {"functionCode": normalize_code}
 })
 
-nodes.append({
-    "id": "3",
-    "name": "Supabase Get User",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-1240, -200],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + $item(0).$node['Normalize Incoming'].json.phone}}"},
-                {"name": "select", "value": "*"},
-                {"name": "limit", "value": "1"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
-
-classify_code = (
-    "const incoming = $item(0).$node['Normalize Incoming'].json;\n"
-    "const response = $json;\n"
-    "let user = null;\n"
-    "if (Array.isArray(response) && response.length > 0) {\n  user = response[0];\n} else if (response && Object.keys(response).length > 0) {\n  user = response;\n}\n"
-    "const onboardingStep = user?.onboarding_step ?? 0;\n"
-    "const status = user ? (user.onboarding_completed === true ? 'active' : 'onboarding') : 'new';\n"
-    "return [{ json: { ...incoming, user, user_status: status, onboarding_step: onboardingStep } }];"
-)
+nodes.append(supabase_http_node(
+    "3",
+    "Supabase Get User",
+    "GET",
+    "/rest/v1/users",
+    [-1240, -200],
+    [
+        {"name": "phone", "value": "={{'eq.' + $item(0).$node['Normalize Incoming'].json.phone}}"},
+        {"name": "select", "value": "*"},
+        {"name": "limit", "value": "1"}
+    ]
+))
 
 nodes.append({
     "id": "4",
@@ -101,24 +197,14 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "6",
-    "name": "Create User Record",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-700, -380],
-    "parameters": {
-        "method": "POST",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"phone\\": $json.phone, \\"name\\": $json.profile_name || null, \\"onboarding_step\\": 1, \\"onboarding_completed\\": false, \\"timezone\\": 'America/Sao_Paulo'} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "6",
+    "Create User Record",
+    "POST",
+    "/rest/v1/users",
+    [-700, -380],
+    body_expr='={{ {"phone": $json.phone, "name": $json.profile_name || null, "onboarding_step": 1, "onboarding_completed": false, "timezone": "America/Sao_Paulo"} }}'
+))
 
 nodes.append({
     "id": "7",
@@ -152,31 +238,15 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "9",
-    "name": "Update Step 1 Response",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-520, -200],
-    "parameters": {
-        "method": "PATCH",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + $json.phone}}"}
-            ]
-        },
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"goals\\": {\\"raw\\": $json.text}, \\"onboarding_step\\": 2} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "9",
+    "Update Step 1 Response",
+    "PATCH",
+    "/rest/v1/users",
+    [-520, -200],
+    [{"name": "phone", "value": "={{'eq.' + $json.phone}}"}],
+    body_expr='={{ {"goals": {"raw": $json.text}, "onboarding_step": 2} }}'
+))
 
 nodes.append({
     "id": "10",
@@ -192,31 +262,15 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "11",
-    "name": "Update Step 2 Response",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-520, -40],
-    "parameters": {
-        "method": "PATCH",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + $json.phone}}"}
-            ]
-        },
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"bad_habits\\": {\\"raw\\": $json.text}, \\"onboarding_step\\": 3} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "11",
+    "Update Step 2 Response",
+    "PATCH",
+    "/rest/v1/users",
+    [-520, -40],
+    [{"name": "phone", "value": "={{'eq.' + $json.phone}}"}],
+    body_expr='={{ {"bad_habits": {"raw": $json.text}, "onboarding_step": 3} }}'
+))
 
 nodes.append({
     "id": "12",
@@ -232,31 +286,15 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "13",
-    "name": "Update Step 3 Response",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-520, 120],
-    "parameters": {
-        "method": "PATCH",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + $json.phone}}"}
-            ]
-        },
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"financial_situation\\": $json.text, \\"onboarding_step\\": 4} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "13",
+    "Update Step 3 Response",
+    "PATCH",
+    "/rest/v1/users",
+    [-520, 120],
+    [{"name": "phone", "value": "={{'eq.' + $json.phone}}"}],
+    body_expr='={{ {"financial_situation": $json.text, "onboarding_step": 4} }}'
+))
 
 nodes.append({
     "id": "14",
@@ -272,31 +310,15 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "15",
-    "name": "Update Step 4 Response",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-520, 280],
-    "parameters": {
-        "method": "PATCH",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + $json.phone}}"}
-            ]
-        },
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"available_times\\": {\\"raw\\": $json.text}, \\"onboarding_step\\": 5} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "15",
+    "Update Step 4 Response",
+    "PATCH",
+    "/rest/v1/users",
+    [-520, 280],
+    [{"name": "phone", "value": "={{'eq.' + $json.phone}}"}],
+    body_expr='={{ {"available_times": {"raw": $json.text}, "onboarding_step": 5} }}'
+))
 
 nodes.append({
     "id": "16",
@@ -306,19 +328,9 @@ nodes.append({
     "position": [-340, 280],
     "parameters": {
         "promptType": "define",
-        "prompt": "Você é um coach de desenvolvimento pessoal. Considere os dados do usuário abaixo e gere um plano de 3 hábitos para construir e até 2 hábitos para abandonar. Responda em JSON seguindo o formato {\\n  \\"summary\\\": string,\\n  \\"habits\\\": [\\n    {\\n      \\"name\\\": string,\\n      \\"type\\\": \\"good\\\"|\\\"bad\\\",\\n      \\"frequency\\\": string,\\n      \\"reminder_times\\\": [string],\\n      \\"guidance\\\": string\\n    }\\n  ]\\n}.\\n\\nDados do usuário: {{ JSON.stringify($item(0).$node['Update Step 4 Response'].json[0] ?? $item(0).$node['Update Step 4 Response'].json) }}"
+        "prompt": prompt_plan
     }
 })
-
-format_plan_code = (
-    "const rawOutput = $json.text ?? $json.output ?? $json.response ?? '';\n"
-    "let parsed;\n"
-    "try {\n  parsed = typeof rawOutput === 'string' ? JSON.parse(rawOutput) : rawOutput;\n} catch (error) {\n  throw new Error('Não foi possível interpretar o JSON do plano gerado pela IA. Ajuste o prompt ou revise a resposta do modelo.');\n}\n"
-    "const userRow = $item(0).$node['Update Step 4 Response'].json;\n"
-    "const user = Array.isArray(userRow) ? userRow[0] : userRow;\n"
-    "const habits = (parsed?.habits ?? []).map((habit, index) => ({\n  order: index + 1,\n  name: habit.name,\n  type: habit.type,\n  frequency: habit.frequency,\n  reminder_times: habit.reminder_times ?? [],\n  guidance: habit.guidance ?? '',\n  user_id: user?.id,\n  completed: false\n}));\n"
-    "return [{ json: { plan_summary: parsed?.summary ?? '', habits } }];"
-)
 
 nodes.append({
     "id": "17",
@@ -329,50 +341,24 @@ nodes.append({
     "parameters": {"functionCode": format_plan_code}
 })
 
-nodes.append({
-    "id": "18",
-    "name": "Insert Habits",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [20, 280],
-    "parameters": {
-        "method": "POST",
-        "url": f"{SUPABASE_URL}/rest/v1/habits",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ $json.habits }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "18",
+    "Insert Habits",
+    "POST",
+    "/rest/v1/habits",
+    [20, 280],
+    body_expr='={{ $json.habits }}'
+))
 
-nodes.append({
-    "id": "19",
-    "name": "Complete Onboarding",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [200, 280],
-    "parameters": {
-        "method": "PATCH",
-        "url": f"{SUPABASE_URL}/rest/v1/users",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "phone", "value": "={{'eq.' + ($item(0).$node['Update Step 4 Response'].json[0]?.phone ?? $item(0).$node['Normalize Incoming'].json.phone)}}"}
-            ]
-        },
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ {\\"onboarding_completed\\": true, \\"onboarding_step\\": 6} }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "19",
+    "Complete Onboarding",
+    "PATCH",
+    "/rest/v1/users",
+    [200, 280],
+    [{"name": "phone", "value": "={{'eq.' + ($item(0).$node['Update Step 4 Response'].json[0]?.phone ?? $item(0).$node['Normalize Incoming'].json.phone)}}"}],
+    body_expr='={{ {"onboarding_completed": true, "onboarding_step": 6} }}'
+))
 
 nodes.append({
     "id": "20",
@@ -387,13 +373,6 @@ nodes.append({
         "text": "Plano pronto! Aqui está o seu resumo: {{$item(0).$node['Format Plan Output'].json.plan_summary}}. Vou te lembrar nos horários combinados para cada hábito."
     }
 })
-
-detect_confirmation_code = (
-    "const text = ($json.text || '').toLowerCase();\n"
-    "const confirmations = ['feito', 'concluí', 'conclui', 'finalizei', 'done', 'ok', 'deu certo', 'terminei'];\n"
-    "const isConfirmation = confirmations.some((word) => text.includes(word));\n"
-    "return [{ json: { ...$json, is_confirmation: isConfirmation } }];"
-)
 
 nodes.append({
     "id": "21",
@@ -410,54 +389,31 @@ nodes.append({
     "type": "n8n-nodes-base.if",
     "typeVersion": 2,
     "position": [-520, 300],
-    "parameters": {
-        "conditions": {"boolean": [{"value1": "={{$json.is_confirmation}}"}]}
-    }
+    "parameters": {"conditions": {"boolean": [{"value1": "={{$json.is_confirmation}}"}]}}
 })
 
-nodes.append({
-    "id": "23",
-    "name": "Fetch Pending Habit",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-340, 220],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/habits",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "user_id", "value": "={{'eq.' + $json.user.id}}"},
-                {"name": "is_active", "value": "eq.true"},
-                {"name": "select", "value": "id,name,user_id"},
-                {"name": "limit", "value": "1"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "23",
+    "Fetch Pending Habit",
+    "GET",
+    "/rest/v1/habits",
+    [-340, 220],
+    [
+        {"name": "user_id", "value": "={{'eq.' + $json.user.id}}"},
+        {"name": "is_active", "value": "eq.true"},
+        {"name": "select", "value": "id,name,user_id"},
+        {"name": "limit", "value": "1"}
+    ]
+))
 
-nodes.append({
-    "id": "24",
-    "name": "Upsert Habit Log",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-160, 220],
-    "parameters": {
-        "method": "POST",
-        "url": f"{SUPABASE_URL}/rest/v1/habit_logs",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": True,
-        "contentType": "json",
-        "specifyBody": "json",
-        "jsonBody": "={{ [{\\"habit_id\\": ($json[0]?.id ?? $json.id), \\"user_id\\": ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node['Detect Confirmation'].json.user.id), \\"completed\\": true, \\"date\\": (new Date()).toISOString().slice(0,10), \\"completed_at\\": (new Date()).toISOString()}] }}",
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "24",
+    "Upsert Habit Log",
+    "POST",
+    "/rest/v1/habit_logs",
+    [-160, 220],
+    body_expr='={{ [{"habit_id": ($json[0]?.id ?? $json.id), "user_id": ($json[0]?.user_id ?? $json.user_id ?? $item(0).$node['Detect Confirmation'].json.user.id), "completed": true, "date": (new Date()).toISOString().slice(0,10), "completed_at": (new Date()).toISOString()}] }}'
+))
 
 nodes.append({
     "id": "25",
@@ -473,84 +429,43 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "26",
-    "name": "Fetch Active Habits",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-340, 420],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/habits",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
-                {"name": "is_active", "value": "eq.true"},
-                {"name": "select", "value": "id,name,type,frequency,reminder_times"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "26",
+    "Fetch Active Habits",
+    "GET",
+    "/rest/v1/habits",
+    [-340, 420],
+    [
+        {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
+        {"name": "is_active", "value": "eq.true"},
+        {"name": "select", "value": "id,name,type,frequency,reminder_times"}
+    ]
+))
 
-nodes.append({
-    "id": "27",
-    "name": "Fetch Today Progress",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-160, 420],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/habit_logs",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
-                {"name": "date", "value": "={{'eq.' + $now.toFormat('yyyy-LL-dd')}}"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
+nodes.append(supabase_http_node(
+    "27",
+    "Fetch Today Progress",
+    "GET",
+    "/rest/v1/habit_logs",
+    [-160, 420],
+    [
+        {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
+        {"name": "date", "value": "={{'eq.' + $now.toFormat('yyyy-LL-dd')}}"}
+    ]
+))
 
-nodes.append({
-    "id": "28",
-    "name": "Fetch Conversation History",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [20, 420],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/conversations",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
-                {"name": "order", "value": "timestamp.desc"},
-                {"name": "limit", "value": "10"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
-
-build_context_code = (
-    "const user = $item(0).$node['Detect Confirmation'].json.user || {};\n"
-    "const habits = $item(0).$node['Fetch Active Habits'].json;\n"
-    "const logs = $item(0).$node['Fetch Today Progress'].json;\n"
-    "const history = $item(0).$node['Fetch Conversation History'].json;\n"
-    "return [{ json: { ...$item(0).$node['Detect Confirmation'].json, user, habits, logs, history } }];"
-)
+nodes.append(supabase_http_node(
+    "28",
+    "Fetch Conversation History",
+    "GET",
+    "/rest/v1/conversations",
+    [20, 420],
+    [
+        {"name": "user_id", "value": "={{'eq.' + $item(0).$node['Detect Confirmation'].json.user.id}}"},
+        {"name": "order", "value": "timestamp.desc"},
+        {"name": "limit", "value": "10"}
+    ]
+))
 
 nodes.append({
     "id": "29",
@@ -569,7 +484,7 @@ nodes.append({
     "position": [380, 420],
     "parameters": {
         "promptType": "define",
-        "prompt": "Você é um assistente de desenvolvimento pessoal amigável, motivador e direto. Use o contexto fornecido para responder a mensagem do usuário. Seja acolhedor, reconheça avanços e proponha ações específicas. Contexto do usuário: {{ JSON.stringify($json.user) }}. Hábitos ativos: {{ JSON.stringify($json.habits) }}. Progresso de hoje: {{ JSON.stringify($json.logs) }}. Histórico recente: {{ JSON.stringify($json.history) }}. Mensagem do usuário: {{$json.text}}"
+        "prompt": agent_prompt
     }
 })
 
@@ -602,45 +517,17 @@ nodes.append({
     }
 })
 
-nodes.append({
-    "id": "33",
-    "name": "Fetch Reminder Candidates",
-    "type": "n8n-nodes-base.httpRequest",
-    "typeVersion": 4.2,
-    "position": [-1420, 120],
-    "parameters": {
-        "method": "GET",
-        "url": f"{SUPABASE_URL}/rest/v1/habits",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": True,
-        "specifyQuery": "keypair",
-        "queryParameters": {
-            "parameters": [
-                {"name": "is_active", "value": "eq.true"},
-                {"name": "select", "value": "id,name,reminder_times,user_id,users(name,phone,timezone)"}
-            ]
-        },
-        "responseFormat": "json"
-    }
-})
-
-filter_reminder_code = (
-    "const records = Array.isArray($json) ? $json : ($json.data || []);\n"
-    "const now = new Date();\n"
-    "const pad = (value) => String(value).padStart(2, '0');\n"
-    "return records.flatMap((record) => {\n"
-    "  const tz = record.users?.timezone || 'America/Sao_Paulo';\n"
-    "  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz });\n"
-    "  const [hourStr, minuteStr] = formatter.format(now).split(':');\n"
-    "  const current = `${pad(hourStr)}:${pad(minuteStr)}`;\n"
-    "  const reminders = record.reminder_times || [];\n"
-    "  if (reminders.includes(current)) {\n"
-    "    return [{ json: { user_id: record.user_id, habit_id: record.id, habit_name: record.name, phone: record.users?.phone, user_name: record.users?.name } }];\n"
-    "  }\n"
-    "  return [];\n"
-    "});"
-)
+nodes.append(supabase_http_node(
+    "33",
+    "Fetch Reminder Candidates",
+    "GET",
+    "/rest/v1/habits",
+    [-1420, 120],
+    [
+        {"name": "is_active", "value": "eq.true"},
+        {"name": "select", "value": "id,name,reminder_times,user_id,users(name,phone,timezone)"}
+    ]
+))
 
 nodes.append({
     "id": "34",
