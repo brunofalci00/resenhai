@@ -1,10 +1,9 @@
-import { SiteHeader } from "@/components/landing/site-header"
 import { HeroSection } from "@/components/landing/hero-section"
-import { ContextSection } from "@/components/landing/context-section"
-import { FeaturesSection } from "@/components/landing/features-section"
+import { BenefitsSection } from "@/components/landing/benefits-section"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
-import { PricingSection } from "@/components/landing/pricing-section"
+import { PricingSimple } from "@/components/landing/pricing-simple"
+import { StickyCtaBar } from "@/components/landing/sticky-cta-bar"
 import { SiteFooter } from "@/components/landing/site-footer"
 
 const checkoutBaseUrl =
@@ -24,26 +23,20 @@ const getCheckoutUrl = (campaign: string) => {
 
 export default function Home() {
   const checkoutHero = getCheckoutUrl("hero")
-  const checkoutHeader = getCheckoutUrl("header")
-  const checkoutTestimonials = getCheckoutUrl("testimonials")
-  const checkoutPricingPrimary = getCheckoutUrl("pricing_primary")
-  const checkoutPricingSecondary = getCheckoutUrl("pricing_secondary")
+  const checkoutPricing = getCheckoutUrl("pricing")
+  const checkoutStickyBar = getCheckoutUrl("sticky_bar")
 
   return (
-    <div className="bg-background text-foreground">
-      <SiteHeader ctaHref={checkoutHeader} ctaLabel="COMEÇAR AGORA" />
+    <div className="bg-white text-foreground">
       <main className="flex flex-col gap-0">
         <HeroSection ctaHref={checkoutHero} />
-        <ContextSection />
-        <FeaturesSection />
+        <BenefitsSection />
         <HowItWorksSection />
-        <TestimonialsSection ctaHref={checkoutTestimonials} />
-        <PricingSection
-          ctaHref={checkoutPricingPrimary}
-          secondaryCtaHref={checkoutPricingSecondary}
-        />
+        <TestimonialsSection />
+        <PricingSimple ctaHref={checkoutPricing} />
       </main>
       <SiteFooter />
+      <StickyCtaBar ctaHref={checkoutStickyBar} />
     </div>
   )
 }

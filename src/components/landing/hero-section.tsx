@@ -1,9 +1,5 @@
 import Image from "next/image"
-import { CheckCircle2, Flame } from "lucide-react"
-
-import { Card } from "@/components/ui/card"
 import { CtaButton } from "@/components/landing/cta-button"
-import { Badge } from "@/components/ui/badge"
 
 interface HeroSectionProps {
   ctaHref: string
@@ -13,49 +9,83 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-28"
+      className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8"
     >
-      <div className="mx-auto grid w-full max-w-7xl gap-16 px-6 pb-24 lg:grid-cols-12 lg:px-8">
-        <div className="space-y-10 lg:col-span-6">
-          <Badge className="rounded-full bg-secondary/15 px-4 py-1 text-secondary">14 dias para virar a chave</Badge>
-          <div className="space-y-6">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              Foquinha IA —
-              <span className="mt-2 block text-slate-700">Transforme a sua vida em 14 dias.</span>
-              <span className="mt-2 block text-secondary">Direto no seu WhatsApp.</span>
-            </h1>
-            <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
-              Organize seus hábitos, melhore sua alimentação, comece a treinar e tire seus objetivos do papel.
-            </p>
-          </div>
-          <div className="flex flex-col items-start gap-4 sm:flex-row">
-            <CtaButton
-              href={ctaHref}
-              label="QUERO USAR A FOQUINHA"
-              className="rounded-full bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
-            />
+      <div className="mx-auto max-w-4xl">
+        {/* Logo */}
+        <div className="mb-8 flex justify-center">
+          <Image
+            src="https://i.ibb.co/Kzr3VMvx/foquiai-logo.png"
+            alt="Foquinha IA"
+            width={80}
+            height={80}
+            className="object-contain"
+          />
+        </div>
+
+        {/* Badge */}
+        <div className="mb-8 flex justify-center">
+          <div className="inline-flex items-center rounded-full bg-secondary/10 px-5 py-2">
+            <span className="text-sm font-semibold text-secondary">
+              Conheça a Foquinha
+            </span>
           </div>
         </div>
 
-        <div className="lg:col-span-6">
-          <Card className="relative flex h-full items-center justify-center overflow-hidden border border-slate-200/70 bg-white shadow-xl">
-            <div className="relative w-full max-w-sm px-6 py-10">
-              <Image
-                src="https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp"
-                alt="Interface da Foquinha IA no WhatsApp"
-                width={600}
-                height={1200}
-                className="w-full object-contain drop-shadow-2xl"
-                priority
-              />
-              <div className="pointer-events-none absolute -right-4 -top-6 hidden size-20 place-items-center rounded-3xl bg-secondary/10 lg:grid">
-                <CheckCircle2 className="size-8 text-secondary" />
-              </div>
-              <div className="pointer-events-none absolute -left-6 -bottom-8 hidden size-16 place-items-center rounded-2xl bg-amber-100 shadow-lg lg:grid">
-                <Flame className="size-8 text-amber-500" />
-              </div>
-            </div>
-          </Card>
+        {/* Headline Principal */}
+        <div className="mb-12 text-center">
+          <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
+            Organize sua vida,
+            <br />
+            <span className="text-slate-700">direto no seu</span>
+            <br />
+            <span className="text-secondary">WhatsApp!</span>
+          </h1>
+
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
+            A Foquinha nasceu pra simplificar sua rotina.
+          </p>
+
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+            Ela registra e organiza todos os seus hábitos, metas e rotina direto no WhatsApp.
+          </p>
+
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+            <span className="font-semibold">Sem apps confusos, sem planilhas chatas, sem perder o controle.</span>
+          </p>
+        </div>
+
+        {/* Imagem WhatsApp - GRANDE */}
+        <div className="mb-12">
+          <div className="relative mx-auto max-w-sm">
+            <Image
+              src="https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp"
+              alt="Interface da Foquinha IA no WhatsApp"
+              width={600}
+              height={1200}
+              className="w-full object-contain drop-shadow-2xl"
+              priority
+            />
+          </div>
+          <p className="mt-6 text-center text-sm font-semibold text-slate-700">
+            Simples assim!
+          </p>
+        </div>
+
+        {/* CTA Principal */}
+        <div className="mb-6 flex justify-center">
+          <CtaButton
+            href={ctaHref}
+            label="Quero ativar a Foquinha"
+            className="w-full rounded-xl bg-[#25D366] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#20BA5A] sm:w-auto"
+          />
+        </div>
+
+        {/* Garantia */}
+        <div className="text-center">
+          <p className="text-sm font-semibold text-secondary">
+            7 dias de garantia!
+          </p>
         </div>
       </div>
     </section>

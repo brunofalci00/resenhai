@@ -1,4 +1,4 @@
-import { ShieldCheck } from "lucide-react"
+import { Coffee, CreditCard, ShieldCheck } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent } from "@/components/ui/card"
@@ -59,39 +59,57 @@ export function PricingSection({ ctaHref, secondaryCtaHref }: PricingSectionProp
                 <div className="text-lg font-medium text-foreground">
                   Mas você leva tudo isso por:
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary">
-                  <ShieldCheck className="size-4" />
-                  Acompanhamento real
-                </div>
               </div>
 
               <div className="space-y-3">
-                <div className="text-sm font-medium text-muted-foreground line-through">De R$287,00</div>
+                <div className="text-sm font-medium text-muted-foreground line-through">De R$29,00/mês</div>
                 <div className="text-5xl font-bold text-foreground">12x de R$ 9,00</div>
                 <div className="text-xl text-muted-foreground">ou R$87 por ano</div>
                 <div className="mx-auto w-16 h-1 bg-secondary rounded-full"></div>
               </div>
 
+              <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+                <div className="flex items-center justify-center gap-2 text-amber-700">
+                  <Coffee className="size-5" />
+                  <span className="text-sm font-semibold">Menos que 1 café por mês!</span>
+                </div>
+                <p className="mt-2 text-xs text-amber-600">
+                  R$ 0,30 por dia para ter sua vida organizada
+                </p>
+              </div>
+
               <div className="space-y-4 text-muted-foreground">
                 <p className="text-lg leading-relaxed">
-                  Por menos do que você gasta em um pedido no iFood por ano, você recebe acompanhamento, organização e evolução real.
+                  Por menos do que você gasta em <strong>um pãozinho com café por mês</strong>, você recebe acompanhamento, organização e evolução real.
                 </p>
                 <p className="font-medium">Tudo isso, de forma segura, fácil e direta no seu WhatsApp.</p>
               </div>
 
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <CreditCard className="size-5 text-secondary" />
+                  <span className="text-sm font-semibold text-slate-700">Formas de pagamento</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600">
+                  <span className="rounded-full bg-white px-3 py-1 font-medium border border-slate-200">💳 Cartão de Crédito</span>
+                  <span className="rounded-full bg-white px-3 py-1 font-medium border border-slate-200">🔐 PIX</span>
+                </div>
+                <p className="mt-2 text-xs text-slate-500">Pagamento 100% seguro via Kiwify</p>
+              </div>
+
               <CtaButton
                 href={ctaHref}
-                label="QUERO COMEÇAR AGORA COM A FOQUINHA IA"
-                className="w-full flex-wrap whitespace-normal rounded-2xl bg-secondary px-6 py-4 text-center text-xs font-bold uppercase leading-tight tracking-wide text-white hover:bg-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 sm:text-sm"
+                label="🚀 SIM! QUERO COMEÇAR AGORA COM 70% OFF"
+                className="w-full flex-wrap whitespace-normal rounded-2xl bg-secondary px-6 py-5 text-center text-xs font-bold uppercase leading-tight tracking-wide text-white hover:scale-105 hover:bg-secondary/90 shadow-2xl shadow-secondary/20 transition-all duration-300 sm:text-sm"
               />
 
               <Separator className="bg-slate-200" />
 
               <Alert className="border-2 border-secondary/30 bg-secondary/5">
                 <ShieldCheck className="size-5 text-secondary" />
-                <AlertTitle className="text-secondary font-semibold">Garantia de 7 dias</AlertTitle>
+                <AlertTitle className="text-secondary font-semibold">✅ Garantia de 7 dias ou seu dinheiro de volta</AlertTitle>
                 <AlertDescription className="text-muted-foreground">
-                  Você pode testar por 7 dias. Se não sentir resultado, cancela sem compromisso. Simples, leve e sem burocracia.
+                  Teste por 7 dias sem compromisso. Se não sentir resultado, devolvemos 100% do valor. Simples, rápido e sem burocracia.
                 </AlertDescription>
               </Alert>
             </CardContent>

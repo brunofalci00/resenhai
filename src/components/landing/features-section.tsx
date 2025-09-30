@@ -46,10 +46,10 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            🤖 O que é a Foquinha?
+            🤖 O que a Foquinha faz por você?
           </h2>
           <p className="mt-6 text-xl text-muted-foreground">
-            Uma assistente de IA que conversa com você no WhatsApp e te ajuda a:
+            Sua assistente pessoal no WhatsApp que te ajuda a:
           </p>
         </div>
         <div className="grid gap-8 sm:grid-cols-2">

@@ -28,13 +28,13 @@ export function ContextSection() {
       <div className="px-6 py-16 md:px-10 lg:px-14">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <h2 className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl lg:font-bold lg:text-secondary">
-            Você não precisa fazer tudo sozinho.
+            Você não precisa de mais força de vontade.
           </h2>
           <h3 className="mt-4 text-2xl font-medium tracking-tight text-foreground md:text-3xl">
-            A Foquinha IA foi criada pra te ajudar com isso.
+            Você precisa de um sistema que funciona no piloto automático.
           </h3>
           <p className="mt-6 text-lg text-muted-foreground">
-            Com leveza, praticidade e planejamento inteligente, ela te apoia na criação de uma rotina realista, personalizada e possível.
+            A Foquinha IA te lembra, reorganiza e mantém você no caminho — mesmo nos dias difíceis. Com leveza, praticidade e planejamento inteligente.
           </p>
         </div>
 

@@ -36,7 +36,7 @@ export function SiteHeader({ ctaHref, ctaLabel }: SiteHeaderProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur">
+    <header className="fixed top-[72px] z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 transition-[height] lg:px-8">
         <Link href="#hero" className="flex items-center gap-3" aria-label="Foquinha IA - Início">
           <div className="relative size-12 overflow-hidden rounded-2xl bg-secondary/10 p-1">
