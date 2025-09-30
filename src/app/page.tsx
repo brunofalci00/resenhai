@@ -7,20 +7,41 @@ import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { PricingSection } from "@/components/landing/pricing-section"
 import { SiteFooter } from "@/components/landing/site-footer"
 
-const WHATSAPP_LINK =
-  "https://wa.me/5500000000000?text=Oi%20quero%20come%C3%A7ar%20com%20a%20Foquinha" // TODO: Atualize com o número real do WhatsApp.
+const checkoutBaseUrl =
+  process.env.NEXT_PUBLIC_KIWIFY_CHECKOUT_URL ?? "https://pay.kiwify.com.br/lzUck6P"
+
+const getCheckoutUrl = (campaign: string) => {
+  try {
+    const url = new URL(checkoutBaseUrl)
+    url.searchParams.set("utm_source", "landing")
+    url.searchParams.set("utm_medium", "cta")
+    url.searchParams.set("utm_campaign", campaign)
+    return url.toString()
+  } catch {
+    return checkoutBaseUrl
+  }
+}
 
 export default function Home() {
+  const checkoutHero = getCheckoutUrl("hero")
+  const checkoutHeader = getCheckoutUrl("header")
+  const checkoutTestimonials = getCheckoutUrl("testimonials")
+  const checkoutPricingPrimary = getCheckoutUrl("pricing_primary")
+  const checkoutPricingSecondary = getCheckoutUrl("pricing_secondary")
+
   return (
     <div className="bg-background text-foreground">
-      <SiteHeader ctaHref={WHATSAPP_LINK} ctaLabel="COMEÇAR AGORA" />
+      <SiteHeader ctaHref={checkoutHeader} ctaLabel="COMEÇAR AGORA" />
       <main className="flex flex-col gap-0">
-        <HeroSection ctaHref={WHATSAPP_LINK} />
+        <HeroSection ctaHref={checkoutHero} />
         <ContextSection />
         <FeaturesSection />
         <HowItWorksSection />
-        <TestimonialsSection ctaHref={WHATSAPP_LINK} />
-        <PricingSection ctaHref={WHATSAPP_LINK} />
+        <TestimonialsSection ctaHref={checkoutTestimonials} />
+        <PricingSection
+          ctaHref={checkoutPricingPrimary}
+          secondaryCtaHref={checkoutPricingSecondary}
+        />
       </main>
       <SiteFooter />
     </div>

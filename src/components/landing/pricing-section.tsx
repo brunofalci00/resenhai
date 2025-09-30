@@ -7,9 +7,10 @@ import { CtaButton } from "@/components/landing/cta-button"
 
 interface PricingSectionProps {
   ctaHref: string
+  secondaryCtaHref?: string
 }
 
-export function PricingSection({ ctaHref }: PricingSectionProps) {
+export function PricingSection({ ctaHref, secondaryCtaHref }: PricingSectionProps) {
   return (
     <section className="py-24">
       <div className="mx-auto max-w-7xl px-6 text-center lg:px-8">
@@ -65,8 +66,9 @@ export function PricingSection({ ctaHref }: PricingSectionProps) {
               </div>
 
               <div className="space-y-3">
-                <div className="text-5xl font-bold text-foreground">12x de R$ 6,59</div>
-                <div className="text-xl text-muted-foreground">ou R$79 por ano</div>
+                <div className="text-sm font-medium text-muted-foreground line-through">De R$287,00</div>
+                <div className="text-5xl font-bold text-foreground">12x de R$ 9,00</div>
+                <div className="text-xl text-muted-foreground">ou R$87 por ano</div>
                 <div className="mx-auto w-16 h-1 bg-secondary rounded-full"></div>
               </div>
 
@@ -103,7 +105,7 @@ export function PricingSection({ ctaHref }: PricingSectionProps) {
               A Foquinha IA não é sobre cobrança. É sobre clareza, constância e evolução no seu ritmo. Ela vai estar ali pra te lembrar do que importa — e te ajudar a manter o que você decidiu começar.
             </p>
             <CtaButton
-              href={ctaHref}
+              href={secondaryCtaHref ?? ctaHref}
               label="COMEÇAR AGORA COM A FOQUINHA IA"
               className="flex-wrap whitespace-normal rounded-full bg-primary px-6 py-3 text-center text-xs font-semibold leading-tight tracking-wide text-primary-foreground hover:bg-primary/90 sm:text-sm"
             />

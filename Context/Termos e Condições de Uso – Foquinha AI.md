@@ -36,8 +36,8 @@ Ao adquirir e utilizar o Foquinha AI, você declara que leu, compreendeu e conco
 ## 2. Planos e Pagamento
 
 2.1. **Planos Disponíveis:**
-    a) Plano Anual: R$ 79,00 (setenta e nove reais) por 12 meses
-    b) Plano Mensal: 12x de R$ 6,59 (seis reais e cinquenta e nove centavos)
+    a) Plano Anual: R$ 87,00 (oitenta e sete reais) por 12 meses
+    b) Plano Mensal: 12x de R$ 9,00 (nove reais)
 
 2.2. **Processamento de Pagamento:** Os pagamentos são processados através da plataforma Kiwify, que possui suas próprias políticas de segurança e privacidade.
 
@@ -169,4 +169,3 @@ Ao adquirir e utilizar o Foquinha AI, você declara ter lido, compreendido e con
 **Para suporte e dúvidas:**
 E-mail: [INSERIR EMAIL DE SUPORTE]
 WhatsApp: [INSERIR NÚMERO DE SUPORTE SE HOUVER]
-

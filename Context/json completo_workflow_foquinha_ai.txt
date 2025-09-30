@@ -1,0 +1,978 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c0e9b576-2cc9-4e8c-9b74-9d2418bd10a9",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        800
+      ],
+      "webhookId": "adc99b1a-ffc4-4a0c-ba1a-442d13a00483"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $json.body || $json;\ntry {\n  const entry = (b.entry||[])[0]||{};\n  const change = (entry.changes||[])[0]||{};\n  const value = change.value||{};\n  const msg = (value.messages||[])[0]||{};\n  const contact = (value.contacts||[])[0]||{};\n  const from = msg.from || b.from || '';\n  const name = (contact.profile && contact.profile.name) || contact.profile?.name || contact?.profile?.name || contact?.name || '';\n  const text = (msg.text && msg.text.body) || msg.text?.body || msg.body || '';\n  return [{ json: { phone: from, profile_name: name, message: text, raw: b } }];\n} catch (e) {\n  return [{ json: { phone: '', profile_name: '', message: '', raw: b, error: e.message } }];\n}"
+      },
+      "id": "3bffe3ad-6b63-4617-8648-cfb213453126",
+      "name": "Parse Incoming WhatsApp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, phone, name, onboarding_completed, onboarding_step, goals, bad_habits, financial_situation, available_times\nFROM users WHERE phone = {{$json.phone}}::text;",
+        "additionalFields": {}
+      },
+      "id": "c80087ab-5b5f-475d-af0a-ba0c93f238c5",
+      "name": "Postgres - Load User",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        800
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "=={{ $json.rows ? $json.rows.length : 0 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "rightValue": 0,
+              "id": "45b18da3-7a56-4344-9108-a53a81a1296b"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "25b23bdf-0dc4-4ea7-aeb2-0e2a68e0bc0d",
+      "name": "User Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO users (phone, name, onboarding_step) VALUES ({{$('Parse Incoming WhatsApp').item.json.phone}}::text, {{$json.profile_name ? `'` + $json.profile_name.replace(/'/g, \"''\") + `'` : 'NULL'}}, 1) RETURNING *;",
+        "additionalFields": {}
+      },
+      "id": "a6e038cc-0aa7-414a-bcbf-6e9c23eb1694",
+      "name": "Postgres - Create User (Step 0)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        80,
+        592
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const exists = $items(\"User Exists?\")[0].json;\nlet row = null;\nif (exists && exists.data && exists.data.length){ row = exists.data[0]; }\nif (!row){ // from create\n  row = $items(\"Postgres - Create User (Step 0)\")[0].json.rows[0];\n}\nreturn [{ json: row }];"
+      },
+      "id": "43c6ca23-3bc9-4440-9ae7-45a67c5c1c2f",
+      "name": "Normalize UserData",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT message, sender, timestamp, context FROM conversations WHERE user_id = {{$json.id}} ORDER BY timestamp DESC LIMIT 10;",
+        "additionalFields": {}
+      },
+      "id": "87296775-0561-45a7-818f-116704f2da03",
+      "name": "Postgres - Load Conversation History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        256,
+        1024
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, name, type, frequency, reminder_times FROM habits WHERE user_id = {{$json.id}} AND is_active = true;",
+        "additionalFields": {}
+      },
+      "id": "e7c75d38-2ce5-46ac-924a-bd41f31fada0",
+      "name": "Postgres - Active Habits",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1152
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT habit_id, completed, date, completed_at, notes FROM habit_logs WHERE user_id = {{$json.id}} AND date = CURRENT_DATE;",
+        "additionalFields": {}
+      },
+      "id": "9e05cae3-2b46-4c76-a197-8092f19c4d30",
+      "name": "Postgres - Today Progress",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        224,
+        1264
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "maxTokens": -800,
+          "temperature": 0.7
+        }
+      },
+      "id": "f923d8e0-583d-4cff-a0c2-9716a4bae77c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        1328
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "RtxPX1hK1qfcpXGk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ $('Parse Incoming WhatsApp').item.json.message }}",
+        "options": {
+          "systemMessage": "=={{ $('SystemPrompt').item.json.prompt }}"
+        }
+      },
+      "id": "4eee2e28-c596-43c3-9716-58626afd795f",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1616,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO conversations (user_id, message, sender, context)\nVALUES (\n  {{$('Normalize UserData').item.json.id}},\n  {{ $('Parse Incoming WhatsApp').item.json.message\n      ? \"'\" + $('Parse Incoming WhatsApp').item.json.message.replace(/'/g, \"''\") + \"'\"\n      : \"''\"\n  }},\n  'user',\n  '{}'\n);\n",
+        "additionalFields": {}
+      },
+      "id": "ab50cf75-b7ee-4c2f-b141-70c4c1989a20",
+      "name": "Postgres - Save User Message",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        496,
+        640
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO conversations (user_id, message, sender, context)\nVALUES (\n  {{$('Normalize UserData').item.json.id}},\n  {{\n    $('AI Agent').item.json.output\n      ? \"'\" + $('AI Agent').item.json.output.replace(/'/g, \"''\") + \"'\"\n      : \"''\"\n  }},\n  'assistant',\n  '{\"action\":\"reply\"}'\n);\n",
+        "additionalFields": {}
+      },
+      "id": "edca184b-cf2f-4f1a-92d8-1a0e554f80c5",
+      "name": "Postgres - Save Assistant Message",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        832
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $('Parse Incoming WhatsApp').item.json.phone }}",
+        "textBody": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {}
+      },
+      "id": "232518cd-42f6-4804-bf65-b80326950e02",
+      "name": "WhatsApp Business Cloud - Send",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        1104
+      ],
+      "webhookId": "e8e926d1-0240-4c39-966e-32dc49b20888",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "fuw0R2mwj1dReu6g",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true}",
+        "options": {}
+      },
+      "id": "bf2c7192-af62-4aaf-9ee2-e61e290cacaa",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2256,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "3279f976-e8eb-442a-a7f9-f3ce97f6cf61",
+      "name": "Cron (30 min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        1792
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  h.id,\n  h.name,\n  h.reminder_times,\n  u.id   AS user_id,\n  u.phone,\n  COALESCE(u.name,'amigo(a)') AS user_name\nFROM public.habits h\nJOIN public.users  u ON h.user_id = u.id\nWHERE h.is_active = TRUE\n  AND u.onboarding_completed = TRUE\n  AND date_trunc('minute', (now() AT TIME ZONE COALESCE(u.timezone,'America/Sao_Paulo')))::time = ANY(h.reminder_times)\n  AND NOT EXISTS (\n    SELECT 1\n    FROM public.habit_logs hl\n    WHERE hl.habit_id = h.id\n      AND hl.user_id  = u.id\n      AND hl.date     = CURRENT_DATE\n      AND hl.completed = TRUE\n  );\n",
+        "additionalFields": {}
+      },
+      "id": "c4e3533b-4360-4d55-86ec-b632ed12407d",
+      "name": "Postgres - Get Pending Reminders",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        1792
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "id": "14e97a48-8469-42fb-bde7-3aafee59a90f",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        176,
+        1792
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "textBody": "=Oi {{$json.user_name}}! Hora do seu {{$json.name}}! 💪 Lembre-se: cada pequeno passo te aproxima do seu objetivo. Bora lá! Avisa quando finalizar :)",
+        "additionalFields": {}
+      },
+      "id": "4394b98f-3157-44ba-8430-d8fe2b541922",
+      "name": "WhatsApp - Send Reminder",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        400,
+        1792
+      ],
+      "webhookId": "c4b41e27-2920-46e4-9651-0073df756889",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO conversations (user_id, message, sender, context) VALUES ({{$json.user_id}}, 'REMINDER: {{$json.name}}', 'assistant', '{\"type\":\"reminder\"}');",
+        "additionalFields": {}
+      },
+      "id": "7987863f-f922-4ca3-848c-1b1082ba6436",
+      "name": "Postgres - Log Reminder",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1776
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('Normalize UserData').item.json.onboarding_completed }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "isFalse"
+              }
+            },
+            {
+              "leftValue": "={{ $('Normalize UserData').item.json.onboarding_step || 1 }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "rightValue": 6
+            }
+          ],
+          "options": {
+            "version": 2,
+            "typeValidation": "strict"
+          }
+        },
+        "options": {}
+      },
+      "id": "581d89f4-2b94-4be0-9352-98d360db2169",
+      "name": "Onboarding?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "value1": "={{ $('Normalize UserData').item.json.onboarding_step || 1 }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": "1"
+            },
+            {
+              "operation": "equal",
+              "value2": "2"
+            },
+            {
+              "operation": "equal",
+              "value2": "3"
+            },
+            {
+              "operation": "equal",
+              "value2": "4"
+            },
+            {
+              "operation": "equal",
+              "value2": "5"
+            }
+          ]
+        }
+      },
+      "id": "5106a215-3e7d-4a48-bfd6-e3f6994ed014",
+      "name": "Onboarding Step",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        912,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET goals = {{\n  $('Parse Incoming WhatsApp').item.json.message\n    ? \"'\" + $('Parse Incoming WhatsApp').item.json.message.replace(/'/g,\"''\") + \"'\"\n    : \"NULL\"\n}},\n    onboarding_step = 2\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "0bc836ce-2c40-4969-b204-594e4b3daa04",
+      "name": "PG - Step 1 (save goals → step 2)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -160
+      ],
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET bad_habits = {{\n  $('Parse Incoming WhatsApp').item.json.message\n    ? \"'\" + $('Parse Incoming WhatsApp').item.json.message.replace(/'/g,\"''\") + \"'\"\n    : \"NULL\"\n}},\n    onboarding_step = 3\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "debf3630-b743-4a78-aea0-b4bb5737bdb1",
+      "name": "PG - Step 2 (save bad_habits → step 3)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        -16
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET financial_situation = {{\n  $('Parse Incoming WhatsApp').item.json.message\n    ? \"'\" + $('Parse Incoming WhatsApp').item.json.message.replace(/'/g,\"''\") + \"'\"\n    : \"NULL\"\n}},\n    onboarding_step = 4\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "8cea7b81-3199-4207-a50c-96a5bfed145a",
+      "name": "PG - Step 3 (save financial_situation → step 4)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET available_times = {{\n  $('Parse Incoming WhatsApp').item.json.message\n    ? \"'\" + $('Parse Incoming WhatsApp').item.json.message.replace(/'/g,\"''\") + \"'\"\n    : \"NULL\"\n}},\n    onboarding_step = 5\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "9a16cc1d-fa76-40f4-936c-e7327531c75f",
+      "name": "PG - Step 4 (save available_times → step 5)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        256
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET onboarding_completed = true,\n    onboarding_step = 6\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "b41e9914-6c53-4c61-9231-974b6d17dba5",
+      "name": "PG - Step 5 (complete onboarding)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        464
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, phone, name, onboarding_completed, onboarding_step, goals, bad_habits, financial_situation, available_times\\nFROM users\\nWHERE id = {{$('Normalize UserData').item.json.id}};",
+        "additionalFields": {}
+      },
+      "id": "62dc23fd-6e34-4afb-8ed5-849c67a0ee22",
+      "name": "Postgres - Reload User (After Step)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "kozYzTTR7YwcGSMF",
+          "name": "Supabase Foquinha Posgress"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "prompt",
+              "type": "string",
+              "value": "=Você é um assistente de desenvolvimento pessoal amigável, motivador e proativo. Fale em PT-BR, com tom leve, direto e encorajador.\\nSe onboarding_completed for falso, faça UMA pergunta por vez conforme o passo atual. Caso contrário, responda ao contexto, registre confirmações de tarefas e motive o próximo passo.\\n\\n[DADOS DO USUÁRIO]\\n- Nome: {{ ( ($items('Postgres - Reload User (After Step)')[0].json.rows || [])[0] || $('Normalize UserData').item.json ).name || $('Parse Incoming WhatsApp').item.json.profile_name || 'Sem nome' }}\\n- Situação Financeira: {{ ( ($items('Postgres - Reload User (After Step)')[0].json.rows || [])[0] || $('Normalize UserData').item.json ).financial_situation || 'não informada' }}\\n- Horários Disponíveis: {{ ( ($items('Postgres - Reload User (After Step)')[0].json.rows || [])[0] || $('Normalize UserData').item.json ).available_times || 'não informados' }}\\n- Hábitos a Construir: {{ ( ($items('Postgres - Reload User (After Step)')[0].json.rows || [])[0] || $('Normalize UserData').item.json ).goals || 'não definidos' }}\\n- Hábitos a Abandonar: {{ ( ($items('Postgres - Reload User (After Step)')[0].json.rows || [])[0] || $('Normalize UserData').item.json ).bad_habits || 'não definidos' }}\\n\\n[HISTÓRICO (últimas 10)]\\n{{  ($items('Postgres - Load Conversation History')[0].json.rows || [])\\n    .map(r => `- [${r.timestamp}] ${r.sender}: ${r.message}`)\\n    .join('\\n') || '— sem histórico —'  }}\\n\\n[HÁBITOS ATIVOS]\\n{{  ($items('Postgres - Active Habits')[0].json.rows || [])\\n    .map(h => `- ${h.name} (${h.frequency})`)\\n    .join('\\n') || '— nenhum ativo —'  }}\\n\\n[PROGRESSO HOJE]\\n{{  ($items('Postgres - Today Progress')[0].json.rows || [])\\n    .map(p => `- habit ${p.habit_id}: ${p.completed ? 'ok' : 'pendente'}`)\\n    .join('\\n') || '— sem logs —'  }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae64b943-3573-494d-a092-16c8408ff199",
+      "name": "SystemPrompt (Reloaded)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        784
+      ]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Incoming WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Incoming WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Load User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Load User": {
+      "main": [
+        [
+          {
+            "node": "User Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Exists?": {
+      "main": [
+        [
+          {
+            "node": "Normalize UserData",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres - Create User (Step 0)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Create User (Step 0)": {
+      "main": [
+        [
+          {
+            "node": "Normalize UserData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize UserData": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Load Conversation History",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres - Save User Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Load Conversation History": {
+      "main": [
+        [
+          {
+            "node": "SystemPrompt (Reloaded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Active Habits": {
+      "main": [
+        [
+          {
+            "node": "SystemPrompt (Reloaded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Today Progress": {
+      "main": [
+        [
+          {
+            "node": "SystemPrompt (Reloaded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud - Send",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres - Save Assistant Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Save User Message": {
+      "main": [
+        [
+          {
+            "node": "Onboarding?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Business Cloud - Send": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron (30 min)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Get Pending Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Get Pending Reminders": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp - Send Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp - Send Reminder": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Log Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onboarding?": {
+      "main": [
+        [
+          {
+            "node": "Onboarding Step",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SystemPrompt (Reloaded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onboarding Step": {
+      "main": [
+        [
+          {
+            "node": "PG - Step 1 (save goals → step 2)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Step 2 (save bad_habits → step 3)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Step 3 (save financial_situation → step 4)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Step 4 (save available_times → step 5)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Step 5 (complete onboarding)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Step 1 (save goals → step 2)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Reload User (After Step)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Step 2 (save bad_habits → step 3)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Reload User (After Step)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Step 3 (save financial_situation → step 4)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Reload User (After Step)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Step 4 (save available_times → step 5)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Reload User (After Step)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Step 5 (complete onboarding)": {
+      "main": [
+        [
+          {
+            "node": "Postgres - Reload User (After Step)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - Reload User (After Step)": {
+      "main": [
+        [
+          {
+            "node": "SystemPrompt (Reloaded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SystemPrompt (Reloaded)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "ab8da8b6a593b6e71c9c78e086a05375ee772a86e70f7234d4d36c330d133fde"
+  }
+}

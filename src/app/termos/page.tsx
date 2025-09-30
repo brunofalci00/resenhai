@@ -76,8 +76,8 @@ export default function TermsPage() {
             <div className="text-sm leading-relaxed text-muted-foreground">
               <p className="font-semibold">2.1. Planos Disponíveis:</p>
               <ul className="mt-2 list-disc space-y-1 pl-6">
-                <li>Plano Anual: R$ 79,00 (setenta e nove reais) por 12 meses</li>
-                <li>Plano Mensal: 12x de R$ 6,59 (seis reais e cinquenta e nove centavos)</li>
+                <li>Plano Anual: R$ 87,00 (oitenta e sete reais) por 12 meses</li>
+                <li>Plano Mensal: 12x de R$ 9,00 (nove reais)</li>
               </ul>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">

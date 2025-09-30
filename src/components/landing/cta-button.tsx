@@ -14,7 +14,7 @@ interface CtaButtonProps extends React.ComponentProps<typeof Button> {
 export function CtaButton({ href, label, icon, className, ...props }: CtaButtonProps) {
   return (
     <Button asChild className={className} {...props}>
-      <Link href={href} aria-label={label}>
+      <Link href={href} aria-label={label} prefetch={false}>
         <span>{label}</span>
         {icon ? <span className="size-4">{icon}</span> : null}
       </Link>
