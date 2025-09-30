@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:docs.n8n.io)"
+      "WebFetch(domain:docs.n8n.io)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
