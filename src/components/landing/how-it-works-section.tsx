@@ -38,7 +38,7 @@ export function HowItWorksSection() {
               <span className="text-2xl font-bold">2</span>
             </div>
             <h3 className="mb-3 text-center text-xl font-bold text-slate-900">
-              Mande um "oi"
+              Mande um &quot;oi&quot;
             </h3>
             <p className="mb-6 text-center text-base text-slate-700">
               A Foquinha te dá as boas-vindas e já pergunta como você quer organizar sua rotina — fácil e rápido.
