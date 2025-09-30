@@ -15,31 +15,37 @@ const steps = [
     number: "1",
     title: "Você envia um \"Oi\" no WhatsApp",
     description: "Início rápido, sem burocracia.",
+    image: "https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp",
   },
   {
     number: "2",
     title: "A Foquinha entende você",
     description: "Hábitos, metas e estilo de vida.",
+    image: "https://i.ibb.co/ccvrJvbP/foquinha-entende-voce.webp",
   },
   {
     number: "3",
     title: "Plano personalizado",
     description: "Roteiro claro e possível para seguir.",
+    image: "https://i.ibb.co/9kdmVsMs/Plano-personalizado.webp",
   },
   {
     number: "4",
     title: "Lembretes e tarefas diárias",
     description: "Orientações pontuais para manter o ritmo.",
+    image: "https://i.ibb.co/RpxYdP13/Lembretes-e-tarefas-di-rias.webp",
   },
   {
     number: "5",
     title: "Reorganiza quando preciso",
     description: "Adaptação quando a rotina muda.",
+    image: "https://i.ibb.co/ZRKFpdV9/Reorganiza-quando-preciso.webp",
   },
   {
     number: "6",
     title: "Relatório semanal",
     description: "Progresso semanal e mensal no seu WhatsApp.",
+    image: "https://i.ibb.co/RTrL3N3m/Relatorio.webp",
   },
 ] as const
 
@@ -72,8 +78,6 @@ const outcomes = [
 ] as const
 
 export function HowItWorksSection() {
-  const mockImage = "https://i.ibb.co/fVgGDsrB/14.png"
-
   const StepCard = ({
     step,
   }: {
@@ -90,13 +94,13 @@ export function HowItWorksSection() {
             <p className="text-sm text-muted-foreground">{step.description}</p>
           </div>
         </div>
-        <div className="relative mt-auto overflow-hidden rounded-3xl border border-slate-200/60 bg-slate-50">
+        <div className="relative mt-auto overflow-hidden rounded-3xl bg-white">
           <Image
-            src={mockImage}
+            src={step.image}
             alt={`Interface Foquinha - passo ${step.number}`}
-            width={340}
-            height={640}
-            className="w-full object-contain"
+            width={360}
+            height={720}
+            className="w-full object-contain drop-shadow-xl"
           />
         </div>
       </CardContent>
