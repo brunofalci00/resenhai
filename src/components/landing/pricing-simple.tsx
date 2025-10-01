@@ -99,7 +99,7 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-secondary/10 px-6 py-3">
               <Shield className="size-5 text-secondary" />
               <span className="text-sm font-bold text-secondary">
-                GARANTIA! Experimente o Porquim por 7 dias.
+                GARANTIA! Experimente a Foquinha por 7 dias.
               </span>
             </div>
             <p className="mt-4 text-sm text-slate-600">
