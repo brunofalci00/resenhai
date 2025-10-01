@@ -55,10 +55,10 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
               </p>
               <div className="mb-4">
                 <span className="text-5xl font-bold text-slate-900">12x</span>
-                <span className="ml-2 text-5xl font-bold text-secondary">R$9,00</span>
+                <span className="ml-2 text-5xl font-bold text-secondary">R$5,90</span>
               </div>
               <p className="text-sm text-slate-600">
-                ou <span className="font-semibold text-secondary">R$87</span> por ano
+                ou <span className="font-semibold text-secondary">R$57</span> por ano
               </p>
             </div>
 
