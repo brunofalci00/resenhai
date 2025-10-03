@@ -32,7 +32,7 @@ export const analytics = {
   },
 
   // Evento genérico
-  track: (eventName: string, properties?: Record<string, any>) => {
+  track: (eventName: string, properties?: Record<string, unknown>) => {
     posthog.capture(eventName, {
       ...properties,
       timestamp: new Date().toISOString(),
