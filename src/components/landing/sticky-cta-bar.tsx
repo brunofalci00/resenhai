@@ -36,7 +36,7 @@ export function StickyCtaBar({ ctaHref }: StickyCtaBarProps) {
                 ⚡ Oferta especial por tempo limitado
               </p>
               <p className="text-xs text-white/90 sm:text-sm">
-                70% OFF - Apenas <span className="font-bold">R$ 9/mês</span>
+                70% OFF - Somente 10 acessos
               </p>
             </div>
           </div>
