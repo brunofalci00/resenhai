@@ -1,10 +1,16 @@
+'use client'
+
+import { useEffect } from 'react'
 import { HeroSection } from "@/components/landing/hero-section"
+import { ProblemSection } from "@/components/landing/problem-section"
 import { BenefitsSection } from "@/components/landing/benefits-section"
+import { SecuritySection } from "@/components/landing/security-section"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { PricingSimple } from "@/components/landing/pricing-simple"
 import { StickyCtaBar } from "@/components/landing/sticky-cta-bar"
 import { SiteFooter } from "@/components/landing/site-footer"
+import { analytics } from '@/lib/analytics'
 
 const checkoutBaseUrl =
   process.env.NEXT_PUBLIC_KIWIFY_CHECKOUT_URL ?? "https://pay.kiwify.com.br/lzUck6P"
@@ -23,15 +29,22 @@ const getCheckoutUrl = (campaign: string) => {
 
 export default function Home() {
   const checkoutHero = getCheckoutUrl("hero")
+  const checkoutBenefits = getCheckoutUrl("benefits")
   const checkoutPricing = getCheckoutUrl("pricing")
   const checkoutStickyBar = getCheckoutUrl("sticky_bar")
+
+  useEffect(() => {
+    // Track landing page view on mount
+    analytics.trackLandingPageView()
+  }, [])
 
   return (
     <div className="bg-white text-foreground">
       <main className="flex flex-col gap-0">
         <HeroSection ctaHref={checkoutHero} />
-        <BenefitsSection />
-        <HowItWorksSection />
+        <ProblemSection />
+        <BenefitsSection ctaHref={checkoutBenefits} />
+        <SecuritySection />
         <TestimonialsSection />
         <PricingSimple ctaHref={checkoutPricing} />
       </main>

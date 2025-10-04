@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { CtaButton } from "@/components/landing/cta-button"
+import { SectionTracker } from "@/components/analytics/section-tracker"
 
 interface HeroSectionProps {
   ctaHref: string
@@ -7,11 +8,12 @@ interface HeroSectionProps {
 
 export function HeroSection({ ctaHref }: HeroSectionProps) {
   return (
-    <section
-      id="hero"
-      className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8"
-    >
-      <div className="mx-auto max-w-4xl">
+    <SectionTracker sectionId="hero">
+      <section
+        id="hero"
+        className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto max-w-4xl">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
           <Image
@@ -35,23 +37,11 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Headline Principal */}
         <div className="mb-12 text-center">
           <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Organize sua vida,
-            <br />
-            <span className="text-slate-700">direto no seu</span>
-            <br />
-            <span className="text-secondary">WhatsApp!</span>
+            Organize sua vida direto no WhatsApp.
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
-            A Foquinha nasceu pra simplificar sua rotina.
-          </p>
-
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
-            Ela registra e organiza todos os seus hábitos, metas e rotina direto no WhatsApp.
-          </p>
-
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
-            <span className="font-semibold">Sem apps confusos, sem planilhas chatas, sem perder o controle.</span>
+            A Foquinha é uma IA simples que monta sua rotina, lembra seus compromissos e te dá mais tempo livre.
           </p>
         </div>
 
@@ -76,8 +66,9 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         <div className="mb-6 flex justify-center">
           <CtaButton
             href={ctaHref}
-            label="Quero ativar a Foquinha"
-            className="w-full rounded-xl bg-[#25D366] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#20BA5A] sm:w-auto"
+            label="Quero minha rotina no zap"
+            trackingLocation="hero"
+            className="w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f] sm:w-auto"
           />
         </div>
 
@@ -87,7 +78,8 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
             7 dias de garantia!
           </p>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </SectionTracker>
   )
 }

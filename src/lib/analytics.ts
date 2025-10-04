@@ -1,17 +1,27 @@
 import posthog from 'posthog-js'
 
 export const analytics = {
-  // Eventos de conversão
-  trackCTAClick: (location: string) => {
-    posthog.capture('cta_clicked', {
-      location,
+  // Eventos de visualização de seções (para funil)
+  trackSectionViewed: (section: 'hero' | 'problem' | 'solution' | 'security' | 'testimonials' | 'pricing') => {
+    posthog.capture('section_viewed', {
+      section,
       timestamp: new Date().toISOString(),
     })
   },
 
-  trackWhatsAppClick: (source: string) => {
-    posthog.capture('whatsapp_clicked', {
-      source,
+  // Eventos de clique nos CTAs (para conversão)
+  trackCheckoutClick: (location: 'hero' | 'benefits' | 'pricing_card' | 'pricing_final' | 'sticky_bar', campaign: string) => {
+    posthog.capture('checkout_clicked', {
+      location,
+      campaign,
+      destination: 'kiwify',
+      timestamp: new Date().toISOString(),
+    })
+  },
+
+  // Evento de início de sessão
+  trackLandingPageView: () => {
+    posthog.capture('landing_page_viewed', {
       timestamp: new Date().toISOString(),
     })
   },
@@ -20,13 +30,6 @@ export const analytics = {
   trackScrollDepth: (depth: number) => {
     posthog.capture('scroll_depth', {
       depth,
-      timestamp: new Date().toISOString(),
-    })
-  },
-
-  trackSectionView: (section: string) => {
-    posthog.capture('section_viewed', {
-      section,
       timestamp: new Date().toISOString(),
     })
   },

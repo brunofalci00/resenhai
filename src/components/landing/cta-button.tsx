@@ -10,16 +10,18 @@ interface CtaButtonProps extends React.ComponentProps<typeof Button> {
   href: string
   label: string
   icon?: React.ReactNode
+  trackingLocation?: 'hero' | 'benefits' | 'pricing_card' | 'pricing_final' | 'sticky_bar'
 }
 
-export function CtaButton({ href, label, icon, className, ...props }: CtaButtonProps) {
+export function CtaButton({ href, label, icon, className, trackingLocation, ...props }: CtaButtonProps) {
   const handleClick = () => {
-    // Track CTA click
-    analytics.trackCTAClick(label)
+    // Track checkout click com location e campaign
+    if (trackingLocation) {
+      // Extrai o campaign da URL (utm_campaign)
+      const url = new URL(href)
+      const campaign = url.searchParams.get('utm_campaign') || 'unknown'
 
-    // Track WhatsApp click if it's a WhatsApp link
-    if (href.includes('wa.me') || href.includes('whatsapp')) {
-      analytics.trackWhatsAppClick(label)
+      analytics.trackCheckoutClick(trackingLocation, campaign)
     }
   }
 
