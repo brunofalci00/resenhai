@@ -66,7 +66,7 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
             Como funciona? Rotina no WhatsApp.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
-            Você manda um "Oi" e a Foquinha faz o resto: entende sua rotina e monta tudo de forma simples e rápida.
+            Você manda um &quot;Oi&quot; e a Foquinha faz o resto: entende sua rotina e monta tudo de forma simples e rápida.
           </p>
           <p className="mx-auto mt-2 max-w-2xl text-base text-slate-600">
             Você só responde. Ela lembra, cobra e te mostra o progresso.
