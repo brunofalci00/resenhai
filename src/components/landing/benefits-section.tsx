@@ -9,32 +9,32 @@ import { SectionTracker } from "@/components/analytics/section-tracker"
 const benefits = [
   {
     title: "Você envia um 'Oi' no WhatsApp",
-    description: "Início rápido, sem burocracia.",
+    description: "Início rápido, sem burocracia. É só começar.",
     image: "https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp",
   },
   {
     title: "A Foquinha entende você",
-    description: "Hábitos, metas e estilo de vida.",
+    description: "Ela pergunta sobre seus hábitos, metas e estilo de vida.",
     image: "https://i.ibb.co/ccvrJvbP/foquinha-entende-voce.webp",
   },
   {
     title: "Plano personalizado",
-    description: "Roteiro claro e possível para seguir.",
+    description: "Em minutos, você tem um roteiro claro e possível de seguir.",
     image: "https://i.ibb.co/9kdmVsMs/Plano-personalizado.webp",
   },
   {
     title: "Lembretes e tarefas diárias",
-    description: "Orientações pontuais para manter o ritmo.",
+    description: "Ela te manda mensagem, pergunta como foi, te dá orientações pontuais.",
     image: "https://i.ibb.co/RpxYdP13/Lembretes-e-tarefas-di-rias.webp",
   },
   {
     title: "Reorganiza quando preciso",
-    description: "Adaptação quando a rotina muda.",
+    description: "Se você sair da linha, ela reorganiza tudo sem dó nem piedade.",
     image: "https://i.ibb.co/ZRKFpdV9/Reorganiza-quando-preciso.webp",
   },
   {
     title: "Relatório semanal",
-    description: "Progresso semanal e mensal no seu WhatsApp.",
+    description: "Fim de semana? Tem relatório no seu zap. Fim de mês? Tem de novo.",
     image: "https://i.ibb.co/RTrL3N3m/Relatorio.webp",
   },
 ]
@@ -63,10 +63,16 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
         {/* Título */}
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Sua rotina, de um jeito simples: no WhatsApp.
+            Como funciona? Rotina no WhatsApp.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
-            A Foquinha foi criada para simplificar sua vida. Ela conversa com você pelo zap, monta sua rotina, lembra seus compromissos e envia relatórios semanais. Você só responde — ela faz o resto.
+            Você manda um "Oi" e a Foquinha faz o resto: entende sua rotina e monta tudo de forma simples e rápida.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-base text-slate-600">
+            Você só responde. Ela lembra, cobra e te mostra o progresso.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-base font-semibold italic text-slate-700">
+            É como ter uma secretária pessoal na palma da mão. Sem esforço, sem desculpa.
           </p>
         </div>
 
@@ -133,25 +139,31 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Tudo no WhatsApp, onde você já está.
+                Tudo no WhatsApp — onde você já vive
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Rotina e hábitos organizados automaticamente.
+                Rotina automática com lembretes
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Lembretes diários sem precisar instalar apps.
+                Relatórios semanais com seu progresso
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Relatórios semanais para acompanhar seu progresso.
+                Suporte direto no zap
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="size-6 flex-shrink-0 text-secondary" />
+              <span className="text-base text-slate-700">
+                Você só responde. Ela cuida do resto.
               </span>
             </div>
           </div>
@@ -162,7 +174,7 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
           <div className="mt-12 flex justify-center">
             <CtaButton
               href={ctaHref}
-              label="Quero minha rotina no zap"
+              label="Começar agora"
               trackingLocation="benefits"
               className="w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f] sm:w-auto"
             />

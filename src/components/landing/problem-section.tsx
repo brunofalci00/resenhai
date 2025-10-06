@@ -21,7 +21,7 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Metas ficam no papel
+                Você escreve meta, mas não faz
               </p>
             </div>
 
@@ -32,7 +32,7 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Planners abandonados
+                Compra planner e larga em 3 dias
               </p>
             </div>
 
@@ -43,17 +43,17 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Apps não viram hábito
+                Baixa app e nunca abre de novo
               </p>
             </div>
           </div>
 
           <div className="rounded-2xl bg-gradient-to-r from-red-50 to-orange-50 p-6 shadow-sm">
             <p className="text-lg font-bold text-slate-800">
-              O resultado?
+              E aí?
             </p>
             <p className="mt-2 text-base text-slate-700">
-              Falta de tempo, atrasos e estresse diário.
+              Mais um mês acaba. Mais uma vez você sente que tá perdendo tempo. Mais uma vez a ansiedade vence.
             </p>
           </div>
         </div>

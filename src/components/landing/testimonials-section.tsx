@@ -4,22 +4,22 @@ import { SectionTracker } from "@/components/analytics/section-tracker"
 const testimonials = [
   {
     name: "Juliana R.",
-    role: "estudante universitária",
+    role: "23 anos",
     quote:
-      "Nunca consegui manter uma rotina de estudos e treinos. A Foquinha me ajuda a organizar tudo sem pressão. Finalmente me sinto no controle!",
+      "Minha cabeça vivia a mil. Acordava atrasada, dormia frustrada. A Foquinha me trouxe calma, rotina e orgulho.",
     image: "https://i.ibb.co/wF2zkBZt/julia-psicologa.webp",
   },
   {
     name: "João S.",
-    role: "profissional de marketing",
-    quote: "Testei vários apps de produtividade e nada funcionava. A Foquinha é simples e funciona de verdade. Agora tenho tempo livre pra família!",
+    role: "19 anos",
+    quote: "Testei planner, app, dica de coach. Nada segurava. Com a Foquinha, eu finalmente cumpro o que prometo pra mim mesmo.",
     image: "https://i.ibb.co/spy6CscW/Luan-estudante.webp",
   },
   {
     name: "Gabriela M.",
-    role: "mãe e dona de casa",
+    role: "29 anos",
     quote:
-      "Com a correria do dia a dia, eu vivia desorganizada. A Foquinha me ajudou a criar hábitos saudáveis e manter minhas tarefas em dia. Mudou minha rotina!",
+      "Minha rotina era bagunça e culpa. Agora eu acordo, faço tudo certinho e ainda tenho tempo pra minha filha.",
     image: "https://i.ibb.co/b5nSxRWm/mariana-designer.webp",
   },
 ] as const
@@ -32,15 +32,11 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Mais de 2.300 pessoas já estão usando a Foquinha todos os dias.
+            Mais de 2.300 pessoas já mudaram de vida.
           </h2>
-          <div className="mb-8 flex justify-center">
-            <div className="inline-flex items-center rounded-full bg-secondary/10 px-5 py-2">
-              <span className="text-sm font-semibold text-secondary">
-                Depoimentos de Usuários
-              </span>
-            </div>
-          </div>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
+            E você pode ser a próxima.
+          </p>
         </div>
 
         {/* Testimonials */}

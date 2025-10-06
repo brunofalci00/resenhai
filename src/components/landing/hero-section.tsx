@@ -37,11 +37,13 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Headline Principal */}
         <div className="mb-12 text-center">
           <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Organize sua vida direto no WhatsApp.
+            Você vê todo mundo com a vida em ordem...
+            <br />
+            mas a sua parece sempre fora do lugar.
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
-            A Foquinha é uma IA simples que monta sua rotina, lembra seus compromissos e te dá mais tempo livre.
+            A Foquinha é a mão invisível que te coloca no trilho: organiza sua rotina direto no WhatsApp, sem esforço e sem complicação.
           </p>
         </div>
 
@@ -57,8 +59,8 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
               priority
             />
           </div>
-          <p className="mt-6 text-center text-sm font-semibold text-slate-700">
-            Simples assim!
+          <p className="mt-6 text-center text-base font-semibold text-slate-700">
+            Conversa simples no WhatsApp que organiza sua vida inteira.
           </p>
         </div>
 
@@ -66,7 +68,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         <div className="mb-6 flex justify-center">
           <CtaButton
             href={ctaHref}
-            label="Quero minha rotina no zap"
+            label="Quero falar com a Foquinha"
             trackingLocation="hero"
             className="w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f] sm:w-auto"
           />
@@ -75,7 +77,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Garantia */}
         <div className="text-center">
           <p className="text-sm font-semibold text-secondary">
-            7 dias de garantia!
+            7 dias de garantia. Testa, muda ou sai.
           </p>
         </div>
         </div>

@@ -12,35 +12,16 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
     <SectionTracker sectionId="pricing">
       <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
-        {/* Badge + Social Proof */}
-        <div className="mb-8 text-center">
-          <div className="mb-4 flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-3xl font-bold text-slate-900">+2.347</span>
-              <span className="text-sm text-slate-600">usuários</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="size-6 text-secondary" />
-              <span className="text-sm font-semibold text-slate-700">Tecnologia Segura</span>
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="inline-flex items-center rounded-full bg-secondary/10 px-5 py-2">
-              <span className="text-sm font-semibold text-secondary">
-                Tenha sua I.A de Produtividade agora!
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Headline */}
         <div className="mb-12 text-center">
           <h2 className="mb-6 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
             Tudo isso por um ☕ por mês.
           </h2>
-          <p className="text-base text-slate-700">
-            Por menos de 6 reais por mês, você tem acesso ilimitado à Foquinha. Um investimento simbólico para ter mais tempo, menos estresse e uma vida organizada.
+          <p className="mx-auto max-w-2xl text-base text-slate-700">
+            Por menos de 6 reais por mês, você tem acesso ilimitado à Foquinha.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-base text-slate-700">
+            Um investimento simbólico para ter mais tempo, menos estresse e uma vida organizada.
           </p>
         </div>
 
@@ -50,14 +31,13 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             {/* Preço */}
             <div className="mb-8 text-center">
               <div className="mb-4">
-                <span className="text-5xl font-bold text-secondary">R$57</span>
-                <span className="ml-2 text-2xl text-slate-600">/ano</span>
+                <span className="text-5xl font-bold text-secondary">12x de R$5,90</span>
               </div>
               <p className="text-base text-slate-600">
-                ou <span className="font-semibold">12x de R$5,90</span>
+                ou <span className="font-normal">R$57/ano</span>
               </p>
               <p className="mt-2 text-sm text-slate-500">
-                Menos de R$5 por mês para organizar toda sua rotina
+                Menos de R$6 por mês para organizar toda sua rotina
               </p>
             </div>
 
@@ -88,7 +68,7 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             {/* CTA */}
             <CtaButton
               href={ctaHref}
-              label="Quero minha rotina no zap"
+              label="Testar por 7 dias"
               trackingLocation="pricing_card"
               className="w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-base font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f]"
             />
@@ -106,21 +86,13 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
               </span>
             </div>
             <p className="mt-4 text-base text-slate-700">
-              Se a Foquinha não ajudar você, devolvemos 100% do seu dinheiro sem complicação. Simples assim.
+              Se a Foquinha não te ajudar, devolvemos seu dinheiro. Sem enrolação.
             </p>
           </div>
         </div>
 
         {/* Footer Section */}
         <div className="mb-12 text-center">
-          <div className="mb-6 flex justify-center">
-            <div className="inline-flex items-center rounded-full bg-amber-50 px-5 py-2">
-              <span className="text-sm font-semibold text-amber-700">
-                Oportunidade
-              </span>
-            </div>
-          </div>
-
           <h3 className="mb-6 text-2xl font-bold text-slate-900 sm:text-3xl">
             Você já ouviu falar de I.A.
             <br />
@@ -137,10 +109,11 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             />
           </div>
 
-          <p className="mb-8 text-base text-slate-700">
+          <p className="mb-4 text-base text-slate-700">
             Experimente a Foquinha.
-            <br />
-            <span className="font-semibold">A I.A mais útil que você já conheceu.</span>
+          </p>
+          <p className="mb-8 text-base font-semibold text-slate-700">
+            A I.A mais útil que você já conheceu.
           </p>
 
           <div className="mb-6">
@@ -149,7 +122,7 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
 
           <CtaButton
             href={ctaHref}
-            label="Quero minha rotina no zap"
+            label="Quero falar com a Foquinha"
             trackingLocation="pricing_final"
             className="mx-auto w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f] sm:w-auto"
           />
