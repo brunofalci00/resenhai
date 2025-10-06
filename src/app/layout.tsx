@@ -22,10 +22,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
-  icons: {
-    icon: "https://i.ibb.co/Kzr3VMvx/foquiai-logo.png",
-    apple: "https://i.ibb.co/Kzr3VMvx/foquiai-logo.png",
-  },
   openGraph: {
     title,
     description,
