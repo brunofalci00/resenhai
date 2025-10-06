@@ -14,14 +14,18 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = "https://foquinhaai.life"
-const title = "Foquinha IA — Transforme a sua vida em 14 dias."
+const title = "Foquinha IA — Organize sua vida direto no WhatsApp"
 const description =
-  "Organize seus hábitos, melhore sua alimentação, comece a treinar e tire seus objetivos do papel. Tudo isso com ajuda da Foquinha direto no seu WhatsApp."
+  "A Foquinha é a mão invisível que te coloca no trilho: organiza sua rotina direto no WhatsApp, sem esforço e sem complicação. Teste por 7 dias!"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
+  icons: {
+    icon: "https://i.ibb.co/Kzr3VMvx/foquiai-logo.png",
+    apple: "https://i.ibb.co/Kzr3VMvx/foquiai-logo.png",
+  },
   openGraph: {
     title,
     description,
@@ -29,10 +33,10 @@ export const metadata: Metadata = {
     siteName: "Foquinha IA",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1526401485004-46910ecc8e51?w=1200&q=80&fit=crop",
+        url: "https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp",
         width: 1200,
         height: 630,
-        alt: "Foquinha IA no WhatsApp",
+        alt: "Foquinha IA - Organize sua vida no WhatsApp",
       },
     ],
     locale: "pt_BR",
@@ -42,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["https://images.unsplash.com/photo-1526401485004-46910ecc8e51?w=1200&q=80&fit=crop"],
+    images: ["https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp"],
   },
   alternates: {
     canonical: siteUrl,
