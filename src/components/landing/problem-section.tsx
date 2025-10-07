@@ -9,7 +9,7 @@ export function ProblemSection() {
         {/* Título */}
         <div className="mb-12 text-center">
           <h2 className="mb-8 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Você já tentou se organizar. Mas nada funcionou.
+            Você sabe o que precisa fazer. Mas não consegue.
           </h2>
 
           {/* Cards de problemas */}
@@ -21,7 +21,7 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Você escreve meta, mas não faz
+                Você promete começar segunda, mas não começa
               </p>
             </div>
 
@@ -32,7 +32,7 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Compra planner e larga em 3 dias
+                Tenta fazer diferente, mas volta ao mesmo
               </p>
             </div>
 
@@ -43,7 +43,7 @@ export function ProblemSection() {
                 </div>
               </div>
               <p className="text-base font-semibold text-slate-700">
-                Baixa app e nunca abre de novo
+                Vê os outros conseguindo e você não
               </p>
             </div>
           </div>
@@ -53,8 +53,9 @@ export function ProblemSection() {
               E aí?
             </p>
             <p className="mt-2 text-base text-slate-700">
-              Mais um dia acaba e você continua no mesmo lugar.
-              Cansado, frustrado e sem paz.
+              Mais um dia passa.
+              Você olha no espelho e não vê quem queria ser.
+              A frustração só cresce. E você se sente cada vez menor.
             </p>
           </div>
         </div>

@@ -6,20 +6,20 @@ const testimonials = [
     name: "Juliana R.",
     role: "23 anos",
     quote:
-      "Minha cabeça vivia a mil. Acordava atrasada, dormia frustrada. A Foquinha me trouxe calma, rotina e orgulho.",
+      "Eu tinha vergonha de mim mesma. A Foquinha me ajudou a criar hábitos que eu nunca consegui sozinha. Hoje eu me olho diferente.",
     image: "https://i.ibb.co/wF2zkBZt/julia-psicologa.webp",
   },
   {
     name: "João S.",
     role: "19 anos",
-    quote: "Testei planner, app, dica de coach. Nada segurava. Com a Foquinha, eu finalmente cumpro o que prometo pra mim mesmo.",
+    quote: "Eu sempre fui 'aquele' que não conseguia. A Foquinha me deu constância. Hoje eu me respeito.",
     image: "https://i.ibb.co/spy6CscW/Luan-estudante.webp",
   },
   {
     name: "Gabriela M.",
     role: "29 anos",
     quote:
-      "Minha rotina era bagunça e culpa. Agora eu acordo, faço tudo certinho e ainda tenho tempo pra minha filha.",
+      "Eu não me reconhecia mais. Com a Foquinha, voltei a me sentir eu mesma. A diferença é real.",
     image: "https://i.ibb.co/b5nSxRWm/mariana-designer.webp",
   },
 ] as const
@@ -32,7 +32,8 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Mais de 2.300 pessoas já recuperaram a paz no dia a dia.
+            Elas também achavam que não iam conseguir.
+            Hoje, são outras pessoas.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
             E você pode ser a próxima.

@@ -67,9 +67,7 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
             É simples: você manda um &quot;Oi&quot; no WhatsApp e ela cuida do resto.
-          </p>
-          <p className="mx-auto mt-2 max-w-2xl text-base text-slate-600">
-            Uma assistente pessoal que realmente entende você e te ajuda todos os dias.
+            Uma assistente pessoal que te ajuda a criar os hábitos que transformam sua vida de verdade.
           </p>
         </div>
 
@@ -136,31 +134,31 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Tudo no WhatsApp — onde você já vive
+                Rotina personalizada direto no WhatsApp
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Rotina automática com lembretes
+                Lembretes inteligentes para você não esquecer
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Relatórios semanais com seu progresso
+                Relatórios que mostram sua evolução real
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Suporte direto no zap
+                Suporte quando a vontade de desistir bater
               </span>
             </div>
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Mais tempo livre e menos culpa no dia a dia
+                A pessoa que você sempre quis ser, todos os dias mais perto
               </span>
             </div>
           </div>

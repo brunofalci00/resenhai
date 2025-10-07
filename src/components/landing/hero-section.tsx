@@ -37,11 +37,11 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Headline Principal */}
         <div className="mb-12 text-center">
           <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Cansado de se sentir sempre atrasado e sem controle?
+            Você está exausto de tentar e nunca conseguir?
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
-            A Foquinha é a sua assistente pessoal inteligente que te devolve a paz no dia a dia. Tudo isso direto no seu WhatsApp
+            A Foquinha é a sua assistente pessoal inteligente que te ajuda a criar os hábitos que você sempre quis ter. Tudo isso direto no seu WhatsApp.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Garantia */}
         <div className="text-center">
           <p className="text-sm font-semibold text-secondary">
-            7 dias de garantia. Testa, muda ou sai.
+            7 dias de garantia total.
           </p>
         </div>
         </div>
