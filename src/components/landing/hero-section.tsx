@@ -37,9 +37,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
         {/* Headline Principal */}
         <div className="mb-12 text-center">
           <h1 className="mb-6 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Você vê todo mundo com a vida em ordem...
-            <br />
-            mas a sua parece sempre fora do lugar.
+            Cansado de se sentir sempre atrasado e sem controle?
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
