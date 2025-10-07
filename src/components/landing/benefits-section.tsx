@@ -75,7 +75,7 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
         <div className="relative">
           {/* Imagem */}
           <div className="mb-8">
-            <div className="relative mx-auto max-w-sm">
+            <div className="relative mx-auto max-w-[280px] sm:max-w-sm">
               <Image
                 src={current.image}
                 alt={current.title}

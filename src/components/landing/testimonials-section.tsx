@@ -6,20 +6,20 @@ const testimonials = [
     name: "Juliana R.",
     role: "23 anos",
     quote:
-      "Eu tinha vergonha de mim mesma. A Foquinha me ajudou a criar hábitos que eu nunca consegui sozinha. Hoje eu me olho diferente.",
+      "Comecei a academia 5 vezes e sempre desisti. A Foquinha me ajudou a manter a rotina de treino e alimentação. Já perdi 8kg e não pretendo parar.",
     image: "https://i.ibb.co/wF2zkBZt/julia-psicologa.webp",
   },
   {
     name: "João S.",
     role: "19 anos",
-    quote: "Eu sempre fui 'aquele' que não conseguia. A Foquinha me deu constância. Hoje eu me respeito.",
+    quote: "Eu queria estudar pra concurso mas nunca conseguia ser disciplinado. Com a Foquinha, criei rotina de estudos e finalmente estou vendo progresso.",
     image: "https://i.ibb.co/spy6CscW/Luan-estudante.webp",
   },
   {
     name: "Gabriela M.",
     role: "29 anos",
     quote:
-      "Eu não me reconhecia mais. Com a Foquinha, voltei a me sentir eu mesma. A diferença é real.",
+      "Depois da gravidez, não conseguia tempo pra nada. A Foquinha me ajudou a organizar minha rotina com a bebê e ainda sobra tempo pra mim.",
     image: "https://i.ibb.co/b5nSxRWm/mariana-designer.webp",
   },
 ] as const
