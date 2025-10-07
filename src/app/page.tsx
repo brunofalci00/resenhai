@@ -13,7 +13,7 @@ import { SiteFooter } from "@/components/landing/site-footer"
 import { analytics } from '@/lib/analytics'
 
 const checkoutBaseUrl =
-  process.env.NEXT_PUBLIC_KIWIFY_CHECKOUT_URL ?? "https://pay.kiwify.com.br/lzUck6P"
+  process.env.NEXT_PUBLIC_KIWIFY_CHECKOUT_URL ?? "https://pay.hub.la/sant8qQx3Y4G3sPn2iCg"
 
 const getCheckoutUrl = (campaign: string) => {
   try {

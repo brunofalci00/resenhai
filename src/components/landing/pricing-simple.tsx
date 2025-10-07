@@ -31,7 +31,7 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             {/* Preço */}
             <div className="mb-8 text-center">
               <div className="mb-4">
-                <span className="text-5xl font-bold text-secondary">12x de R$5,90</span>
+                <span className="text-5xl font-bold text-secondary">12x de R$5,80</span>
               </div>
               <p className="text-base text-slate-600">
                 ou <span className="font-normal">R$57/ano</span>
