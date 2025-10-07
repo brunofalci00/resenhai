@@ -63,16 +63,13 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
         {/* Título */}
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Como funciona? Rotina no WhatsApp.
+            Como a Foquinha funciona?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
-            Você manda um &quot;Oi&quot; e a Foquinha faz o resto: entende sua rotina e monta tudo de forma simples e rápida.
+            É simples: você manda um &quot;Oi&quot; no WhatsApp e ela cuida do resto.
           </p>
           <p className="mx-auto mt-2 max-w-2xl text-base text-slate-600">
-            Você só responde. Ela lembra, cobra e te mostra o progresso.
-          </p>
-          <p className="mx-auto mt-2 max-w-2xl text-base font-semibold italic text-slate-700">
-            É como ter uma secretária pessoal na palma da mão. Sem esforço, sem desculpa.
+            Uma assistente pessoal que realmente entende você e te ajuda todos os dias.
           </p>
         </div>
 
@@ -163,7 +160,7 @@ export function BenefitsSection({ ctaHref }: BenefitsSectionProps) {
             <div className="flex items-start gap-3">
               <Check className="size-6 flex-shrink-0 text-secondary" />
               <span className="text-base text-slate-700">
-                Você só responde. Ela cuida do resto.
+                Mais tempo livre e menos culpa no dia a dia
               </span>
             </div>
           </div>

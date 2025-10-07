@@ -15,13 +15,13 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
         {/* Headline */}
         <div className="mb-12 text-center">
           <h2 className="mb-6 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Tudo isso por um ☕ por mês.
+            Paz no dia a dia por menos de um café por mês.
           </h2>
           <p className="mx-auto max-w-2xl text-base text-slate-700">
-            Por menos de 6 reais por mês, você tem acesso ilimitado à Foquinha.
+            Por R$5,80/mês você tem uma assistente pessoal inteligente organizando sua rotina.
           </p>
           <p className="mx-auto mt-2 max-w-2xl text-base text-slate-700">
-            Um investimento simbólico para ter mais tempo, menos estresse e uma vida organizada.
+            Um pequeno investimento para ter mais tempo, menos estresse e paz de verdade.
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export function PricingSimple({ ctaHref }: PricingSimpleProps) {
             Experimente a Foquinha.
           </p>
           <p className="mb-8 text-base font-semibold text-slate-700">
-            A I.A mais útil que você já conheceu.
+            Sua assistente pessoal que te devolve a paz no dia a dia.
           </p>
 
           <div className="mb-6">

@@ -32,7 +32,7 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Mais de 2.300 pessoas já mudaram de vida.
+            Mais de 2.300 pessoas já recuperaram a paz no dia a dia.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
             E você pode ser a próxima.

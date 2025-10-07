@@ -41,7 +41,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
-            A Foquinha é a mão invisível que te coloca no trilho: organiza sua rotina direto no WhatsApp, sem esforço e sem complicação.
+            A Foquinha é a sua assistente pessoal inteligente que te devolve a paz no dia a dia. Tudo isso direto no seu WhatsApp
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export function HeroSection({ ctaHref }: HeroSectionProps) {
             />
           </div>
           <p className="mt-6 text-center text-base font-semibold text-slate-700">
-            Conversa simples no WhatsApp que organiza sua vida inteira.
+            Sua assistente pessoal que cabe no bolso.
           </p>
         </div>
 

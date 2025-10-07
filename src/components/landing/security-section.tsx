@@ -41,10 +41,10 @@ export function SecuritySection() {
             <Check className="size-6 flex-shrink-0 text-secondary" />
             <div>
               <p className="text-lg font-semibold text-slate-900">
-                +2.300 pessoas já usam diariamente
+                +2.300 pessoas confiam na Foquinha todos os dias
               </p>
               <p className="mt-1 text-sm text-slate-600">
-                Uma comunidade crescente confia na Foquinha para organizar suas rotinas.
+                Uma comunidade crescente que recuperou a paz e o controle da rotina.
               </p>
             </div>
           </div>
@@ -53,10 +53,10 @@ export function SecuritySection() {
             <Check className="size-6 flex-shrink-0 text-secondary" />
             <div>
               <p className="text-lg font-semibold text-slate-900">
-                7 dias de garantia: risco zero para você
+                7 dias de garantia: você testa sem risco
               </p>
               <p className="mt-1 text-sm text-slate-600">
-                Se não gostar, devolvemos 100% do seu dinheiro sem complicação.
+                Devolvemos 100% do valor se não gostar. Simples assim.
               </p>
             </div>
           </div>

@@ -9,7 +9,7 @@ export function ProblemSection() {
         {/* Título */}
         <div className="mb-12 text-center">
           <h2 className="mb-8 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Por que se organizar é tão difícil?
+            Você já tentou se organizar. Mas nada funcionou.
           </h2>
 
           {/* Cards de problemas */}
@@ -53,7 +53,8 @@ export function ProblemSection() {
               E aí?
             </p>
             <p className="mt-2 text-base text-slate-700">
-              Mais um mês acaba. Mais uma vez você sente que tá perdendo tempo. Mais uma vez a ansiedade vence.
+              Mais um dia acaba e você continua no mesmo lugar.
+              Cansado, frustrado e sem paz.
             </p>
           </div>
         </div>
