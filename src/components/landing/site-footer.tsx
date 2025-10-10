@@ -9,13 +9,16 @@ export function SiteFooter() {
             Termos de uso
           </Link>
           <span className="text-slate-400">•</span>
-          <Link href="/termos" className="hover:text-secondary hover:underline">
+          <Link href="/politica" className="hover:text-secondary hover:underline">
             Política de Privacidade
           </Link>
           <span className="text-slate-400">•</span>
-          <Link href="/termos" className="hover:text-secondary hover:underline">
+          <a
+            href="mailto:suporte@trendlycorp.com"
+            className="hover:text-secondary hover:underline"
+          >
             Suporte Resenhai
-          </Link>
+          </a>
         </div>
 
         <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
