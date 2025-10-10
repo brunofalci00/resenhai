@@ -44,6 +44,7 @@ export default function Home() {
         <HeroSection ctaHref={checkoutHero} />
         <ProblemSection />
         <BenefitsSection ctaHref={checkoutBenefits} />
+        <HowItWorksSection />
         <SecuritySection />
         <TestimonialsSection />
         <PricingSimple ctaHref={checkoutPricing} />

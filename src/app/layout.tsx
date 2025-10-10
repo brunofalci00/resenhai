@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://foquinhaai.life"
-const title = "Foquinha IA — Organize sua vida direto no WhatsApp"
+const siteUrl = "https://resenhai.com"
+const title = "Resenhai – Nunca mais erre na hora de responder no WhatsApp"
 const description =
-  "A Foquinha é a mão invisível que te coloca no trilho: organiza sua rotina direto no WhatsApp, sem esforço e sem complicação. Teste por 7 dias!"
+  "Manda o print, recebe a resposta certa. Resenhai é o parceiro no WhatsApp que evita vacilos, mantém a conversa viva e te dá 7 dias para testar sem risco."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     title,
     description,
     url: siteUrl,
-    siteName: "Foquinha IA",
+    siteName: "Resenhai",
     images: [
       {
-        url: "https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp",
+        url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80",
         width: 1200,
         height: 630,
-        alt: "Foquinha IA - Organize sua vida no WhatsApp",
+        alt: "Resenhai - Assistente para responder no WhatsApp",
       },
     ],
     locale: "pt_BR",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["https://i.ibb.co/S4h0cKw7/hero-e-Voc-envia-um-Oi-no-Whats-App.webp"],
+    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80"],
   },
   alternates: {
     canonical: siteUrl,

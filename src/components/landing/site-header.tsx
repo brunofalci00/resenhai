@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { Menu } from "lucide-react"
 
@@ -22,9 +21,9 @@ import {
 import { Button } from "@/components/ui/button"
 
 const navigationItems = [
-  { href: "#funciona", label: "Como funciona" },
-  { href: "#recursos", label: "Recursos" },
-  { href: "#depoimentos", label: "Depoimentos" },
+  { href: "#solution", label: "Como funciona" },
+  { href: "#testimonials", label: "Resultados" },
+  { href: "#pricing", label: "Teste grátis" },
 ]
 
 interface SiteHeaderProps {
@@ -36,21 +35,14 @@ export function SiteHeader({ ctaHref, ctaLabel }: SiteHeaderProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="fixed top-[72px] z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 transition-[height] lg:px-8">
-        <Link href="#hero" className="flex items-center gap-3" aria-label="Foquinha IA - Início">
-          <div className="relative size-12 overflow-hidden rounded-2xl bg-secondary/10 p-1">
-            <Image
-              alt="Foquinha IA"
-              src="https://i.ibb.co/Kzr3VMvx/foquiai-logo.png"
-              fill
-              className="object-contain"
-              sizes="48px"
-              priority
-            />
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-foreground">
-            Foquinha IA
+    <header className="fixed top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 transition-[height] sm:px-6">
+        <Link href="#hero" className="flex items-center gap-3" aria-label="Resenhai - início">
+          <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground">
+            Resenhai
+          </span>
+          <span className="hidden text-sm font-semibold tracking-tight text-foreground sm:block">
+            Nunca mais erre no WhatsApp
           </span>
         </Link>
 
@@ -72,7 +64,11 @@ export function SiteHeader({ ctaHref, ctaLabel }: SiteHeaderProps) {
         </NavigationMenu>
 
         <div className="hidden items-center gap-4 md:flex">
-          <CtaButton href={ctaHref} label={ctaLabel} className="rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90" />
+          <CtaButton
+            href={ctaHref}
+            label={ctaLabel}
+            className="rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          />
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
@@ -88,7 +84,7 @@ export function SiteHeader({ ctaHref, ctaLabel }: SiteHeaderProps) {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetHeader>
-              <SheetTitle>Foquinha IA</SheetTitle>
+              <SheetTitle>Resenhai</SheetTitle>
             </SheetHeader>
             <nav className="mt-6 flex flex-col gap-3">
               {navigationItems.map((item) => (

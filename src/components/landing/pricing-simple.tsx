@@ -1,132 +1,110 @@
-import Image from "next/image"
 import { Check, Shield } from "lucide-react"
-import { CtaButton } from "@/components/landing/cta-button"
 import { SectionTracker } from "@/components/analytics/section-tracker"
+import { CtaButton } from "@/components/landing/cta-button"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface PricingSimpleProps {
   ctaHref: string
 }
 
+const inclusions = [
+  "Acesso imediato ao WhatsApp do Resenhai",
+  "Respostas sob medida para cada print, áudio ou story",
+  "Orientações com contexto — você entende o porquê",
+  "Sugestões para follow-up, convite e retomada de papo",
+  "Suporte 24/7 (não some, não dorme, não tem ressaca)",
+]
+
 export function PricingSimple({ ctaHref }: PricingSimpleProps) {
   return (
     <SectionTracker sectionId="pricing">
-      <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-        {/* Headline */}
-        <div className="mb-12 text-center">
-          <h2 className="mb-6 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            Ser quem você quer ser por menos de um café por mês.
-          </h2>
-          <p className="mx-auto max-w-2xl text-base text-slate-700">
-            Por R$5,80/mês você tem uma assistente pessoal te ajudando a criar os hábitos que transformam tudo.
-          </p>
-          <p className="mx-auto mt-2 max-w-2xl text-base text-slate-700">
-            Um pequeno investimento para se tornar quem você sempre quis.
-          </p>
-        </div>
-
-        {/* Pricing Card */}
-        <div className="mx-auto mb-12 max-w-lg">
-          <div className="rounded-3xl bg-white p-8 shadow-lg ring-2 ring-secondary/20">
-            {/* Preço */}
-            <div className="mb-8 text-center">
-              <div className="mb-4">
-                <span className="text-5xl font-bold text-secondary">12x de R$5,80</span>
-              </div>
-              <p className="text-base text-slate-600">
-                ou <span className="font-normal">R$57/ano</span>
-              </p>
-              <p className="mt-2 text-sm text-slate-500">
-                Menos de R$6 por mês para organizar toda sua rotina
-              </p>
-            </div>
-
-            {/* Benefícios */}
-            <div className="mb-8 space-y-3">
-              <div className="flex items-start gap-3">
-                <Check className="size-5 flex-shrink-0 text-secondary" />
-                <span className="text-sm text-slate-700">Rotina automática no WhatsApp</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="size-5 flex-shrink-0 text-secondary" />
-                <span className="text-sm text-slate-700">Lembretes personalizados</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="size-5 flex-shrink-0 text-secondary" />
-                <span className="text-sm text-slate-700">Relatórios semanais</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="size-5 flex-shrink-0 text-secondary" />
-                <span className="text-sm text-slate-700">Suporte direto no zap</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="size-5 flex-shrink-0 text-secondary" />
-                <span className="text-sm text-slate-700">Acesso 24h/7 dias</span>
-              </div>
-            </div>
-
-            {/* CTA */}
-            <CtaButton
-              href={ctaHref}
-              label="Testar por 7 dias"
-              trackingLocation="pricing_card"
-              className="w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-base font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f]"
-            />
-          </div>
-
-          {/* Garantia */}
-          <div className="mt-8 text-center">
-            <h3 className="mb-4 text-2xl font-bold text-slate-900">
-              Teste por 7 dias, sem risco.
-            </h3>
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-secondary/10 px-6 py-3">
-              <Shield className="size-5 text-secondary" />
-              <span className="text-sm font-bold text-secondary">
-                GARANTIA DE 7 DIAS
-              </span>
-            </div>
-            <p className="mt-4 text-base text-slate-700">
-              Se a Foquinha não te ajudar, devolvemos seu dinheiro. Sem enrolação.
+      <section id="pricing" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-4xl flex-col gap-12">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
+              Teste o Resenhai por 7 dias. Zero risco, só conversa boa.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
+              Se em uma semana você continuar tomando vácuo, cancela com um
+              “valeu” e pronto. Sem formulário, sem explicação, sem drama.
             </p>
           </div>
-        </div>
 
-        {/* Footer Section */}
-        <div className="mb-12 text-center">
-          <h3 className="mb-6 text-2xl font-bold text-slate-900 sm:text-3xl">
-            Você já ouviu falar de I.A.
-            <br />
-            Agora é hora de usar uma que muda sua vida de verdade.
-          </h3>
+          <Card className="mx-auto w-full max-w-xl border border-primary/30 shadow-xl shadow-primary/10">
+            <CardContent className="space-y-8 p-8">
+              <div className="text-center">
+                <span className="rounded-full bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+                  Plano único
+                </span>
+                <h3 className="mt-4 text-2xl font-bold text-slate-900">
+                  Acesso completo + 7 dias grátis
+                </h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  Depois do teste, a cobrança continua automaticamente (via
+                  Kiwify). Mantenha se fizer sentido — cancele quando quiser.
+                </p>
+              </div>
 
-          <div className="mb-8 flex justify-center">
-            <Image
-              src="https://i.ibb.co/Kzr3VMvx/foquiai-logo.png"
-              alt="Foquinha IA"
-              width={120}
-              height={120}
-              className="object-contain"
+              <ul className="space-y-3">
+                {inclusions.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm text-slate-700">
+                    <Check className="mt-1 size-4 flex-shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <CtaButton
+                href={ctaHref}
+                label="Começar meu teste de 7 dias agora"
+                trackingLocation="pricing_card"
+                className="w-full rounded-xl bg-primary px-8 py-4 text-center text-base font-bold text-primary-foreground shadow-lg transition-all hover:scale-105 hover:bg-primary/90"
+              />
+
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-secondary/40 bg-secondary/10 p-4 text-center">
+                <Shield className="size-6 text-secondary" />
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Garantia “sem vaidade”
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    Achou furada? Mensagem simples no WhatsApp e pronto — reembolso
+                    integral.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-6 text-center">
+            <h3 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Em minutos você recebe:
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                "Primeira resposta calibrada para a conversa atual",
+                "Sugestões de próximos passos (sem virar stalker)",
+                "Checklist para nunca mais mandar textão desesperado",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-slate-600">
+              Bônus: desbloqueie modelos de mensagens para stories, áudios e
+              situações de “ela sumiu”.
+            </p>
+            <CtaButton
+              href={ctaHref}
+              label="Entrar no Resenhai agora"
+              trackingLocation="pricing_final"
+              className="mx-auto w-full rounded-full bg-secondary px-8 py-4 text-center text-sm font-semibold text-secondary-foreground shadow-lg transition-all hover:scale-105 hover:bg-secondary/90 sm:w-auto"
             />
           </div>
-
-          <p className="mb-4 text-base text-slate-700">
-            Experimente a Foquinha.
-          </p>
-          <p className="mb-8 text-base font-semibold text-slate-700">
-            Sua assistente pessoal que te ajuda a ser a melhor versão de você.
-          </p>
-
-          <div className="mb-6">
-            <p className="text-sm font-bold text-secondary">7 dias de garantia!</p>
-          </div>
-
-          <CtaButton
-            href={ctaHref}
-            label="Quero falar com a Foquinha"
-            trackingLocation="pricing_final"
-            className="mx-auto w-full rounded-xl bg-[#128C7E] px-8 py-4 text-center text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#0d6b5f] sm:w-auto"
-          />
-        </div>
         </div>
       </section>
     </SectionTracker>
