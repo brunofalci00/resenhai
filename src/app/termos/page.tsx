@@ -1,5 +1,9 @@
 import type { Metadata } from "next"
 
+import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 type Section = {
@@ -292,6 +296,15 @@ export default function TermsPage() {
   return (
     <div className="bg-slate-50 py-24">
       <div className="mx-auto max-w-4xl px-4 text-slate-800 sm:px-6">
+        <div className="mb-6">
+          <Button variant="ghost" asChild className="gap-2 text-sm text-slate-600 hover:text-primary">
+            <Link href="/">
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Voltar para a página inicial
+            </Link>
+          </Button>
+        </div>
+
         <div className="mb-10 text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
             Termos de Serviço

@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/providers/posthog-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bebas = Bebas_Neue({
+  variable: "--font-bebas",
   subsets: ["latin"],
 });
 
-const siteUrl = "https://resenhai.com"
-const title = "Resenhai – Nunca mais erre na hora de responder no WhatsApp"
+const siteUrl = "https://resenhai.life";
+const title = "O Mago da Sedução – Nunca mais seja ignorado";
 const description =
-  "Manda o print, recebe a resposta certa. Resenhai é o parceiro no WhatsApp que evita vacilos, mantém a conversa viva e te dá 7 dias para testar sem risco."
+  "O Mago da Sedução é seu estrategista emocional direto no WhatsApp. Mande o print, receba a frase perfeita e vire o jogo.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     title,
     description,
     url: siteUrl,
-    siteName: "Resenhai",
+    siteName: "O Mago da Sedução",
     images: [
       {
         url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80",
         width: 1200,
         height: 630,
-        alt: "Resenhai - Assistente para responder no WhatsApp",
+        alt: "O Mago da Sedução - Assuma o controle das conversas",
       },
     ],
     locale: "pt_BR",
@@ -57,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${bebas.variable} antialiased`}
       >
         <PostHogProvider>{children}</PostHogProvider>
       </body>
