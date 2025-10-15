@@ -116,7 +116,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-family: var(--font-montserrat), sans-serif;
   }
   .font-heading {
     font-family: var(--font-heading), sans-serif;

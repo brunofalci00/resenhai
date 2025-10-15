@@ -1,23 +1,32 @@
-import type { Metadata } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
-import "./globals.css";
-import { PostHogProvider } from "@/providers/posthog-provider";
+import type { Metadata } from "next"
+import type { ReactNode } from "react"
+import { Bebas_Neue, Inter, Montserrat } from "next/font/google"
+
+import "./globals.css"
+import "./lp-final.css"
+import { PostHogProvider } from "@/providers/posthog-provider"
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-});
+})
 
 const bebas = Bebas_Neue({
   weight: "400",
   variable: "--font-bebas",
   subsets: ["latin"],
-});
+})
 
-const siteUrl = "https://resenhai.life";
-const title = "O Mago da Sedução – Nunca mais seja ignorado";
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+})
+
+const siteUrl = "https://resenhai.life"
+const title = "O Mago da Sedução – Domine a Arte da Conversa"
 const description =
-  "O Mago da Sedução é seu estrategista emocional direto no WhatsApp. Mande o print, receba a frase perfeita e vire o jogo.";
+  "O Mago da Sedução é seu estrategista emocional direto no WhatsApp. Mande o print, receba a resposta perfeita e vire o jogo em minutos."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -48,20 +57,18 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode
 }>) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${inter.variable} ${bebas.variable} antialiased`}
-      >
+      <body className={`${inter.variable} ${bebas.variable} ${montserrat.variable} antialiased`}>
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
-  );
+  )
 }

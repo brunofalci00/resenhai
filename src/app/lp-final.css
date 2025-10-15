@@ -1,0 +1,969 @@
+.lp-final * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box
+    }
+.lp-final {
+    --bg-primary: #000;
+    --bg-secondary: #0A0A0A;
+    --text-primary: #FFF;
+    --text-secondary: rgba(255, 255, 255, 0.702);
+    --accent: #D10000;
+    --accent-hover: #FF1952;
+    --border: rgba(255, 255, 255, 0.102)
+    }
+.lp-final {
+    font-family: "Montserrat", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh
+    }
+/* Countdown Bar */
+.lp-final .countdown-bar {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+    padding: 12px 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(209, 0, 0, 0.3)
+    }
+.lp-final .countdown-bar span {
+    font-size: 16px;
+    margin-left: 8px
+    }
+/* Logo */
+.lp-final .logo-container {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: var(--bg-primary)
+    }
+.lp-final .logo-container img {
+    max-width: 250px;
+    height: auto;
+    display: inline-block
+    }
+/* Container */
+.lp-final .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px
+    }
+/* Hero Section */
+.lp-final .hero {
+    padding: 80px 20px 100px;
+    text-align: center;
+    background: radial-gradient(ellipse at center, rgba(209, 0, 0, 0.15) 0%, transparent 70%);
+    position: relative;
+    overflow: hidden
+    }
+.lp-final .hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+    pointer-events: none
+    }
+.lp-final .hero-emoji {
+    font-size: 80px;
+    margin-bottom: 20px;
+    display: block;
+    animation: shake 2s infinite
+    }
+@keyframes shake {
+    0%, 100% {
+        transform: rotate(0deg);
+        } 25% {
+        transform: rotate(-5deg);
+        } 75% {
+        transform: rotate(5deg);
+        }
+    }
+.lp-final .hero h1 {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: -1px
+    }
+.lp-final .hero h1 span {
+    color: var(--accent)
+    }
+.lp-final .hero .subheadline {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-secondary)
+    }
+.lp-final .hero .tagline {
+    font-size: 18px;
+    margin-bottom: 40px;
+    color: var(--text-secondary)
+    }
+/* CTA Button */
+.lp-final .cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    color: var(--text-primary);
+    padding: 20px 50px;
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 40px rgba(209, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden
+    }
+.lp-final .cta-button:hover {
+    transform: translatey(-2px);
+    box-shadow: 0 15px 50px rgba(209, 0, 0, 0.6)
+    }
+.lp-final .cta-button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s
+    }
+.lp-final .cta-button:hover::before {
+    width: 300px;
+    height: 300px
+    }
+.lp-final .cta-button span {
+    position: relative;
+    z-index: 1
+    }
+.lp-final .pricing {
+    margin-top: 30px;
+    font-size: 16px
+    }
+.lp-final .pricing .installments {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 5px
+    }
+.lp-final .pricing .guarantee {
+    font-size: 14px;
+    color: var(--accent-hover);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px
+    }
+/* Content Sections */
+.lp-final .content-section {
+    padding: 100px 20px;
+    position: relative
+    }
+.lp-final .content-section:nth-child(even) {
+    background-color: var(--bg-secondary)
+    }
+.lp-final .section-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto
+    }
+.lp-final .section-content.reverse {
+    direction: rtl
+    }
+.lp-final .section-content.reverse > * {
+    direction: ltr
+    }
+.lp-final .section-image {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5)
+    }
+.lp-final .section-image img {
+    width: 100%;
+    height: auto;
+    display: block
+    }
+.lp-final .section-text h2 {
+    font-size: 42px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-transform: uppercase
+    }
+.lp-final .section-text h2 span {
+    color: var(--accent)
+    }
+.lp-final .section-text p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 15px
+    }
+.lp-final .section-text ul {
+    list-style: none;
+    margin: 30px 0
+    }
+.lp-final .section-text ul li {
+    font-size: 18px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: start;
+    gap: 15px
+    }
+.lp-final .section-text ul li i {
+    color: var(--accent);
+    font-size: 24px;
+    margin-top: 2px
+    }
+/* WhatsApp Preview */
+.lp-final .whatsapp-preview {
+    background: #0D1418;
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6)
+    }
+.lp-final .whatsapp-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px
+    }
+.lp-final .whatsapp-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px
+    }
+.lp-final .whatsapp-name {
+    font-weight: 700;
+    font-size: 16px
+    }
+.lp-final .whatsapp-message {
+    background: #005C4B;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 10px
+    }
+.lp-final .whatsapp-message.sent {
+    background: #1F2C34;
+    opacity: 0.7
+    }
+.lp-final .whatsapp-typing {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-style: italic;
+    padding-left: 10px
+    }
+/* Mockup Images Grid */
+.lp-final .mockup-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto
+    }
+.lp-final .mockup-images-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6)
+    }
+@media (max-width: 968px) {
+    .lp-final .mockup-images-grid {
+        grid-template-columns: 1fr;
+        gap: 20px
+        }
+    }
+/* Stacked Cards */
+.lp-final .stacked-cards {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    height: 550px
+    }
+.lp-final .card-stack {
+    position: absolute;
+    width: 85%;
+    left: 50%;
+    transform: translatex(-50%);
+    border-radius: 12px;
+    overflow: visible;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease
+    }
+.lp-final .card-stack img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px
+    }
+.lp-final .card-stack:nth-child(1) {
+    top: 0;
+    z-index: 3;
+    transform: translatex(-50%) rotate(-3deg)
+    }
+.lp-final .card-stack:nth-child(2) {
+    top: 50px;
+    z-index: 2;
+    transform: translatex(-50%) rotate(2deg)
+    }
+.lp-final .card-stack:nth-child(3) {
+    top: 100px;
+    z-index: 1;
+    transform: translatex(-50%) rotate(-1deg)
+    }
+.lp-final .stacked-cards:hover .card-stack:nth-child(1) {
+    transform: translatex(-50%) rotate(-5deg) translatey(-10px)
+    }
+.lp-final .stacked-cards:hover .card-stack:nth-child(2) {
+    transform: translatex(-50%) rotate(3deg) translatey(-5px)
+    }
+.lp-final .stacked-cards:hover .card-stack:nth-child(3) {
+    transform: translatex(-50%) rotate(-2deg)
+    }
+@media (max-width: 640px) {
+    .lp-final .stacked-cards {
+        height: 450px;
+        max-width: 400px
+        }
+    .lp-final .card-stack {
+        width: 90%
+        }
+    .lp-final .card-stack:nth-child(2) {
+        top: 40px
+        }
+    .lp-final .card-stack:nth-child(3) {
+        top: 80px
+        }
+    }
+/* Steps Section */
+.lp-final .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 60px auto 0
+    }
+.lp-final .step-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease
+    }
+.lp-final .step-card:hover {
+    border-color: var(--accent);
+    transform: translatey(-5px);
+    box-shadow: 0 20px 40px rgba(209, 0, 0, 0.2)
+    }
+.lp-final .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 50%;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 20px
+    }
+.lp-final .step-card h3 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 15px
+    }
+.lp-final .step-card p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6
+    }
+/* Testimonials */
+.lp-final .testimonials-section {
+    padding: 100px 20px;
+    background: var(--bg-secondary)
+    }
+.lp-final .testimonials-section h2 {
+    font-size: 42px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 60px;
+    text-transform: uppercase
+    }
+.lp-final .swiper {
+    width: 100%;
+    max-width: 1200px;
+    padding-bottom: 50px;
+    overflow: hidden
+    }
+.lp-final .swiper-viewport {
+    overflow: hidden;
+    width: 100%
+    }
+.lp-final .swiper-wrapper {
+    display: flex;
+    gap: 30px
+    }
+.lp-final .swiper-slide {
+    flex: 0 0 100%
+    }
+@media (min-width: 640px) {
+    .lp-final .swiper-slide {
+        flex: 0 0 calc(50% - 15px)
+        }
+    }
+@media (min-width: 968px) {
+    .lp-final .swiper-slide {
+        flex: 0 0 calc(33.333% - 20px)
+        }
+    }
+.lp-final .swiper-pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px
+    }
+.lp-final .testimonial-card {
+    background: var(--bg-primary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    height: auto
+    }
+.lp-final .testimonial-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px
+    }
+.lp-final .testimonial-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    overflow: hidden
+    }
+.lp-final .testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover
+    }
+.lp-final .testimonial-info h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px
+    }
+.lp-final .testimonial-info .stars {
+    color: #FFD700;
+    font-size: 14px
+    }
+.lp-final .testimonial-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    font-style: italic
+    }
+/* Swiper Pagination */
+.lp-final .swiper-pagination-bullet {
+    background: var(--text-secondary);
+    opacity: 0.5;
+    border: none;
+    cursor: pointer;
+    padding: 0
+    }
+.lp-final .swiper-pagination-bullet-active {
+    background: var(--accent);
+    opacity: 1
+    }
+/* Bonus Section */
+.lp-final .bonus-section {
+    padding: 100px 20px;
+    background: var(--bg-primary)
+    }
+/* Value Summary Box */
+.lp-final .value-summary-box {
+    max-width: 800px;
+    margin: 80px auto 0;
+    padding: 50px 40px;
+    background: var(--bg-secondary);
+    border: 3px solid var(--accent);
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(209, 0, 0, 0.3)
+    }
+.lp-final .value-label {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 15px
+    }
+.lp-final .value-striked {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    text-decoration: line-through;
+    opacity: 0.5
+    }
+.lp-final .value-divider {
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    margin: 30px 0
+    }
+.lp-final .value-total-label {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 10px
+    }
+.lp-final .value-total-striked {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    text-decoration: line-through;
+    opacity: 0.6
+    }
+.lp-final .value-fire-text {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 15px;
+    text-transform: uppercase
+    }
+.lp-final .value-price {
+    font-size: 72px;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 20px;
+    line-height: 1
+    }
+.lp-final .value-bonus-text {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 40px
+    }
+.lp-final .value-bonus-highlight {
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 24px
+    }
+.lp-final .value-guarantee {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 25px
+    }
+/* Responsive Value Box */
+@media (max-width: 640px) {
+    .lp-final .value-summary-box {
+        padding: 30px 20px;
+        margin: 60px auto 0
+        }
+    .lp-final .value-label {
+        font-size: 16px
+        }
+    .lp-final .value-striked {
+        font-size: 28px
+        }
+    .lp-final .value-total-label {
+        font-size: 18px
+        }
+    .lp-final .value-total-striked {
+        font-size: 36px
+        }
+    .lp-final .value-fire-text {
+        font-size: 20px
+        }
+    .lp-final .value-price {
+        font-size: 48px
+        }
+    .lp-final .value-bonus-text {
+        font-size: 16px
+        }
+    .lp-final .value-bonus-highlight {
+        font-size: 18px
+        }
+    .lp-final .value-guarantee {
+        font-size: 12px
+        }
+    }
+.lp-final .bonus-section h2 {
+    font-size: 42px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 60px;
+    text-transform: uppercase
+    }
+.lp-final .bonus-section h2 span {
+    color: var(--accent)
+    }
+.lp-final .bonus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto
+    }
+.lp-final .bonus-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease
+    }
+.lp-final .bonus-card:hover {
+    transform: translatey(-5px);
+    box-shadow: 0 20px 40px rgba(209, 0, 0, 0.3)
+    }
+.lp-final .bonus-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+    display: block
+    }
+.lp-final .bonus-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
+    }
+.lp-final .bonus-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px
+    }
+.lp-final .bonus-card h3 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: var(--accent)
+    }
+.lp-final .bonus-card p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6
+    }
+.lp-final .bonus-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-hover);
+    margin-top: 15px;
+    text-transform: uppercase
+    }
+/* FAQ Section */
+.lp-final .faq-section {
+    padding: 100px 20px;
+    background: var(--bg-secondary)
+    }
+.lp-final .faq-section h2 {
+    font-size: 42px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 60px;
+    text-transform: uppercase
+    }
+.lp-final .faq-container {
+    max-width: 900px;
+    margin: 0 auto
+    }
+.lp-final .faq-item {
+    background: var(--bg-primary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease
+    }
+.lp-final .faq-item:hover {
+    border-color: var(--accent)
+    }
+.lp-final .faq-question {
+    padding: 25px 30px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    color: inherit
+    }
+.lp-final .faq-question:hover {
+    color: var(--accent)
+    }
+.lp-final .faq-question i {
+    font-size: 20px;
+    transition: transform 0.3s ease
+    }
+.lp-final .faq-item.active .faq-question i {
+    transform: rotate(180deg)
+    }
+.lp-final .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease
+    }
+.lp-final .faq-answer-content {
+    padding: 0 30px 25px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary)
+    }
+.lp-final .faq-item.active .faq-answer {
+    max-height: 500px
+    }
+/* Guarantee Section */
+.lp-final .guarantee-section {
+    padding: 100px 20px;
+    background: var(--bg-primary);
+    text-align: center
+    }
+.lp-final .guarantee-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 50%;
+    font-size: 80px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 60px rgba(209, 0, 0, 0.4)
+    }
+.lp-final .guarantee-section h2 {
+    font-size: 42px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-transform: uppercase
+    }
+.lp-final .guarantee-section p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 40px
+    }
+/* Final CTA Section */
+.lp-final .final-cta {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, rgba(209, 0, 0, 0.1) 0%, transparent 100%);
+    text-align: center
+    }
+.lp-final .final-cta h2 {
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 30px;
+    line-height: 1.2;
+    text-transform: uppercase
+    }
+.lp-final .final-cta p {
+    font-size: 20px;
+    margin-bottom: 40px;
+    color: var(--text-secondary)
+    }
+.lp-final .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 900px;
+    margin: 60px auto 60px;
+    text-align: left
+    }
+.lp-final .option-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 30px
+    }
+.lp-final .option-card.wrong {
+    opacity: 0.6
+    }
+.lp-final .option-card.right {
+    border-color: var(--accent);
+    position: relative
+    }
+.lp-final .option-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 15px
+    }
+.lp-final .option-card h3 {
+    font-size: 18px;
+    line-height: 1.6
+    }
+/* Footer */
+.lp-final footer {
+    padding: 60px 20px 30px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    text-align: center
+    }
+.lp-final .footer-logo {
+    margin-bottom: 30px
+    }
+.lp-final .footer-logo img {
+    max-width: 200px;
+    height: auto;
+    display: inline-block
+    }
+.lp-final .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap
+    }
+.lp-final .footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease
+    }
+.lp-final .footer-links a:hover {
+    color: var(--accent)
+    }
+.lp-final .footer-contact {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px
+    }
+.lp-final .footer-contact a {
+    color: var(--accent);
+    text-decoration: none
+    }
+.lp-final .footer-copyright {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding-top: 20px;
+    border-top: 1px solid var(--border)
+    }
+/* Responsive */
+@media (max-width: 968px) {
+    .lp-final .hero h1 {
+        font-size: 40px
+        }
+    .lp-final .hero .subheadline {
+        font-size: 20px
+        }
+    .lp-final .section-content {
+        grid-template-columns: 1fr;
+        gap: 40px
+        }
+    .lp-final .section-content.reverse {
+        direction: ltr
+        }
+    .lp-final .section-text h2 {
+        font-size: 32px
+        }
+    .lp-final .options-grid {
+        grid-template-columns: 1fr
+        }
+    .lp-final .steps-grid {
+        grid-template-columns: 1fr
+        }
+    .lp-final .bonus-grid {
+        grid-template-columns: 1fr
+        }
+    }
+@media (max-width: 640px) {
+    .lp-final .countdown-bar {
+        font-size: 12px;
+        padding: 10px 15px
+        }
+    .lp-final .hero {
+        padding: 60px 20px 80px
+        }
+    .lp-final .hero-emoji {
+        font-size: 60px
+        }
+    .lp-final .hero h1 {
+        font-size: 32px
+        }
+    .lp-final .hero .subheadline {
+        font-size: 18px
+        }
+    .lp-final .hero .tagline {
+        font-size: 16px
+        }
+    .lp-final .cta-button {
+        padding: 18px 40px;
+        font-size: 16px
+        }
+    .lp-final .content-section {
+        padding: 60px 20px
+        }
+    .lp-final .section-text h2 {
+        font-size: 28px
+        }
+    .lp-final .section-text p, .lp-final .section-text ul li {
+        font-size: 16px
+        }
+    .lp-final .testimonials-section h2, .lp-final .bonus-section h2, .lp-final .faq-section h2, .lp-final .guarantee-section h2 {
+        font-size: 32px
+        }
+    .lp-final .final-cta h2 {
+        font-size: 36px
+        }
+    }
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+        } to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+.lp-final .animate-in {
+    animation: fadeInUp 0.8s ease-out
+    }
