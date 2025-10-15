@@ -240,10 +240,12 @@ const sections: Section[] = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="bg-slate-50 py-24">
-      <div className="mx-auto max-w-4xl px-4 text-slate-800 sm:px-6">
-        <div className="mb-6">
-          <Button variant="ghost" asChild className="gap-2 text-sm text-slate-600 hover:text-primary">
+    <div className="relative min-h-screen overflow-hidden bg-[#050505] py-24">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(220,38,38,0.2),_transparent_65%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-[radial-gradient(circle_at_bottom,_rgba(148,163,184,0.18),_transparent_70%)]" />
+      <div className="relative mx-auto max-w-5xl px-4 text-slate-100 sm:px-6">
+        <div className="mb-8">
+          <Button variant="ghost" asChild className="gap-2 text-sm text-slate-200 hover:text-primary">
             <Link href="/">
               <ArrowLeft className="size-4" aria-hidden="true" />
               Voltar para a página inicial
@@ -251,32 +253,32 @@ export default function PrivacyPolicyPage() {
           </Button>
         </div>
 
-        <div className="mb-10 text-center">
-          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+        <div className="mb-12 text-center">
+          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/80">
             Política de Privacidade
           </span>
-          <h1 className="mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h1 className="mt-4 text-4xl font-bold text-white sm:text-5xl">
             Política de Privacidade – Resenhai
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-3 text-sm text-slate-400">
             Última atualização: 10 de outubro de 2025 • Versão 1.0
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {sections.map((section) => (
-            <Card key={section.title} className="border border-slate-200 shadow-sm">
-              <CardContent className="space-y-4 p-6">
-                <h2 className="text-xl font-semibold text-slate-900">{section.title}</h2>
+            <Card key={section.title} className="border border-white/10 bg-white/5 shadow-xl shadow-black/50 backdrop-blur-lg">
+              <CardContent className="space-y-5 p-8">
+                <h2 className="text-2xl font-semibold text-white">{section.title}</h2>
 
                 {section.intro?.map((paragraph) => (
-                  <p key={paragraph} className="text-sm leading-relaxed text-slate-700">
+                  <p key={paragraph} className="text-base leading-relaxed text-slate-200">
                     {paragraph}
                   </p>
                 ))}
 
                 {section.bullets && (
-                  <ul className="list-disc space-y-2 pl-6 text-sm leading-relaxed text-slate-700">
+                  <ul className="list-disc space-y-2 pl-6 text-base leading-relaxed text-slate-200">
                     {section.bullets.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -291,13 +293,13 @@ export default function PrivacyPolicyPage() {
                     {subsection.description?.map((paragraph) => (
                       <p
                         key={paragraph}
-                        className="text-sm leading-relaxed text-slate-700"
+                        className="text-base leading-relaxed text-slate-200"
                       >
                         {paragraph}
                       </p>
                     ))}
                     {subsection.bullets && (
-                      <ul className="list-disc space-y-2 pl-6 text-sm leading-relaxed text-slate-700">
+                      <ul className="list-disc space-y-2 pl-6 text-base leading-relaxed text-slate-200">
                         {subsection.bullets.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
