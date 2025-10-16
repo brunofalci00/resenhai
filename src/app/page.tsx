@@ -328,7 +328,7 @@ export default function LandingPage() {
           <h1>
             ELA NÃO TE <span>RESPONDEU</span>
           </h1>
-          <p className="subheadline">Mas printou. Mandou no grupo. Soltou um "socorro HAHAHAHA".</p>
+          <p className="subheadline">Mas printou. Mandou no grupo. Soltou um &quot;socorro HAHAHAHA&quot;.</p>
           <p className="tagline">Riu. Fez as amigas rirem. Te expôs. E você? Ficou lá… esperando. Como sempre.</p>
           <a
             href={CHECKOUT_URL}
@@ -361,7 +361,7 @@ export default function LandingPage() {
               A dor? Não é só rejeição. <strong>É humilhação.</strong>
             </p>
             <p>
-              É o cérebro dela dizendo: <em>"Esse aqui é fraco."</em>
+              É o cérebro dela dizendo: <em>&quot;Esse aqui é fraco.&quot;</em>
             </p>
             <p>E no fundo você sente. Sente que perdeu o controle.</p>
           </div>
