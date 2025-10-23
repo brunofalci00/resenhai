@@ -71,6 +71,13 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
     })
 
     parsedDocument.querySelectorAll("script").forEach((scriptNode, index) => {
+      const scriptContent = scriptNode.textContent?.trim()
+
+      // Skip Facebook Pixel scripts to avoid duplicate initialization
+      if (scriptContent && (scriptContent.includes('fbq') || scriptContent.includes('facebook.net/en_US/fbevents.js'))) {
+        return
+      }
+
       const scriptElement = document.createElement("script")
 
       Array.from(scriptNode.attributes).forEach((attribute) => {
@@ -81,7 +88,6 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
         }
       })
 
-      const scriptContent = scriptNode.textContent?.trim()
       if (scriptContent) {
         scriptElement.textContent = scriptContent
       }
