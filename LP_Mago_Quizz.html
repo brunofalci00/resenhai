@@ -1,0 +1,1181 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Solta a língua e assume o comando da DM. O diagnóstico direto do Mago da Sedução mostra onde você perde o ritmo e entrega mensagens que seguram a atenção dela.">
+    <meta property="og:image" content="https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png">
+    <title>Mago da Sedução | Diagnóstico Safado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="prefetch" href="https://pay.hub.la/IpQ0Q6aIfeXfSVNqrl5z">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #090708;
+            --bg-soft: #141014;
+            --panel: rgba(25, 15, 20, 0.92);
+            --accent: #F54747;
+            --accent-dark: #C82640;
+            --accent-soft: rgba(245, 71, 71, 0.16);
+            --text: #FAF6F7;
+            --muted: rgba(250, 246, 247, 0.72);
+            --shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(130% 140% at 50% 0%, rgba(122, 23, 40, 0.35) 0%, #080507 68%, #060405 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        .quiz-shell {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            padding: 48px 18px 96px;
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            box-shadow: inset 0 0 14px rgba(0,0,0,0.35);
+        }
+
+        .progress-fill {
+            display: block;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, #C81D4C 100%);
+            transition: width 0.35s ease;
+        }
+
+        .progress-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 760px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-step {
+            display: none;
+            background: linear-gradient(135deg, rgba(24, 14, 20, 0.92), rgba(16, 9, 14, 0.9));
+            border: 1px solid rgba(255, 88, 88, 0.24);
+            border-radius: 36px;
+            padding: 56px 52px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .quiz-step.active {
+            display: block;
+            animation: fade-in 0.45s ease;
+        }
+
+        .step-content {
+            margin-bottom: 28px;
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.45rem;
+        }
+
+        h2 {
+            font-size: 2.05rem;
+        }
+
+        .lead {
+            font-size: 1.08rem;
+            margin-bottom: 18px;
+            color: var(--muted);
+        }
+
+        .emphasis {
+            color: var(--accent);
+        }
+
+        .step-media {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            border-radius: 28px;
+            background-size: cover;
+            background-position: center;
+            margin: 28px 0;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+        }
+
+        .option-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .option-btn,
+        .primary-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 71, 71, 0.22);
+            background: linear-gradient(135deg, rgba(54, 20, 24, 0.75), rgba(36, 15, 20, 0.85));
+            color: var(--muted);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 16px 20px 16px 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover,
+        .option-btn:focus-visible {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            color: #FFF;
+            box-shadow: 0 16px 36px rgba(196, 32, 76, 0.28);
+        }
+
+        .option-text {
+            flex: 1;
+            margin-right: 12px;
+        }
+
+        .option-btn::after {
+            content: '›';
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+
+        .primary-btn {
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 85%);
+            color: #15080C;
+            border: none;
+            margin-top: 28px;
+            padding: 18px 30px;
+            box-shadow: 0 18px 34px rgba(245, 71, 71, 0.35);
+        }
+
+        .primary-btn:hover,
+        .primary-btn:focus-visible {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .primary-btn .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            background: rgba(21, 3, 9, 0.35);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .microcopy {
+            font-size: 0.93rem;
+            color: var(--muted);
+            margin-top: 18px;
+        }
+
+        .microcopy.emotive {
+            font-style: italic;
+            color: rgba(245, 71, 71, 0.8);
+        }
+
+        .analysis-bar {
+            width: 100%;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(60, 30, 35, 0.65);
+            overflow: hidden;
+            margin: 22px 0;
+        }
+
+        .analysis-fill {
+            display: block;
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #F54747 0%, #7B1E36 100%);
+            transition: width 1.6s ease;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(27, 14, 18, 0.92), rgba(18, 10, 20, 0.9));
+            border: 1px solid rgba(245, 71, 71, 0.22);
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: inset 0 0 80px rgba(245, 71, 71, 0.12);
+        }
+
+        .profile-card h2 {
+            margin-bottom: 12px;
+        }
+
+        .discount-offer {
+            background: linear-gradient(140deg, rgba(18, 28, 22, 0.96), rgba(8, 14, 11, 0.9));
+            border: 1px solid rgba(45, 216, 129, 0.32);
+            border-radius: 32px;
+            padding: 44px 42px;
+            box-shadow: 0 36px 80px rgba(0, 0, 0, 0.55);
+            display: grid;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .discount-offer h2 {
+            margin-bottom: 8px;
+            font-size: 2.1rem;
+            text-transform: none;
+        }
+
+        .discount-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(45, 216, 129, 0.12);
+            border: 1px solid rgba(45, 216, 129, 0.28);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: #7ef3b9;
+        }
+
+        .discount-lead {
+            font-size: 1.1rem;
+            color: rgba(245, 255, 249, 0.86);
+        }
+
+        .discount-timer {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(126, 243, 185, 0.95);
+        }
+
+        .discount-count {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2dd881;
+            display: block;
+            margin-top: 6px;
+        }
+
+        .discount-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 38px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2dd881 0%, #11b56a 100%);
+            color: #041f12;
+            font-weight: 700;
+            font-size: 1.02rem;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            text-decoration: none;
+            box-shadow: 0 22px 44px rgba(17, 181, 106, 0.32);
+            animation: pulse-glow 1.4s ease-in-out infinite alternate;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .discount-cta:hover,
+        .discount-cta:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 26px 56px rgba(17, 181, 106, 0.42);
+            color: #041f12;
+        }
+
+        .discount-cta.expired {
+            animation: none;
+            box-shadow: 0 18px 36px rgba(17, 181, 106, 0.28);
+            filter: saturate(0.88);
+        }
+
+        .exclusive-loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            margin-top: 28px;
+        }
+
+        .loading-ring {
+            width: 64px;
+            height: 64px;
+            border: 4px solid rgba(45, 216, 129, 0.18);
+            border-top-color: #2dd881;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .exclusive-loader .microcopy {
+            text-align: center;
+            color: rgba(173, 236, 205, 0.88);
+        }
+
+        .discount-note {
+            font-size: 0.9rem;
+            color: rgba(173, 236, 205, 0.88);
+        }
+
+        .mago-proof-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+            margin: 30px 0;
+        }
+
+        .phone-mock {
+            position: relative;
+            padding: 12px;
+            border-radius: 32px;
+            background: linear-gradient(145deg, rgba(35, 23, 30, 0.85), rgba(18, 10, 18, 0.92));
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            border: 1px solid rgba(245, 71, 71, 0.18);
+        }
+
+        .phone-mock img {
+            width: 100%;
+            display: block;
+            border-radius: 24px;
+        }
+
+        .mago-explainer {
+            display: grid;
+            gap: 16px;
+        }
+
+        .mago-explainer strong {
+            color: var(--accent);
+        }
+
+        .scarcity-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: rgba(245, 71, 71, 0.12);
+            border: 1px solid rgba(245, 71, 71, 0.32);
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-top: 26px;
+        }
+
+        .scarcity-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: rgba(245, 71, 71, 0.18);
+            border-radius: 999px;
+            padding: 8px 14px;
+        }
+
+        .scarcity-copy {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-glow {
+            from {
+                transform: translateY(0);
+                box-shadow: 0 22px 44px rgba(17, 181, 106, 0.24);
+                filter: brightness(1);
+            }
+            to {
+                transform: translateY(-3px);
+                box-shadow: 0 32px 58px rgba(17, 181, 106, 0.44);
+                filter: brightness(1.08);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .quiz-shell {
+                padding: 34px 16px 76px;
+                gap: 28px;
+            }
+
+            .quiz-step {
+                padding: 36px 24px;
+                border-radius: 30px;
+            }
+
+            .step-content {
+                margin-bottom: 24px;
+            }
+
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.6rem; }
+
+            .lead {
+                font-size: 1.02rem;
+            }
+
+            .option-btn,
+            .primary-btn {
+                font-size: 0.93rem;
+            }
+
+            .mago-proof-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            body {
+                line-height: 1.6;
+            }
+
+            .quiz-shell {
+                padding: 28px 16px 64px;
+                gap: 24px;
+            }
+
+            .progress-wrapper {
+                gap: 8px;
+            }
+
+            .progress-label {
+                font-size: 0.66rem;
+                letter-spacing: 1.6px;
+            }
+
+            .quiz-step {
+                padding: 30px 20px;
+                border-radius: 24px;
+            }
+
+            h1 { font-size: 1.85rem; }
+            h2 { font-size: 1.55rem; }
+
+            .lead {
+                font-size: 0.98rem;
+            }
+
+            .microcopy {
+                font-size: 0.9rem;
+            }
+
+            .step-media {
+                aspect-ratio: 3 / 4;
+                margin: 20px 0;
+                border-radius: 20px;
+            }
+
+            .option-grid {
+                gap: 12px;
+                margin-top: 18px;
+            }
+
+            .option-btn,
+            .primary-btn {
+                padding: 14px 18px;
+                font-size: 0.9rem;
+            }
+
+            .option-btn::after {
+                font-size: 1.1rem;
+            }
+
+            .primary-btn {
+                margin-top: 22px;
+            }
+
+            .primary-btn .btn-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.82rem;
+            }
+
+            .profile-card {
+                padding: 24px 20px;
+                border-radius: 22px;
+            }
+
+            .analysis-bar {
+                height: 10px;
+                margin: 18px 0;
+            }
+
+            .mago-proof-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+                margin: 22px 0;
+            }
+
+            .phone-mock {
+                padding: 10px;
+                border-radius: 26px;
+            }
+
+            .scarcity-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 14px 16px;
+            }
+
+            .discount-offer {
+                padding: 32px 22px;
+                border-radius: 24px;
+                gap: 16px;
+            }
+
+            .discount-offer h2 {
+                font-size: 1.52rem;
+            }
+
+            .discount-count {
+                font-size: 1.85rem;
+            }
+
+            .discount-cta {
+                width: 100%;
+                padding: 16px 22px;
+                font-size: 0.95rem;
+                letter-spacing: 1.1px;
+            }
+
+            .exclusive-loader {
+                margin-top: 24px;
+                gap: 14px;
+            }
+
+            .loading-ring {
+                width: 56px;
+                height: 56px;
+                border-width: 3px;
+            }
+        }
+    </style>
+
+
+    <script
+
+      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+
+      data-utmify-prevent-xcod-sck
+
+      data-utmify-prevent-subids
+
+      async
+
+      defer
+
+    ></script>
+
+    <script>
+
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+
+        n.queue=[];t=b.createElement(e);t.async=!0;
+
+        t.src=v;s=b.getElementsByTagName(e)[0];
+
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+
+        'https://connect.facebook.net/en_US/fbevents.js');
+
+        fbq('init', '369969430611939');
+
+        fbq('track', 'PageView');
+
+    </script>
+
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=369969430611939&ev=PageView&noscript=1" /></noscript>
+
+</head>
+<body>
+    <div class="quiz-shell">
+        <div class="progress-wrapper">
+            <span class="progress-label" id="progress-label">Passo 1 de 11</span>
+            <div class="progress-track">
+                <span class="progress-fill" id="progress-fill"></span>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <!-- Step 1 -->
+            <section class="quiz-step active" data-step="1">
+                <div class="step-content">
+                    <h1><span class="emphasis">Você não quer resposta.</span> Você quer ela travando o sorriso pra falar contigo.</h1>
+                    <p class="lead">O Mago rastreia onde você perde o ritmo na DM e arma textos que combinam energia, ego e presença até ela ficar presa na tua atmosfera.</p>
+                    <p class="microcopy">Fala sem filtro. Quem floreia aqui volta a dormir abraçado com o próprio celular.</p>
+                    <button class="primary-btn" data-next="2">
+                        <span>Quero ela na minha energia</span>
+                        <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    </button>
+                </div>
+                <div class="step-media" style="background-image:url('https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png');"></div>
+            </section>
+
+            <!-- Step 2 -->
+            <section class="quiz-step" data-step="2">
+                <div class="step-content">
+                    <h2>Quando vai puxar o primeiro movimento, <span class="emphasis">você chega assumindo o comando ou pedindo licença?</span></h2>
+                    <p class="lead">Entrega qual padrão ainda te deixa com cara de boa praça que quer aprovação em vez de acender a tensão.</p>
+                </div>
+                <div class="step-media" style="background-image:url('https://i.ibb.co/7tPnD9Np/Chat-GPT-Image-22-de-out-de-2025-17-20-45.png');"></div>
+                <div class="option-grid">
+                    <button class="option-btn" data-question="q1" data-profile="observador" data-next="3">
+                        <span class="option-text">🌒 Eu reescrevo até sumir e deixo outro ocupar o espaço.</span>
+                    </button>
+                    <button class="option-btn" data-question="q1" data-profile="impulsivo" data-next="3">
+                        <span class="option-text">🔥 Mando qualquer ousadia só pra parecer confiante, mesmo vazio.</span>
+                    </button>
+                    <button class="option-btn" data-question="q1" data-profile="impulsivo" data-next="3">
+                        <span class="option-text">🎭 Fingo que não ligo, mas ela sente o medo colado na frase.</span>
+                    </button>
+                    <button class="option-btn" data-question="q1" data-profile="reativo" data-next="3">
+                        <span class="option-text">👻 Espero ela sinalizar… e vejo outro levar a vez.</span>
+                    </button>
+                </div>
+                <p class="microcopy emotive">Teu primeiro passo já entrega se você é caça ou caçador.</p>
+            </section>
+
+                        <!-- Step 3 -->
+            <section class="quiz-step" data-step="3">
+                <div class="step-content">
+                    <h2>Quando a DM fica quieta, <span class="emphasis">você gira o jogo ou entrega teu valor?</span></h2>
+                    <p class="lead">Silêncio escancara quem manda. Fala direto.</p>
+                </div>
+                <div class="step-media" style="background-image:url('https://i.ibb.co/qYDN90VD/Chat-GPT-Image-22-de-out-de-2025-17-23-45.png');"></div>
+                <div class="option-grid">
+                    <button class="option-btn" data-question="q2" data-profile="observador" data-next="4">
+                        <span class="option-text">⏳ Releio tudo como se tivesse pedido perdão por existir.</span>
+                    </button>
+                    <button class="option-btn" data-question="q2" data-profile="impulsivo" data-next="4">
+                        <span class="option-text">🔁 Mando outra correndo com medo dela me apagar da cabeça.</span>
+                    </button>
+                    <button class="option-btn" data-question="q2" data-profile="reativo" data-next="4">
+                        <span class="option-text">🧊 Pago de frio, mas fico encarando a tela esperando migalha.</span>
+                    </button>
+                    <button class="option-btn" data-question="q2" data-profile="impulsivo" data-next="4">
+                        <span class="option-text">🎯 Solto piadinha nervosa só pra convencer meu ego que existo.</span>
+                    </button>
+                </div>
+                <p class="microcopy emotive">Não falta resposta. Falta você parar de entregar o trono antes dela pedir.</p>
+            </section>
+
+            <!-- Step 4 -->
+            <section class="quiz-step" data-step="4">
+                <div class="step-content">
+                    <h2>Quando ela chega na sua frente, <span class="emphasis">quem dita temperatura e olhar?</span></h2>
+                    <p class="lead">Sem emoji, sem delay. Ou ela sente sua energia tomar o ambiente, ou você vira figurante bonzinho.</p>
+                </div>
+                <div class="step-media" style="background-image:url('https://i.ibb.co/fd2CrWNn/Chat-GPT-Image-22-de-out-de-2025-17-26-20.png');"></div>
+                <div class="option-grid">
+                    <button class="option-btn" data-question="q3" data-profile="observador" data-next="5">
+                        <span class="option-text">🎯 Fico lendo a vibe até perder o momento e entregar o volante.</span>
+                    </button>
+                    <button class="option-btn" data-question="q3" data-profile="impulsivo" data-next="5">
+                        <span class="option-text">🔥 Aperto o acelerador querendo provar que sou interessante.</span>
+                    </button>
+                    <button class="option-btn" data-question="q3" data-profile="reativo" data-next="5">
+                        <span class="option-text">🌀 Espero sinal dela e viro figurante da minha própria cena.</span>
+                    </button>
+                    <button class="option-btn" data-question="q3" data-profile="impulsivo" data-next="5">
+                        <span class="option-text">🎬 Vendo história pra inflar ego porque morro de medo de parecer normal.</span>
+                    </button>
+                </div>
+                <p class="microcopy emotive">Tua postura mostra na hora se ela vai grudar em você ou te deixar assistindo de longe.</p>
+            </section><!-- Step 5 -->
+            <section class="quiz-step" data-step="5">
+                <div class="step-content">
+                    <h2>A hora exata em que você desce do pedestal.</h2>
+                    <p class="lead">Tem um segundo em que você deixa de ser prêmio e vira opção descartável. O diagnóstico captura esse momento e desmonta o gatilho.</p>
+                    <div class="analysis-bar">
+                        <span class="analysis-fill" id="analysis-fill"></span>
+                    </div>
+                    <p class="microcopy" id="analysis-status">Caçando o segundo em que você cedeu o comando…</p>
+                </div>
+            </section>
+
+            <!-- Step 6 -->
+            <section class="quiz-step" data-step="6">
+                <div class="profile-card">
+                    <h2 id="profile-title"></h2>
+                    <p id="profile-description"></p>
+                    <p id="profile-insight" class="microcopy"></p>
+                </div>
+                <p class="microcopy emotive" id="profile-bridge"></p>
+                <button class="primary-btn" data-next="7">
+                    <span>Quero mandar na nossa DM</span>
+                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                </button>
+            </section>
+
+                                    <!-- Step 7 -->
+            <section class="quiz-step" data-step="7">
+                <div class="step-content">
+                    <h2>Agora que viu onde entrega poder, <span class="emphasis">vamos mexer no que te trava.</span></h2>
+                    <p class="lead">Cada clique recalibra teu instinto pra ela correr atrás. Nada de aula chata — é ajuste fino de malícia.</p>
+                </div>
+                <div class="question-block">
+                    <p id="awareness-question"></p>
+                    <div class="option-grid" id="awareness-options"></div>
+                    <p class="microcopy emotive hidden" id="awareness-feedback"></p>
+                    <button class="primary-btn hidden" id="awareness-next">
+                        <span>Manda a próxima</span>
+                        <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    </button>
+                </div>
+            </section>
+
+<!-- Step 8 -->
+<section class="quiz-step" data-step="8">
+                <div class="step-content">
+                    <h2><span class="emphasis">Como o Mago joga?</span> Ele transforma você na fascinação dela.</h2>
+                    <p class="lead">Você despeja o contexto cru. Ele fareja os gatilhos dela e devolve mensagens que deixam ela colada na conversa certa.</p>
+                    <div class="mago-proof-grid">
+                        <div class="phone-mock">
+                            <img src="https://i.ibb.co/Wp0VNMqr/Telas-Foquinha-3.png" alt="Exemplo de análise do Mago da Sedução">
+                        </div>
+                        <div class="phone-mock">
+                            <img src="https://i.ibb.co/2Y3Zbs6v/Telas-Foquinha-1.png" alt="Sugestões de respostas prontas do Mago da Sedução">
+                        </div>
+                    </div>
+                    <div class="mago-explainer">
+                        <p><strong>Leitura estratégica:</strong> interpreta legenda, foto, horário e emoji pra sacar onde ela busca atenção e carinho sutil.</p>
+                        <p><strong>Mensagens de presença:</strong> entrega duas respostas — uma que liga a tensão na hora, outra que faz ela visualizar você como prioridade.</p>
+                        <p><strong>Comando contínuo:</strong> cada retorno dela gera novas instruções pra você continuar sendo o prêmio, não o fã.</p>
+                    </div>
+                    <button class="primary-btn" data-next="9">
+                        <span>Quero comandar esse jogo mental</span>
+                        <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    </button>
+                </div>
+            </section>
+
+                        <!-- Step 9 -->
+<section class="quiz-step" data-step="9">
+                <div class="step-content">
+                    <h2><span class="emphasis">Desejo cresce quando ela sente que pode te perder.</span></h2>
+                    <p class="lead">O Método Mago monta conversas que fazem ela segurar o sorriso, disputar teu tempo e provar que quer o próximo áudio.</p>
+                    <p class="microcopy">Nada de cantada engessada. Só mensagem viva, com tua assinatura, que devolve o comando e puxa ela pra conversa.</p>
+                </div>
+                <div class="scarcity-banner">
+                    <span class="scarcity-chip">⏳ 27 vagas reabertas</span>
+                    <p class="scarcity-copy">Consultoria 1:1 ativa só até 23h59 — ou até o Mago fechar a lista dos caras que vão comandar as DMs dessa rodada.</p>
+                </div>
+                <button class="primary-btn offer-btn">
+                    <span>Quero mensagem que acende a tensão</span>
+                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                </button>
+            </section>
+
+            <!-- Step 10 -->
+            <section class="quiz-step" data-step="10">
+                <div class="step-content">
+                    <h2>Segura aí, estou liberando tua condição exclusiva...</h2>
+                    <p class="lead">Estamos travando o acesso com prioridade. Essa janela só abre pra quem finaliza agora.</p>
+                </div>
+                <div class="exclusive-loader">
+                    <span class="loading-ring"></span>
+                    <p class="microcopy emotive" id="exclusive-status">Validando sua prioridade dentro da lista...</p>
+                </div>
+            </section>
+
+            <!-- Step 11 -->
+            <section class="quiz-step" data-step="11">
+                <div class="discount-offer">
+                    <span class="discount-badge">Parabéns! Condição especial liberada</span>
+                    <h2>Você garantiu 75% de desconto</h2>
+                    <p class="discount-lead">Finalize seu acesso em até 10 minutos para manter os 75% ativos no checkout.</p>
+                    <div class="discount-timer">
+                        Tempo restante
+                        <span class="discount-count" id="discount-timer">10:00</span>
+                    </div>
+                    <a class="discount-cta" id="discount-cta" href="https://pay.hub.la/IpQ0Q6aIfeXfSVNqrl5z">Quero meu desconto</a>
+                    <p class="discount-note">Ao clicar, você segue para o checkout protegido e mantém a condição de 75% liberada automaticamente.</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        const steps = Array.from(document.querySelectorAll('.quiz-step'));
+        const totalSteps = 11;
+        const progressLabel = document.getElementById('progress-label');
+        const progressFill = document.getElementById('progress-fill');
+        const analysisFill = document.getElementById('analysis-fill');
+        const analysisStatus = document.getElementById('analysis-status');
+        const personaScores = { observador: 0, impulsivo: 0, reativo: 0 };
+        const personaProfiles = {
+            observador: {
+                title: '🧭 O ESTRATEGISTA SILENCIOSO',
+                description: 'Você observa tudo, mas age quando o clima já esfriou. Enquanto digita a frase perfeita, outro cara já fez ela rir na DM.',
+                insight: 'Sua mente é bisturi. Usa pra cortar rápido, direto e com malícia - antes que ela escolha outro palco pra se divertir.'
+            },
+            impulsivo: {
+                title: '⚡ O INTENSO SEM FREIO',
+                description: 'Você sente fundo e despeja tudo como se paixão fosse prova de valor. Ela sente ansiedade, não conexão.',
+                insight: 'Canaliza essa energia em provocações curtas, venenosas, e deixa espaço. Ela vai ter que voltar pra pedir mais.'
+            },
+            reativo: {
+                title: '🛰 O REATIVO EM ALERTA',
+                description: 'Você espera o “ok” dela pra se mexer. Quando percebe, virou fã-clube e não protagonista.',
+                insight: 'Assume o controle. Seus silêncios precisam cutucar, não mendigar atenção.'
+            }
+        };
+
+        const checkoutUrl = 'https://pay.hub.la/IpQ0Q6aIfeXfSVNqrl5z';
+        const discountTimerEl = document.getElementById('discount-timer');
+        const discountCta = document.getElementById('discount-cta');
+        const discountNoteEl = document.querySelector('.discount-note');
+        const discountTotalSeconds = 600;
+        let discountRemainingSeconds = discountTotalSeconds;
+        let discountCountdownStarted = false;
+        let discountIntervalId = null;
+        const exclusiveStatusEl = document.getElementById('exclusive-status');
+        let exclusiveLoadingTimeoutId = null;
+        let exclusiveStatusTimeoutId = null;
+
+        const profileBridgeEl = document.getElementById('profile-bridge');
+        const stepSevenIntro = document.querySelector('[data-step="7"] .step-content');
+
+                const awarenessQuestions = [
+            {
+                question: 'Quando ela some da DM, qual história você monta na cabeça?',
+                options: [
+                    'Eu fico revisitando tudo como se tivesse que pedir desculpa.',
+                    'Eu mando outra rapidinho pra ela lembrar que eu existo.',
+                    'Eu juro que vou bancar o frio, mas fico stalkeando cada minuto.',
+                    'Eu penso em soltar indireta nos stories pra cutucar.'
+                ],
+                feedback: 'Percebeu? Em todas as opções você entrega o volante. Agora a direção é sua.'
+            },
+            {
+                question: 'Quando ela reaparece, qual papel você veste sem perceber?',
+                options: [
+                    'Finjo que nada aconteceu pra não assustar.',
+                    'Faço piada pra disfarçar saudade.',
+                    'Solto um gelo pra ver se ela insiste.',
+                    'Explico demais pra justificar meu interesse.'
+                ],
+                feedback: 'Primeira resposta dita quem manda na vibe. Vamos ajustar pra ela se provar pra você.'
+            },
+            {
+                question: 'Qual é sua relação com essas dicas e scripts de paquera que pipocam?',
+                options: [
+                    'Já testei vários e pareço outra pessoa usando.',
+                    'Eu salvo, mas na hora H travo.',
+                    'Eu sigo minha intuição, mas ela anda falhando.',
+                    'Desconfio de tudo e acabo sem referência.'
+                ],
+                feedback: 'Não falta conteúdo, falta tua voz com lâmina. É isso que vamos afiar.'
+            },
+            {
+                question: 'O que mais te segura de tentar outra abordagem agora?',
+                options: [
+                    'Medo de soar apegado demais.',
+                    'Pânico dela achar que estou jogando.',
+                    'Não tenho plano claro do que dizer.',
+                    'Não sei manter a tensão depois.'
+                ],
+                feedback: 'Nomeou a trava. A seguir, vamos destravar isso.'
+            },
+            {
+                question: 'O que você quer que ela sinta quando ler sua mensagem?',
+                options: [
+                    'Que eu entendo o tempo dela sem me dobrar.',
+                    'Que ela fique curiosa e peça mais.',
+                    'Que ela imagine a cena e queira viver comigo.',
+                    'Que ela sinta paz e tensão boa quando aparece meu nome.'
+                ],
+                feedback: 'Perfeito. Essa emoção vira âncora das próximas mensagens. Sem ela, você volta pro rascunho.'
+            }
+        ];
+
+
+        let currentStep = 1;
+        let awarenessIndex = 0;
+
+        function updateProgress(step) {
+            progressLabel.textContent = `Passo ${step} de ${totalSteps}`;
+            progressFill.style.width = `${(step - 1) / (totalSteps - 1) * 100}%`;
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            steps.forEach(section => {
+                section.classList.toggle('active', Number(section.dataset.step) === step);
+            });
+            updateProgress(step);
+            handleSpecialSteps(step);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleSpecialSteps(step) {
+            if (step === 5) {
+                runAnalysis();
+            }
+            if (step === 6) {
+                renderPersona();
+            }
+            if (step === 7) {
+                awarenessIndex = 0;
+                renderAwarenessQuestion();
+            }
+            if (step === 10) {
+                startExclusiveLoading();
+            }
+            if (step === 11) {
+                startDiscountTimer();
+            }
+        }
+
+        function startExclusiveLoading() {
+            if (exclusiveStatusTimeoutId) {
+                clearTimeout(exclusiveStatusTimeoutId);
+                exclusiveStatusTimeoutId = null;
+            }
+            if (exclusiveLoadingTimeoutId) {
+                clearTimeout(exclusiveLoadingTimeoutId);
+            }
+            if (exclusiveStatusEl) {
+                exclusiveStatusEl.textContent = 'Validando sua prioridade dentro da lista...';
+                exclusiveStatusTimeoutId = setTimeout(() => {
+                    if (exclusiveStatusEl && currentStep === 10) {
+                        exclusiveStatusEl.textContent = 'Reservando a condição especial pra você...';
+                    }
+                }, 900);
+            }
+            exclusiveLoadingTimeoutId = setTimeout(() => {
+                exclusiveLoadingTimeoutId = null;
+                if (exclusiveStatusTimeoutId) {
+                    clearTimeout(exclusiveStatusTimeoutId);
+                    exclusiveStatusTimeoutId = null;
+                }
+                if (exclusiveStatusEl) {
+                    exclusiveStatusEl.textContent = 'Condição liberada!';
+                }
+                if (currentStep === 10) {
+                    goToStep(11);
+                }
+            }, 2200);
+        }
+
+        function updateDiscountTimerDisplay(seconds) {
+            if (!discountTimerEl) return;
+            const clamped = Math.max(seconds, 0);
+            const minutes = String(Math.floor(clamped / 60)).padStart(2, '0');
+            const secs = String(clamped % 60).padStart(2, '0');
+            discountTimerEl.textContent = `${minutes}:${secs}`;
+        }
+
+        function startDiscountTimer() {
+            if (!discountTimerEl || discountCountdownStarted) return;
+            discountCountdownStarted = true;
+            updateDiscountTimerDisplay(discountRemainingSeconds);
+            discountIntervalId = setInterval(() => {
+                discountRemainingSeconds -= 1;
+                updateDiscountTimerDisplay(discountRemainingSeconds);
+                if (discountRemainingSeconds <= 0) {
+                    clearInterval(discountIntervalId);
+                    if (discountCta) {
+                        discountCta.classList.add('expired');
+                        discountCta.textContent = 'Quero garantir mesmo assim';
+                    }
+                    if (discountNoteEl) {
+                    discountNoteEl.textContent = 'Tempo expirado. Se a condicao variar no checkout, nossa equipe tenta manter os 75% pra voce.';
+                    }
+                }
+            }, 1000);
+        }
+
+        function runAnalysis() {
+            analysisFill.style.width = '0%';
+            analysisStatus.textContent = 'Farejando o instante em que você baixou a guarda.';
+            setTimeout(() => {
+                analysisFill.style.width = '87%';
+                analysisStatus.textContent = 'Cheirando intenção fraca, resposta desesperada e timing fora de ritmo.';
+            }, 250);
+            setTimeout(() => {
+                analysisFill.style.width = '100%';
+                analysisStatus.textContent = 'Costurando cada gesto que tirou você do centro da fantasia dela.';
+            }, 1800);
+            setTimeout(() => {
+                analysisStatus.textContent = 'Diagnóstico pronto. Recupera o trono agora ou aceita seguir de joelhos.';
+                goToStep(6);
+            }, 2400);
+        }
+
+        function renderPersona() {
+            const profileKey = Object.keys(personaScores).reduce(
+                (prev, curr) => (personaScores[curr] > personaScores[prev] ? curr : prev),
+                'observador'
+            );
+
+            const profile = personaProfiles[profileKey];
+            document.getElementById('profile-title').textContent = profile.title;
+            document.getElementById('profile-description').textContent = profile.description;
+            document.getElementById('profile-insight').textContent = profile.insight;
+            if (profileBridgeEl) {
+                profileBridgeEl.textContent = 'Esse é o roteiro bonzinho que te tirou do trono. Agora a gente afia tua língua pra ela te chamar na DM/Whats sem freio.';
+            }
+        }
+
+        const awarenessQuestionEl = document.getElementById('awareness-question');
+        const awarenessOptionsEl = document.getElementById('awareness-options');
+        const awarenessFeedbackEl = document.getElementById('awareness-feedback');
+        const awarenessNextBtn = document.getElementById('awareness-next');
+
+        function renderAwarenessQuestion() {
+            const current = awarenessQuestions[awarenessIndex];
+            if (stepSevenIntro) {
+                if (awarenessIndex === 0) {
+                    stepSevenIntro.classList.remove('hidden');
+                } else {
+                    stepSevenIntro.classList.add('hidden');
+                }
+            }
+            awarenessQuestionEl.textContent = current.question;
+            awarenessOptionsEl.innerHTML = '';
+            awarenessFeedbackEl.classList.add('hidden');
+            awarenessNextBtn.classList.add('hidden');
+            const nextLabelSpan = awarenessNextBtn.querySelector('span:not(.btn-icon)');
+            if (nextLabelSpan) {
+                nextLabelSpan.textContent = awarenessIndex === awarenessQuestions.length - 1
+                    ? 'Ver meu mapa safado'
+                    : 'Manda a próxima';
+            }
+
+            current.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerHTML = `<span class="option-text">${option}</span>`;
+                button.addEventListener('click', () => {
+                    awarenessFeedbackEl.textContent = current.feedback;
+                    awarenessFeedbackEl.classList.remove('hidden');
+                    awarenessNextBtn.classList.remove('hidden');
+                });
+                awarenessOptionsEl.appendChild(button);
+            });
+        }
+
+        awarenessNextBtn.addEventListener('click', () => {
+            awarenessIndex += 1;
+            if (awarenessIndex < awarenessQuestions.length) {
+                renderAwarenessQuestion();
+            } else {
+                goToStep(8);
+            }
+        });
+
+        document.querySelectorAll('.option-btn[data-question]').forEach(button => {
+            button.addEventListener('click', () => {
+                const profile = button.dataset.profile;
+                if (profile && personaScores[profile] !== undefined) {
+                    personaScores[profile] += 1;
+                }
+            });
+        });
+
+        document.querySelectorAll('.option-btn[data-next]').forEach(button => {
+            button.addEventListener('click', () => {
+                const nextStep = parseInt(button.dataset.next, 10);
+                if (Number.isNaN(nextStep)) return;
+                setTimeout(() => goToStep(nextStep), 180);
+            });
+        });
+
+        document.querySelectorAll('[data-next]:not(.option-btn)').forEach(button => {
+            button.addEventListener('click', () => {
+                const nextStep = parseInt(button.dataset.next, 10);
+                if (Number.isNaN(nextStep)) return;
+                goToStep(nextStep);
+            });
+        });
+
+        const offerBtn = document.querySelector('.offer-btn');
+        if (offerBtn) {
+            offerBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                goToStep(10);
+            });
+        }
+
+        if (discountCta) {
+            discountCta.setAttribute('href', checkoutUrl);
+        }
+
+        updateProgress(currentStep);
+    </script>
+</body>
+</html>
