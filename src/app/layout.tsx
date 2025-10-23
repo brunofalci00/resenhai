@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
-import { Bebas_Neue, Inter, Montserrat } from "next/font/google"
+import { Bebas_Neue, Inter, Montserrat, Playfair_Display } from "next/font/google"
 
 import "./globals.css"
-import "./lp-final.css"
 import { PostHogProvider } from "@/providers/posthog-provider"
 
 const inter = Inter({
@@ -23,10 +22,16 @@ const montserrat = Montserrat({
   weight: ["400", "500", "600", "700", "800", "900"],
 })
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+})
+
 const siteUrl = "https://resenhai.life"
-const title = "O Mago da Sedução – Domine a Arte da Conversa"
+const title = "Mago da Sedução | Diagnóstico Safado"
 const description =
-  "O Mago da Sedução é seu estrategista emocional direto no WhatsApp. Mande o print, receba a resposta perfeita e vire o jogo em minutos."
+  "Solta a língua e assume o comando da DM. O diagnóstico direto do Mago da Sedução mostra onde você perde o ritmo e entrega mensagens que seguram a atenção dela."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,13 +41,13 @@ export const metadata: Metadata = {
     title,
     description,
     url: siteUrl,
-    siteName: "O Mago da Sedução",
+    siteName: "Mago da Sedução",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80",
+        url: "https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png",
         width: 1200,
         height: 630,
-        alt: "O Mago da Sedução - Assuma o controle das conversas",
+        alt: "Mago da Sedução | Diagnóstico Safado",
       },
     ],
     locale: "pt_BR",
@@ -52,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80"],
+    images: ["https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png"],
   },
   alternates: {
     canonical: siteUrl,
@@ -66,9 +71,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${bebas.variable} ${montserrat.variable} antialiased`}>
+      <body className={`${inter.variable} ${bebas.variable} ${montserrat.variable} ${playfair.variable} antialiased`}>
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   )
 }
+
