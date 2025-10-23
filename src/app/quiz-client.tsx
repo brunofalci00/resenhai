@@ -15,7 +15,6 @@ type QuizClientProps = {
 
 export function QuizClient({ rawHtml }: QuizClientProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const viewContentFired = useRef(false)
 
   useEffect(() => {
     const container = containerRef.current
@@ -81,9 +80,8 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
     parsedDocument.querySelectorAll("script").forEach((scriptNode, index) => {
       const scriptContent = scriptNode.textContent?.trim()
 
-      // Skip only Facebook Pixel base code to avoid duplicate initialization
-      // Allow event tracking scripts like fbq('track', 'ViewContent')
-      if (scriptContent && (scriptContent.includes("fbq('init'") || scriptContent.includes('facebook.net/en_US/fbevents.js'))) {
+      // Skip ALL Facebook Pixel scripts to avoid duplicate events
+      if (scriptContent && (scriptContent.includes('fbq') || scriptContent.includes('facebook.net/en_US/fbevents.js'))) {
         return
       }
 
@@ -105,30 +103,6 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
       document.body.appendChild(scriptElement)
       appendedScripts.push(scriptElement)
     })
-
-    // Fire ViewContent event after pixel is ready
-    const fireViewContent = () => {
-      if (viewContentFired.current) return
-
-      if (typeof window !== 'undefined' && window.fbq) {
-        viewContentFired.current = true
-        console.log('Firing ViewContent event')
-        window.fbq('track', 'ViewContent')
-      } else {
-        // If fbq is not ready yet, try again
-        console.log('fbq not ready, retrying...')
-        setTimeout(fireViewContent, 300)
-      }
-    }
-
-    // Wait for page to fully load before firing ViewContent
-    if (document.readyState === 'complete') {
-      setTimeout(fireViewContent, 1000)
-    } else {
-      window.addEventListener('load', () => {
-        setTimeout(fireViewContent, 1000)
-      })
-    }
 
     return () => {
       container.innerHTML = ""
