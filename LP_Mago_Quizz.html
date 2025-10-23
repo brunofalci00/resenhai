@@ -665,7 +665,11 @@
 
         fbq('track', 'PageView');
 
-        fbq('track', 'ViewContent');
+        fbq('track', 'ViewContent', {
+            content_name: 'Quiz Mago da Seducao',
+            content_category: 'Quiz',
+            content_type: 'product'
+        });
 
     </script>
 
