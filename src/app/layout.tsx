@@ -29,9 +29,9 @@ const playfair = Playfair_Display({
 })
 
 const siteUrl = "https://resenhai.life"
-const title = "Mago da Sedução | Diagnóstico Safado"
+const title = "Descubra Por Que Ela Não Responde | Teste Gratuito"
 const description =
-  "Solta a língua e assume o comando da DM. O diagnóstico direto do Mago da Sedução mostra onde você perde o ritmo e entrega mensagens que seguram a atenção dela."
+  "Descubra onde você perde o ritmo nas conversas. Teste gratuito mostra exatamente o que fazer para ela não te ignorar mais."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
         url: "https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png",
         width: 1200,
         height: 630,
-        alt: "Mago da Sedução | Diagnóstico Safado",
+        alt: "Descubra Por Que Ela Não Responde | Teste Gratuito",
       },
     ],
     locale: "pt_BR",
