@@ -169,12 +169,23 @@
             text-align: left;
         }
 
-        .option-btn:hover,
+.option-btn:hover,
         .option-btn:focus-visible {
             transform: translateY(-2px);
             border-color: var(--accent);
             color: #FFF;
             box-shadow: 0 16px 36px rgba(196, 32, 76, 0.28);
+        }
+
+        .option-btn.is-selected {
+            border-color: rgba(255, 71, 71, 0.65);
+            color: #FFF;
+            background: linear-gradient(135deg, #F54747, #C82640);
+            box-shadow: 0 18px 38px rgba(245, 71, 71, 0.32);
+        }
+
+        .option-btn.is-selected::after {
+            color: #FFF;
         }
 
         .option-text {
@@ -1121,6 +1132,11 @@
                 button.className = 'option-btn';
                 button.innerHTML = `<span class="option-text">${option}</span>`;
                 button.addEventListener('click', () => {
+                    awarenessOptionsEl.querySelectorAll('.option-btn').forEach(optionBtn => {
+                        optionBtn.classList.remove('is-selected');
+                    });
+                    button.classList.add('is-selected');
+
                     awarenessFeedbackEl.textContent = current.feedback;
                     awarenessFeedbackEl.classList.remove('hidden');
                     awarenessNextBtn.classList.remove('hidden');
