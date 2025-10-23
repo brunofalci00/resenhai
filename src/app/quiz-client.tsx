@@ -73,8 +73,9 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
     parsedDocument.querySelectorAll("script").forEach((scriptNode, index) => {
       const scriptContent = scriptNode.textContent?.trim()
 
-      // Skip Facebook Pixel scripts to avoid duplicate initialization
-      if (scriptContent && (scriptContent.includes('fbq') || scriptContent.includes('facebook.net/en_US/fbevents.js'))) {
+      // Skip only Facebook Pixel base code to avoid duplicate initialization
+      // Allow event tracking scripts like fbq('track', 'ViewContent')
+      if (scriptContent && (scriptContent.includes("fbq('init'") || scriptContent.includes('facebook.net/en_US/fbevents.js'))) {
         return
       }
 
