@@ -106,13 +106,28 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
       appendedScripts.push(scriptElement)
     })
 
-    // Fire ViewContent event after page is fully loaded
-    if (!viewContentFired.current && typeof window !== 'undefined' && window.fbq) {
-      viewContentFired.current = true
-      // Small delay to ensure pixel is ready
-      setTimeout(() => {
+    // Fire ViewContent event after pixel is ready
+    const fireViewContent = () => {
+      if (viewContentFired.current) return
+
+      if (typeof window !== 'undefined' && window.fbq) {
+        viewContentFired.current = true
+        console.log('Firing ViewContent event')
         window.fbq('track', 'ViewContent')
-      }, 500)
+      } else {
+        // If fbq is not ready yet, try again
+        console.log('fbq not ready, retrying...')
+        setTimeout(fireViewContent, 300)
+      }
+    }
+
+    // Wait for page to fully load before firing ViewContent
+    if (document.readyState === 'complete') {
+      setTimeout(fireViewContent, 1000)
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(fireViewContent, 1000)
+      })
     }
 
     return () => {
