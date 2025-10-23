@@ -2,12 +2,20 @@
 
 import { useEffect, useRef } from "react"
 
+// Facebook Pixel type declaration
+declare global {
+  interface Window {
+    fbq: (action: string, event: string, data?: Record<string, unknown>) => void
+  }
+}
+
 type QuizClientProps = {
   rawHtml: string
 }
 
 export function QuizClient({ rawHtml }: QuizClientProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const viewContentFired = useRef(false)
 
   useEffect(() => {
     const container = containerRef.current
@@ -97,6 +105,15 @@ export function QuizClient({ rawHtml }: QuizClientProps) {
       document.body.appendChild(scriptElement)
       appendedScripts.push(scriptElement)
     })
+
+    // Fire ViewContent event after page is fully loaded
+    if (!viewContentFired.current && typeof window !== 'undefined' && window.fbq) {
+      viewContentFired.current = true
+      // Small delay to ensure pixel is ready
+      setTimeout(() => {
+        window.fbq('track', 'ViewContent')
+      }, 500)
+    }
 
     return () => {
       container.innerHTML = ""
