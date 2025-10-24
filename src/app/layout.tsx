@@ -1,37 +1,20 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
-import { Bebas_Neue, Inter, Montserrat, Playfair_Display } from "next/font/google"
+import { Poppins } from "next/font/google"
 
 import "./globals.css"
 import { PostHogProvider } from "@/providers/posthog-provider"
 
-const inter = Inter({
-  variable: "--font-inter",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-})
-
-const bebas = Bebas_Neue({
-  weight: "400",
-  variable: "--font-bebas",
-  subsets: ["latin"],
-})
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-})
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600", "700"],
 })
 
 const siteUrl = "https://resenhai.life"
-const title = "Descubra Por Que Ela Não Responde | Teste Gratuito"
+const title = "Frase Discreta | Quiz de Acesso"
 const description =
-  "Descubra onde você perde o ritmo nas conversas. Teste gratuito mostra exatamente o que fazer para ela não te ignorar mais."
+  "Descubra a frase discreta que deixa ela obcecada por voc�. Responda o quiz r�pido e libere o acesso exclusivo."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,13 +24,13 @@ export const metadata: Metadata = {
     title,
     description,
     url: siteUrl,
-    siteName: "Mago da Sedução",
+    siteName: "Frase Discreta",
     images: [
       {
-        url: "https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png",
+        url: "https://i.ibb.co/Xf9tvjBy/pexels-rrodriguesim-16807593.jpg",
         width: 1200,
         height: 630,
-        alt: "Descubra Por Que Ela Não Responde | Teste Gratuito",
+        alt: "Frase Discreta | Quiz de Acesso",
       },
     ],
     locale: "pt_BR",
@@ -57,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["https://i.ibb.co/Z0v8Rhq/Chat-GPT-Image-22-de-out-de-2025-17-11-48.png"],
+    images: ["https://i.ibb.co/Xf9tvjBy/pexels-rrodriguesim-16807593.jpg"],
   },
   alternates: {
     canonical: siteUrl,
@@ -71,10 +54,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${bebas.variable} ${montserrat.variable} ${playfair.variable} antialiased`}>
+      <body className={`${poppins.variable} antialiased`}>
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   )
 }
-

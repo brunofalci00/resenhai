@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Descubra a frase discreta que deixa ela obcecada por você. Responda o quiz rápido e libere o acesso exclusivo.">
+    <title>Frase Discreta | Quiz de Acesso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #0E0E0E;
+            --panel-soft: #141414;
+            --text: #FFFFFF;
+            --muted: rgba(255,255,255,0.72);
+            --primary: #15D541;
+            --primary-dark: #0f9f30;
+            --accent-red: #FF1D3D;
+            --accent-pink: #FF007A;
+            --accent-blue: #1F56FF;
+            --accent-grey: #A8A8A8;
+            --shadow: 0 30px 70px rgba(0,0,0,0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(120% 130% at 50% -10%, rgba(255, 0, 122, 0.35) 0%, var(--bg) 48%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 42px 16px;
+        }
+
+        .quiz-shell {
+            width: 100%;
+            max-width: 420px;
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 26px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .quiz-progress {
+            height: 12px;
+            background: #1D1D1D;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            background: #ededed;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, #ffffff 100%);
+            transition: width 0.3s ease;
+        }
+
+        .quiz-step {
+            display: none;
+            padding: 42px 36px 48px;
+            text-align: center;
+            background: var(--panel);
+            min-height: 520px;
+        }
+
+        .quiz-step.active {
+            display: block;
+            animation: fade-in 0.35s ease;
+        }
+
+        .step-hero {
+            width: 180px;
+            height: 180px;
+            border-radius: 26px;
+            overflow: hidden;
+            margin: 0 auto 24px;
+            background: #191919;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1, h2 {
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 1.74rem;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 1.52rem;
+            margin-bottom: 10px;
+        }
+
+        .highlight-red {
+            color: var(--accent-red);
+        }
+
+        .lead {
+            font-size: 0.98rem;
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+
+        .microcopy {
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.62);
+            margin-bottom: 22px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 20px;
+            background: linear-gradient(180deg, #23F95A 0%, var(--primary) 100%);
+            color: #041204;
+            font-size: 1.04rem;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 16px 40px rgba(35, 249, 90, 0.28);
+        }
+
+        .primary-btn:hover,
+        .primary-btn:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 48px rgba(35, 249, 90, 0.42);
+        }
+
+        .option-group {
+            display: grid;
+            gap: 16px;
+            margin-top: 26px;
+        }
+
+        .option-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 16px 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .option-btn:hover,
+        .option-btn:focus-visible {
+            transform: translateY(-2px);
+            opacity: 0.92;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+        }
+
+        .option-btn.pink {
+            background: linear-gradient(120deg, #FF2AA6 0%, var(--accent-pink) 100%);
+        }
+
+        .option-btn.blue {
+            background: linear-gradient(120deg, #3A6DFF 0%, var(--accent-blue) 100%);
+        }
+
+        .option-btn.grey {
+            background: linear-gradient(120deg, #D5D5D5 0%, var(--accent-grey) 100%);
+            color: #101010;
+        }
+
+        .option-btn.red {
+            background: linear-gradient(120deg, #FF3E3E 0%, #B90E29 100%);
+        }
+
+        .option-btn.dark {
+            background: linear-gradient(120deg, #1C1C1C 0%, #2D2D2D 100%);
+        }
+
+        .step-label {
+            display: block;
+            font-size: 0.86rem;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 8px;
+        }
+
+        .step-illustration {
+            margin: 0 auto 24px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-illustration img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gender-icons {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-bottom: 22px;
+        }
+
+        .gender-icons img {
+            width: 140px;
+            height: auto;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 460px) {
+            .quiz-step {
+                padding: 36px 24px 42px;
+            }
+
+            .step-hero {
+                width: 150px;
+                height: 150px;
+            }
+
+            h1 { font-size: 1.58rem; }
+            h2 { font-size: 1.4rem; }
+        }
+    </style>
+    <script
+      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+      data-utmify-prevent-xcod-sck
+      data-utmify-prevent-subids
+      async
+      defer
+    ></script>
+    <script>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '369969430611939');
+        fbq('track', 'PageView');
+    </script>
+    <script>
+        fbq('track', 'ViewContent');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=369969430611939&ev=PageView&noscript=1" /></noscript>
+</head>
+<body>
+    <div class="quiz-shell">
+        <div class="quiz-progress">
+            <div class="progress-track">
+                <span class="progress-fill" id="progress-fill"></span>
+            </div>
+        </div>
+
+        <section class="quiz-step active" data-step="1">
+            <div class="step-hero">
+                <img src="https://i.ibb.co/Xf9tvjBy/pexels-rrodriguesim-16807593.jpg" alt="Homem confiante com sinal de silêncio">
+            </div>
+            <span class="step-label">Passo 1 de 5</span>
+            <h1>Descubra como deixar <span class="highlight-red">ela obcecada</span> por você</h1>
+            <h2>Apenas usando essa <span class="highlight-red">“FRASE DISCRETA”</span></h2>
+            <p class="lead">Responda este pequeno questionário e veja se você está pronto para liberar esse segredo. Leva menos de 1 minuto.</p>
+            <button class="primary-btn" data-next="2">SIM, VAMOS COMEÇAR!</button>
+        </section>
+
+        <section class="quiz-step" data-step="2">
+            <span class="step-label">Passo 2 de 5</span>
+            <div class="gender-icons">
+                <img src="https://i.ibb.co/Hfq2q3Ph/couple-1739005-1280.webp" alt="Ícone feminino e masculino">
+            </div>
+            <h2>Qual o seu gênero?</h2>
+            <p class="microcopy">Selecione a sua resposta</p>
+            <div class="option-group">
+                <button class="option-btn pink" data-next="3">Mulher</button>
+                <button class="option-btn blue" data-next="3">Homem</button>
+                <button class="option-btn grey" data-next="3">Prefiro não dizer</button>
+            </div>
+        </section>
+
+        <section class="quiz-step" data-step="3">
+            <span class="step-label">Passo 3 de 5</span>
+            <div class="step-illustration">
+                <img src="https://i.ibb.co/hrpcvQG/download-62.jpg" alt="Homem e mulher sorrindo em um encontro">
+            </div>
+            <h2>Você gostaria de se sentir mais seguro e confiante ao interagir com qualquer mulher?</h2>
+            <p class="microcopy">Selecione a sua resposta</p>
+            <div class="option-group">
+                <button class="option-btn red" data-next="4">Sim — hoje eu travo quando chega a hora de me aproximar</button>
+                <button class="option-btn red" data-next="4">Sim — quero ter o controle da conversa e manter a atenção dela</button>
+                <button class="option-btn red" data-next="4">Estou indo bem — mas quero resultados mais consistentes</button>
+            </div>
+        </section>
+
+        <section class="quiz-step" data-step="4">
+            <span class="step-label">Passo 4 de 5</span>
+            <div class="step-illustration">
+                <img src="https://i.ibb.co/XxVWBQb2/download-63.jpg" alt="Mulher abraçando homem elegante">
+            </div>
+            <h2>Se você pudesse usar uma técnica comprovada para criar desejo e curiosidade nela, como isso mudaria sua vida amorosa?</h2>
+            <p class="microcopy">Selecione a sua resposta</p>
+            <div class="option-group">
+                <button class="option-btn red" data-next="5">Mudaria tudo — eu seria o cara que ela procura</button>
+                <button class="option-btn red" data-next="5">Seria incrível — mais encontros e menos enrolação</button>
+                <button class="option-btn red" data-next="5">Quero mais segurança — nada de jogar no escuro</button>
+            </div>
+        </section>
+
+        <section class="quiz-step" data-step="5">
+            <span class="step-label">Passo 5 de 5</span>
+            <h2>PARABÉNS, VOCÊ FOI SELECIONADO PARA TER ACESSO A ESSE SEGREDO DA SEDUÇÃO</h2>
+            <p class="lead">Você saberá exatamente quais passos seguir. Você está pronto?</p>
+            <button class="primary-btn" id="final-cta">SIM, QUERO CONTINUAR!</button>
+            <p class="microcopy">Ao continuar, você será direcionado para a página com todos os detalhes e poderá garantir seu acesso completo.</p>
+        </section>
+    </div>
+
+    <script>
+        const steps = Array.from(document.querySelectorAll('.quiz-step'));
+        const totalSteps = steps.length;
+        const progressFill = document.getElementById('progress-fill');
+
+        let currentStep = 1;
+
+        function updateProgress(step) {
+            const percentage = ((step - 1) / (totalSteps - 1)) * 100;
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            steps.forEach(section => {
+                section.classList.toggle('active', Number(section.dataset.step) === step);
+            });
+            updateProgress(step);
+            fbq('track', 'StepView', {step});
+        }
+
+        document.querySelectorAll('[data-next]').forEach(button => {
+            button.addEventListener('click', () => {
+                const nextStep = parseInt(button.dataset.next, 10);
+                if (Number.isNaN(nextStep)) return;
+                goToStep(nextStep);
+            });
+        });
+
+        const finalCta = document.getElementById('final-cta');
+        if (finalCta) {
+            finalCta.addEventListener('click', () => {
+                const targetUrl = '/offer?utm_source=quiz&utm_medium=redirect&utm_campaign=frase_discreta';
+                window.location.href = targetUrl;
+            });
+        }
+
+        updateProgress(currentStep);
+    </script>
+</body>
+</html>
