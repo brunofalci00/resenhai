@@ -14,7 +14,7 @@ const poppins = Poppins({
 const siteUrl = "https://resenhai.life"
 const title = "Frase Discreta | Quiz de Acesso"
 const description =
-  "Descubra a frase discreta que deixa ela obcecada por você. Responda o quiz rápido e libere o acesso exclusivo."
+  "Descubra a frase discreta que deixa ela obcecada por vocÃª. Responda o quiz rÃ¡pido e libere o acesso exclusivo."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
