@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra Confirmada</title>
+    <script>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '369969430611939');
+        fbq('track', 'PageView');
+        fbq('track', 'ViewContent');
+        fbq('track', 'Purchase', { value: 19.90, currency: 'BRL' });
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=369969430611939&ev=PageView&noscript=1" /></noscript>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0b0b;
+            color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            text-align: center;
+            background: rgba(20,20,20,0.92);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 32px 28px;
+            box-shadow: 0 26px 60px rgba(0,0,0,0.45);
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+        p {
+            font-size: 1rem;
+            color: rgba(245,245,245,0.82);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Compra confirmada!</h2>
+        <p>O acesso foi enviado para seu e-mail agora.</p>
+        <p>Qualquer duvida, responda o e-mail de confirmacao e nossa equipe ajuda voce.</p>
+    </div>
+</body>
+</html>

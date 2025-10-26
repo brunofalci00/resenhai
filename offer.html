@@ -31,9 +31,10 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: var(--bg);
+            background: #050505 url('https://i.ibb.co/BVQQyFLz/Design-sem-nome-7.png') no-repeat center top / cover;
             color: var(--text);
             line-height: 1.7;
+            background-attachment: fixed;
         }
 
         img {
@@ -52,9 +53,21 @@
         }
 
         .hero {
+            position: relative;
             padding: 96px 0 72px;
             text-align: center;
-            background: linear-gradient(180deg, #000000 0%, #080808 70%, #111111 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(190deg, rgba(5,5,8,0.22) 0%, rgba(5,5,8,0.18) 55%, rgba(5,5,8,0.12) 100%);
+            backdrop-filter: blur(2px);
+        }
+
+        .hero > .wrapper {
+            position: relative;
         }
 
         .hero h1 {
@@ -78,14 +91,16 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 20px 42px;
+            padding: 18px 32px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #26FF5A 0%, var(--green) 100%);
-            color: #031704;
+            background: linear-gradient(180deg, #41FF6C 0%, #1AC546 100%);
+            color: #041204;
             font-weight: 700;
-            letter-spacing: 1.8px;
+            letter-spacing: 1.6px;
             text-transform: uppercase;
             font-size: 1.02rem;
+            text-align: center;
+            margin: 18px 0;
             box-shadow: 0 22px 48px rgba(38, 255, 90, 0.32);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -101,11 +116,12 @@
         }
 
         .section-dark {
-            background: var(--panel);
+            background: rgba(14, 14, 20, 0.88);
+            backdrop-filter: blur(2px);
         }
 
         .section-light {
-            background: #FFFFFF;
+            background: rgba(255, 255, 255, 0.9);
             color: #111111;
         }
 
@@ -160,6 +176,38 @@
             width: min(420px, 100%);
             border-radius: 24px;
             box-shadow: var(--shadow);
+        }
+
+        .hero-proof {
+            margin-top: 18px;
+            font-size: 0.98rem;
+            color: rgba(247,245,255,0.82);
+        }
+
+        .cta-caption {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 0.96rem;
+        }
+
+        .cta-inline {
+            display: inline-flex;
+            margin: 18px auto 0;
+        }
+
+        .price-highlight {
+            display: block;
+            font-size: 1.6rem;
+            color: #0fb63a;
+            font-weight: 800;
+        }
+
+        .cta-guarantee {
+            font-size: 0.95rem;
+            margin-top: 16px;
+            color: rgba(17, 17, 17, 0.78);
+            text-align: center;
         }
 
         .copy-block {
@@ -321,10 +369,11 @@
             margin-top: 6px;
         }
 
-        .cta-secondary {
+        .cta-primary {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 12px;
             padding: 18px 32px;
             background: linear-gradient(180deg, #41FF6C 0%, #1AC546 100%);
             color: #041204;
@@ -333,7 +382,20 @@
             border-radius: 999px;
             text-transform: uppercase;
             margin: 18px 0;
+            box-shadow: 0 22px 48px rgba(38, 255, 90, 0.32);
         }
+
+        .cta-primary:hover,
+        .cta-primary:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 28px 56px rgba(38, 255, 90, 0.4);
+        }
+
+        .cta-inline {
+            display: inline-flex;
+            margin: 18px auto 0;
+        }
+
 
         .secure-badges {
             margin-top: 18px;
@@ -460,10 +522,11 @@
 <body>
     <header class="hero">
         <div class="wrapper">
-            <h1>Envie essas <span>FRASES DISCRETAS</span> para ela… e ela ficará <span>obcecada</span> por você</h1>
-            <p>Sem precisar implorar atenção, sem joguinhos ou parecer desesperado. Com as palavras certas, ela não enxerga outro homem além de você.</p>
-            <a class="cta-primary" href="https://pay.hub.la/yIR0mofi4RZKyO0GdAEm?utm_source=offer&utm_medium=cta&utm_campaign=frase_discreta" target="_blank" rel="noopener noreferrer" onclick="fbq('track', 'AddToCart');">
-                Quero a frase agora
+            <h1>⚠️ A <span>FRASE</span> que dispara desejo e faz ela pensar em voce o dia todo</h1>
+            <p>Voce envia hoje... e ela te responde diferente.</p>
+            <p class="hero-proof">Mais de 3.000 homens testaram — o efeito e sempre o mesmo: ela muda o jeito de tratar.</p>
+            <a class="cta-primary" href="#offer-card" rel="noopener noreferrer">
+                QUERO LIBERAR A FRASE AGORA
             </a>
         </div>
     </header>
@@ -472,11 +535,13 @@
         <section class="section-dark">
             <div class="wrapper">
                 <h2 class="section-title">Confira depoimentos de homens que usaram as <span>Frases Discretas</span></h2>
-                <p class="intro-copy">Eles conseguiram fazer a mulher que queriam correr atrás deles. Veja o que acontece quando você aplica a frase do jeito certo.</p>
+                <p class="intro-copy">Eles conseguiram fazer a mulher que queriam correr atras deles. Veja o que acontece quando voce aplica a frase do jeito certo.</p>
                 <div class="testimonial-gallery">
                     <img src="https://i.ibb.co/21Pmb3Rt/Design-sem-nome-16.png" alt="Comentário 1">
                     <img src="https://i.ibb.co/ZprR4KCB/Design-sem-nome-15.png" alt="Comentário 2">
                 </div>
+                <p class="cta-caption">Se funcionou pra eles, pode funcionar pra voce tambem.</p>
+                <a class="cta-primary cta-inline" href="#offer-card" rel="noopener noreferrer">QUERO LIBERAR A FRASE AGORA</a>
             </div>
         </section>
 
@@ -492,17 +557,19 @@
                 <div class="bullet-problems">
                     <div class="problem-item">
                         <div class="problem-icon">&times;</div>
-                        <p>Medo de ser rejeitado ou virar “só amigo” quando tenta se aproximar</p>
+                        <p>Voce trava quando tenta chegar junto</p>
                     </div>
                     <div class="problem-item">
                         <div class="problem-icon">&times;</div>
-                        <p>Dificuldade em entender os sinais e o comportamento dela</p>
+                        <p>Ela te enxerga como amigo… e some quando voce mostra interesse</p>
                     </div>
                     <div class="problem-item">
                         <div class="problem-icon">&times;</div>
-                        <p>Não saber conduzir a conversa para encontro, conexão e desejo real</p>
+                        <p>A conversa nunca vira quimica, muito menos encontro</p>
                     </div>
                 </div>
+                <p class="cta-caption">Se isso soa familiar, essa FRASE e o ponto de virada que voce tava procurando.</p>
+                <a class="cta-primary cta-inline" href="#offer-card" rel="noopener noreferrer">QUERO LIBERAR A FRASE AGORA</a>
             </div>
         </section>
 
@@ -537,6 +604,40 @@
                         <div class="slider-item">
                             <img src="https://i.ibb.co/TxgX1rB8/Whats-App-Image-2025-10-24-at-15-21-22.jpg" alt="Depoimento real 2">
                         </div>
+                    </div>
+                    <div class="slider-dots">
+                        <span class="active"></span>
+                        <span></span>
+                    </div>
+                    <p class="cta-caption">Quer ver esse tipo de resposta no seu WhatsApp tambem?</p>
+                    <a class="cta-primary cta-inline" href="#offer-card" rel="noopener noreferrer">QUERO LIBERAR A FRASE AGORA</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-dark">
+            <div class="wrapper">
+                <div id="offer-card" class="pricing-card">
+                    <h3>🎁 Acesso imediato por tempo limitado</h3>
+                    <p class="pricing-value">
+                        <span class="price-highlight">R$19,90 a vista</span>
+                        <span>Ou so R$5,38 em ate 4x</span>
+                    </p>
+                    <p class="cta-note">Libere agora e receba a FRASE + bonus prontos pra aplicar HOJE MESMO.</p>
+                    <a id="cta-checkout" class="cta-primary cta-inline" href="https://pay.hub.la/yIR0mofi4RZKyO0GdAEm?utm_source=offer&utm_medium=cta&utm_campaign=frase_discreta" target="_blank" rel="noopener noreferrer" onclick="fbq('track', 'AddToCart');">
+                        QUERO LIBERAR A FRASE AGORA
+                    </a>
+                    <p class="cta-guarantee">Teste por 15 dias sem risco. Se ela nao mudar a forma de te responder, a gente devolve 100% do valor.</p>
+                    <div class="secure-badges">
+                        <img src="https://i.ibb.co/5XNzP9Gj/image-5.png" alt="Selos de pagamento seguro">
+                    </div>
+                </div>
+            </div>
+
+        <section class="section-dark">
+            <div class="wrapper">
+                <div class="slider-wrapper">
+                    <div class="slider-track">
                         <div class="slider-item">
                             <img src="https://i.ibb.co/60QDBvxv/Whats-App-Image-2025-10-24-at-15-06-36.jpg" alt="Depoimento real 3">
                         </div>
@@ -551,28 +652,9 @@
                         <span class="active"></span>
                         <span></span>
                         <span></span>
-                        <span></span>
-                        <span></span>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-dark">
-            <div class="wrapper">
-                <div class="pricing-card">
-                    <h3>Garanta o acesso ao programa Frases da Obsessão agora</h3>
-                    <p class="pricing-value">
-                        De R$ <span style="text-decoration: line-through;">229,90</span> por apenas 4 vezes de <span style="font-size: 2.4rem; display:block; color:#0fb63a; margin-top:10px;">R$ 5,38</span>
-                        <span>Ou R$ 19,90 à vista</span>
-                    </p>
-                    <a class="cta-secondary" href="https://pay.hub.la/yIR0mofi4RZKyO0GdAEm?utm_source=offer&utm_medium=cta&utm_campaign=frase_discreta" target="_blank" rel="noopener noreferrer">
-                        Quero comprar com o desconto!
-                    </a>
-                    <p style="font-size:0.95rem; margin-bottom:18px;">Você vai economizar R$200 hoje. Clique no botão e confirme seu acesso.</p>
-                    <div class="secure-badges">
-                        <img src="https://i.ibb.co/5XNzP9Gj/image-5.png" alt="Selos de pagamento seguro">
-                    </div>
+                    <p class="cta-caption">Pronto para provocar esse tipo de resposta nela?</p>
+                    <a class="cta-primary cta-inline" href="#offer-card" rel="noopener noreferrer">QUERO LIBERAR A FRASE AGORA</a>
                 </div>
             </div>
         </section>

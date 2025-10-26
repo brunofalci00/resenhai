@@ -243,6 +243,32 @@
             height: auto;
         }
 
+        .loading-step {
+            display: grid;
+            place-items: center;
+            gap: 18px;
+        }
+
+        .loading-ring {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.18);
+            border-top-color: var(--accent-red);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @keyframes fade-in {
             from { opacity: 0; transform: translateY(18px); }
             to { opacity: 1; transform: translateY(0); }
@@ -293,19 +319,19 @@
 
         <section class="quiz-step active" data-step="1">
             <div class="step-hero">
-                <img src="https://i.ibb.co/Xf9tvjBy/pexels-rrodriguesim-16807593.jpg" alt="Homem confiante com sinal de silêncio">
+                <img src="https://i.ibb.co/WpdJvSMq/FRASE-00.jpg" alt="Homem confiante com sinal de silêncio">
             </div>
-            <span class="step-label">Passo 1 de 5</span>
-            <h1>Descubra como deixar <span class="highlight-red">ela obcecada</span> por você</h1>
-            <h2>Apenas usando essa <span class="highlight-red">“FRASE DISCRETA”</span></h2>
-            <p class="lead">Responda este pequeno questionário e veja se você está pronto para liberar esse segredo. Leva menos de 1 minuto.</p>
-            <button class="primary-btn" data-next="2">SIM, VAMOS COMEÇAR!</button>
+            <span class="step-label">Passo 1 de 6</span>
+            <h1>A <span class="highlight-red">FRASE</span> que faz ela correr atras de voce... Sera que vai funcionar contigo tambem?</h1>
+            <h2>Responda o teste e descubra se voce esta pronto pra usar essa mensagem secreta ainda hoje.</h2>
+            <p class="lead">Leva menos de 1 minuto - e no final voce pode ter acesso imediato a frase.</p>
+            <button class="primary-btn" data-next="2">QUERO FAZER O TESTE AGORA</button>
         </section>
 
         <section class="quiz-step" data-step="2">
-            <span class="step-label">Passo 2 de 5</span>
+            <span class="step-label">Passo 2 de 6</span>
             <div class="gender-icons">
-                <img src="https://i.ibb.co/Hfq2q3Ph/couple-1739005-1280.webp" alt="Ícone feminino e masculino">
+                <img src="https://i.ibb.co/GfR3vpyT/FRASE-01.jpg" alt="Ícone feminino e masculino">
             </div>
             <h2>Qual o seu gênero?</h2>
             <p class="microcopy">Selecione a sua resposta</p>
@@ -317,9 +343,9 @@
         </section>
 
         <section class="quiz-step" data-step="3">
-            <span class="step-label">Passo 3 de 5</span>
+            <span class="step-label">Passo 3 de 6</span>
             <div class="step-illustration">
-                <img src="https://i.ibb.co/hrpcvQG/download-62.jpg" alt="Homem e mulher sorrindo em um encontro">
+                <img src="https://i.ibb.co/pV6RtC3/FRASE-02.jpg" alt="Homem e mulher sorrindo em um encontro">
             </div>
             <h2>Você gostaria de se sentir mais seguro e confiante ao interagir com qualquer mulher?</h2>
             <p class="microcopy">Selecione a sua resposta</p>
@@ -331,9 +357,9 @@
         </section>
 
         <section class="quiz-step" data-step="4">
-            <span class="step-label">Passo 4 de 5</span>
+            <span class="step-label">Passo 4 de 6</span>
             <div class="step-illustration">
-                <img src="https://i.ibb.co/XxVWBQb2/download-63.jpg" alt="Mulher abraçando homem elegante">
+                <img src="https://i.ibb.co/JwpD36GF/FRASE-03.jpg" alt="Mulher abraçando homem elegante">
             </div>
             <h2>Se você pudesse usar uma técnica comprovada para criar desejo e curiosidade nela, como isso mudaria sua vida amorosa?</h2>
             <p class="microcopy">Selecione a sua resposta</p>
@@ -344,11 +370,20 @@
             </div>
         </section>
 
+        <!-- Loading Step -->
         <section class="quiz-step" data-step="5">
-            <span class="step-label">Passo 5 de 5</span>
-            <h2>PARABÉNS, VOCÊ FOI SELECIONADO PARA TER ACESSO A ESSE SEGREDO DA SEDUÇÃO</h2>
-            <p class="lead">Você saberá exatamente quais passos seguir. Você está pronto?</p>
-            <button class="primary-btn" id="final-cta">SIM, QUERO CONTINUAR!</button>
+            <span class="step-label">Passo 5 de 6</span>
+            <div class="loading-step">
+                <div class="loading-ring"></div>
+                <p class="loading-text">Calculando seus gatilhos...<br>Checando se voce esta pronto pra liberar a frase.</p>
+            </div>
+        </section>
+
+        <section class="quiz-step" data-step="6">
+            <span class="step-label">Passo 6 de 6</span>
+            <h2>⚠️ LIBERADO: Voce pode aplicar a FRASE ainda hoje.</h2>
+            <p class="lead">Essa mensagem dispara desejo, confunde a mente dela e faz ela vir atras. Vai usar ou vai continuar sendo ignorado?</p>
+            <button class="primary-btn" id="final-cta">LIBERAR A FRASE AGORA</button>
             <p class="microcopy">Ao continuar, você será direcionado para a página com todos os detalhes e poderá garantir seu acesso completo.</p>
         </section>
     </div>
@@ -359,6 +394,8 @@
         const progressFill = document.getElementById('progress-fill');
 
         let currentStep = 1;
+        let loadingTimeout = null;
+
 
         function updateProgress(step) {
             const percentage = ((step - 1) / (totalSteps - 1)) * 100;
@@ -366,12 +403,19 @@
         }
 
         function goToStep(step) {
+            if (loadingTimeout) {
+                clearTimeout(loadingTimeout);
+                loadingTimeout = null;
+            }
             currentStep = step;
             steps.forEach(section => {
                 section.classList.toggle('active', Number(section.dataset.step) === step);
             });
             updateProgress(step);
             fbq('track', 'StepView', {step});
+            if (step === 5) {
+                loadingTimeout = setTimeout(() => goToStep(6), 2200);
+            }
         }
 
         document.querySelectorAll('[data-next]').forEach(button => {
