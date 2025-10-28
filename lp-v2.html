@@ -305,7 +305,12 @@
         'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '369969430611939');
         fbq('track', 'PageView');
-        fbq('track', 'ViewContent');
+        fbq('track', 'ViewContent', {
+            value: 19.90,
+            currency: 'BRL',
+            content_ids: ['frase_discreta'],
+            content_type: 'product'
+        });
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=369969430611939&ev=PageView&noscript=1" /></noscript>
 </head>
